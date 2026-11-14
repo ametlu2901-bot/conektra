@@ -65,22 +65,47 @@
     arrancar();
   }
 
-  // Pestañas de servicios
+  // Pestañas de servicios: avanzan solas con barra de progreso; al tocar una, se quedan quietas
+  const caja = $('.servicios');
   const tabs = $$('.pestana');
   const paneles = $$('.panel');
+  const DURACION = 7000;
+  let actualTab = 0, relojTab = null, visibleTab = false;
   const elegir = n => {
-    tabs.forEach((t, j) => { t.classList.toggle('activa', j === n); t.setAttribute('aria-selected', String(j === n)); t.tabIndex = j === n ? 0 : -1; });
+    actualTab = n;
+    tabs.forEach((t, j) => {
+      const si = j === n;
+      t.classList.toggle('activa', si); t.setAttribute('aria-selected', String(si)); t.tabIndex = si ? 0 : -1;
+      // reinicia la animación de la barra de progreso
+      const barra = $('.pestana__progreso i', t);
+      if (barra) { barra.style.animation = 'none'; void barra.offsetWidth; barra.style.animation = ''; }
+    });
     paneles.forEach((p, j) => { p.classList.toggle('activo', j === n); p.hidden = j !== n; });
   };
-  tabs.forEach((t, j) => {
-    t.addEventListener('click', () => elegir(j));
-    t.addEventListener('keydown', e => {
-      const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
-      if (!d) return;
-      e.preventDefault();
-      const k = (j + d + tabs.length) % tabs.length;
-      elegir(k); tabs[k].focus();
+  const arrancarTabs = () => {
+    clearTimeout(relojTab);
+    if (quieto || !visibleTab || caja.classList.contains('pausado')) return;
+    relojTab = setTimeout(() => { elegir((actualTab + 1) % tabs.length); arrancarTabs(); }, DURACION);
+  };
+  const pausar = () => { caja.classList.add('pausado'); clearTimeout(relojTab); };
+  if (caja) {
+    caja.style.setProperty('--duracion', DURACION / 1000 + 's');
+    if (quieto) caja.classList.add('pausado');
+    tabs.forEach((t, j) => {
+      t.addEventListener('click', () => { pausar(); elegir(j); });
+      t.addEventListener('keydown', e => {
+        const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        const k = (j + d + tabs.length) % tabs.length;
+        pausar(); elegir(k); tabs[k].focus();
+      });
     });
-  });
-  elegir(0);
+    // solo avanzan mientras la sección está en pantalla
+    new IntersectionObserver(([e]) => {
+      visibleTab = e.isIntersecting;
+      if (visibleTab) { elegir(actualTab); arrancarTabs(); } else clearTimeout(relojTab);
+    }, { threshold: .35 }).observe(caja);
+    elegir(0);
+  }
 })();

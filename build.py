@@ -4,6 +4,7 @@ Uso:  python build.py
 Los datos de contacto se cambian en CONFIG. Los textos, en ES y EN.
 """
 import json, os, urllib.parse
+import servicios
 
 CONFIG = {
     "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://integrafy.dev/ cuando se compre el dominio
@@ -190,26 +191,7 @@ def pagina(T):
 <div class="cuadro" data-cuadro="2"><div class="tarjeta"><div class="tarjeta__cab"><b>{e3["cab"]}</b><span class="estado estado--ambar">{e3["est"]}</span></div>{filas(e3["filas"])}</div></div>
 <div class="cuadro" data-cuadro="3"><div class="tarjeta"><div class="tarjeta__cab"><b>{e4["cab"]}</b><span class="estado">{e4["est"]}</span></div>{filas(e4["filas"])}<div class="total"><span>{e4["total"][0]}</span><span>{e4["total"][1]}</span></div></div></div>'''
 
-    pestanas = "\n".join(
-        f'<button type="button" class="pestana{" activa" if i == 0 else ""}" role="tab" id="tab-{i}" aria-controls="panel-{i}" aria-selected="{str(i == 0).lower()}" data-tab="{i}"><h3>{t}{I["flecha"]}</h3><p>{d}</p></button>'
-        for i, (t, d) in enumerate(T["servicios"]))
-    mw, mc, ma, me = T["mock_web"], T["mock_crm"], T["mock_api"], T["mock_erp"]
-    kanban = "".join(
-        f'<div class="kanban__col"><h5>{col}<span>{len(ls)}</span></h5>' + "".join(f'<div class="lead"><b>{n}</b><span>{d}</span></div>' for n, d in ls) + "</div>"
-        for col, ls in mc["cols"])
-    registros = "".join(f'<div class="registro"><i></i>{a}<span>{b}</span></div>' for a, b in ma["log"])
-    metricas = "".join(f'<div class="metrica"><span>{a}</span><b>{b}</b></div>' for a, b in me["m"])
-    paneles = f'''
-<div class="panel activo" role="tabpanel" id="panel-0" aria-labelledby="tab-0"><div class="ventana"><div class="ventana__barra"><i></i><i></i><i></i><span>{mw["url"]}</span></div><div class="ventana__cuerpo web-mock"><h4>{mw["h"]}</h4><div class="barra-gris" style="width:80%"></div><div class="barra-gris" style="width:62%"></div><span class="cta">WhatsApp</span><div class="serp"><small>{mw["serp_u"]}</small><b>{mw["serp_t"]}</b>{mw["serp_d"]}</div></div></div></div>
-<div class="panel" role="tabpanel" id="panel-1" aria-labelledby="tab-1" hidden><div class="ventana"><div class="ventana__barra"><i></i><i></i><i></i><span>CRM</span></div><div class="ventana__cuerpo"><div class="kanban">{kanban}</div></div></div></div>
-<div class="panel" role="tabpanel" id="panel-2" aria-labelledby="tab-2" hidden><div class="codigo"><span class="c">{ma["c"]}</span>
-<span class="k">POST</span> /webhook/cliente
-{{
-  <span class="n">"nombre"</span>: <span class="s">"María Pérez"</span>,
-  <span class="n">"servicio"</span>: <span class="s">"Mudanza"</span>,
-  <span class="n">"canal"</span>: <span class="s">"web"</span>
-}}</div><div class="registros">{registros}</div></div>
-<div class="panel" role="tabpanel" id="panel-3" aria-labelledby="tab-3" hidden><div class="ventana"><div class="ventana__barra"><i></i><i></i><i></i><span>ERP</span></div><div class="ventana__cuerpo"><div class="metricas">{metricas}</div><div class="barras"><i style="height:40%"></i><i style="height:55%"></i><i style="height:48%"></i><i style="height:70%"></i><i style="height:62%"></i><i style="height:84%"></i><i style="height:78%"></i><i style="height:95%"></i></div></div></div></div>'''
+    pestanas, paneles = servicios.seccion(T["lang"], I)
 
     logros = "\n".join(f'<li><i>{I["check"]}</i><span><b>{t}</b><span>{d}</span></span></li>' for t, d in T["logros"])
     proceso = "\n".join(f'<li data-revelar style="transition-delay:{i * .08}s"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(T["proceso"]))
@@ -248,7 +230,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=3">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=4">
 </head>
 <body>
   <header class="cabecera">
@@ -313,7 +295,7 @@ def pagina(T):
         <header class="cabeza" data-revelar><p class="etiqueta">{T["serv_etiqueta"]}</p><h2>{T["serv_h2"]}</h2></header>
         <div class="servicios">
           <div class="pestanas" role="tablist" aria-label="{T["serv_etiqueta"]}">{pestanas}</div>
-          <div class="vitrina">{paneles}</div>
+          <div class="vitrina"><div class="vitrina__rejilla" aria-hidden="true"></div>{paneles}</div>
         </div>
       </div>
     </section>
@@ -375,7 +357,7 @@ def pagina(T):
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json};</script>
-  <script src="{pre}js/main.js?v=1" defer></script>
+  <script src="{pre}js/main.js?v=2" defer></script>
 </body>
 </html>
 '''
