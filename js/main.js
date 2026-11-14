@@ -4,6 +4,28 @@
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Título de la portada: separa las palabras para que aparezcan una por una
+  $$('.titulo-animado').forEach(h => {
+    let n = 0;
+    const partir = nodo => {
+      [...nodo.childNodes].forEach(hijo => {
+        if (hijo.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          hijo.textContent.split(/(\s+)/).forEach(trozo => {
+            if (!trozo) return;
+            if (/^\s+$/.test(trozo)) { frag.append(trozo); return; }
+            const s = document.createElement('span');
+            s.className = 'palabra'; s.style.setProperty('--n', n++); s.textContent = trozo;
+            frag.append(s);
+          });
+          hijo.replaceWith(frag);
+        } else if (hijo.nodeType === 1) partir(hijo);
+      });
+    };
+    h.setAttribute('aria-label', h.textContent);
+    partir(h);
+  });
+
   // Menú del celular
   const boton = $('#hamburguesa');
   const cerrar = () => { document.body.classList.remove('menu-abierto'); boton.setAttribute('aria-expanded', 'false'); };

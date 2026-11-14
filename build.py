@@ -52,6 +52,8 @@ ES = dict(
     lead="Unimos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que los datos viajen solos y tu equipo deje de copiar y pegar.",
     ver_casos="Mira un caso real",
     prueba='<b>Acarreos Makena:</b> web, SEO y CRM conectados',
+    chip_cta="Hablemos", prueba_etiqueta="Caso real", prueba_texto="Web, SEO y CRM conectados",
+    confianza=["Proyectos a la medida", "Español e inglés", "Soporte después de entregar"],
     nodos=[("Web", "Formularios", "web"), ("CRM", "Clientes", "crm"), ("ERP", "Facturación", "erp"), ("WhatsApp", "Mensajes", "chat"), ("Pagos", "Cobros", "pago"), ("Sheets", "Reportes", "hoja")],
     avisos=[("Nuevo cliente", "Guardado en el CRM"), ("Factura creada", "Enviada al ERP"), ("Mensaje enviado", "Confirmación por WhatsApp"), ("Pago recibido", "Conciliado automáticamente")],
     franja_texto="Conectamos tu negocio con",
@@ -130,6 +132,8 @@ EN = dict(
     lead="We link your website, CRM, ERP, WhatsApp and payments so data flows on its own and your team stops copying and pasting.",
     ver_casos="See a real case",
     prueba='<b>Acarreos Makena:</b> website, SEO and CRM connected',
+    chip_cta="Let's talk", prueba_etiqueta="Case study", prueba_texto="Website, SEO and CRM connected",
+    confianza=["Made-to-measure projects", "English and Spanish", "Support after launch"],
     nodos=[("Web", "Forms", "web"), ("CRM", "Customers", "crm"), ("ERP", "Invoicing", "erp"), ("WhatsApp", "Messages", "chat"), ("Payments", "Billing", "pago"), ("Sheets", "Reports", "hoja")],
     avisos=[("New customer", "Saved to the CRM"), ("Invoice created", "Sent to the ERP"), ("Message sent", "WhatsApp confirmation"), ("Payment received", "Reconciled automatically")],
     franja_texto="We connect your business with",
@@ -314,7 +318,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=13">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=14">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -337,14 +341,15 @@ def pagina(T):
     <section class="portada">
       <div class="contenedor portada__grid">
         <div>
-          <p class="chip">{T["chip"]}</p>
-          <h1>{T["h1"]}</h1>
-          <p class="portada__lead">{T["lead"]}</p>
-          <div class="portada__botones">
-            <a class="boton boton--marca" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
+          <a class="chip chip--vivo" href="#proyecto"><span class="chip__punto" aria-hidden="true"></span>{T["chip"]}<span class="chip__sep" aria-hidden="true"></span><b>{T["chip_cta"]}</b>{I["flecha"]}</a>
+          <h1 class="titulo-animado">{T["h1"]}</h1>
+          <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
+          <div class="portada__botones aparece" style="--a:.7s">
+            <a class="boton boton--marca boton--destello" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
             <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
           </div>
-          <a class="prueba" href="#caso"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"><span>{T["prueba"]}</span></a>
+          <ul class="confianza aparece" style="--a:.85s">{"".join(f'<li>{I["check"]}{x}</li>' for x in T["confianza"])}</ul>
+          <a class="prueba aparece" style="--a:1s" href="#caso"><span class="prueba__foto"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"></span><span class="prueba__txt"><small>{T["prueba_etiqueta"]}</small><b>Acarreos Makena</b><span>{T["prueba_texto"]}</span></span><span class="prueba__flecha">{I["flecha"]}</span></a>
         </div>
         <div class="diagrama" aria-hidden="true">
           <div class="diagrama__fondo"></div>
@@ -497,7 +502,7 @@ def pagina(T):
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=7" defer></script>
+  <script src="{pre}js/main.js?v=8" defer></script>
 </body>
 </html>
 '''
@@ -509,7 +514,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="13", v_js="7")
+    cfg = dict(CONFIG, v_css="14", v_js="8")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:
