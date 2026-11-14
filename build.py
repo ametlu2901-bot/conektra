@@ -318,7 +318,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=18">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=19">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -491,8 +491,8 @@ def pagina(T):
           <p>{T["descripcion"]}</p>
         </div>
         <nav aria-label="{T["pie_servicios"]}"><h4>{T["pie_servicios"]}</h4>{servicios_pie}</nav>
-        <nav aria-label="{T["pie_empresa"]}"><h4>{T["pie_empresa"]}</h4><a href="#como-funciona">{T["nav"][1]}</a><a href="#caso">{T["nav"][2]}</a><a href="#preguntas">{T["nav"][3]}</a><a href="{enlace_caso}">{T["caso_etiqueta"]}</a><a href="{enlace_privacidad}">{"Privacidad" if T["lang"] == "es" else "Privacy"}</a></nav>
-        <nav aria-label="{T["pie_contacto"]}"><h4>{T["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="#proyecto">{T["form"]["h2"]}</a><a href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}">{T["otra_nombre"]}</a></nav>
+        <nav aria-label="{T["pie_empresa"]}"><h4>{T["pie_empresa"]}</h4><a href="#como-funciona">{T["nav"][1]}</a><a href="#preguntas">{T["nav"][3]}</a><a href="{enlace_caso}">{T["caso_etiqueta"]}</a><a href="{enlace_privacidad}">{"Privacidad" if T["lang"] == "es" else "Privacy"}</a></nav>
+        <nav class="pie__contacto" aria-label="{T["pie_contacto"]}"><h4>{T["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="#proyecto">{T["form"]["h2"]}</a><a href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}">{T["otra_nombre"]}</a></nav>
       </div>
       <div class="pie">
         <span>{T["pie_derechos"]}</span>
@@ -506,7 +506,7 @@ def pagina(T):
     <a class="boton boton--wa" href="{wa}"{wa_attr} tabindex="-1">{I["wa"]} WhatsApp</a>
   </div>
   <script>window.CONEKTRA_AVISOS = {avisos_json}; window.CONEKTRA_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=10" defer></script>
+  <script src="{pre}js/main.js?v=11" defer></script>
 </body>
 </html>
 '''
@@ -518,7 +518,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="18", v_js="10")
+    cfg = dict(CONFIG, v_css="19", v_js="11")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

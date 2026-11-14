@@ -252,7 +252,7 @@ def pie_html(ui, I, LOGO, cfg, ruta, ruta_otra, lang, wa, wa_attr, descripcion):
         <div class="pie__marca"><a class="marca" href="{inicio}">{LOGO}Conektra</a><p>{descripcion}</p></div>
         <nav aria-label="{ui["pie_servicios"]}"><h4>{ui["pie_servicios"]}</h4>{serv}</nav>
         <nav aria-label="{ui["pie_empresa"]}"><h4>{ui["pie_empresa"]}</h4><a href="{inicio}#como-funciona">{ui["nav"][1]}</a><a href="{pre}{RUTAS[lang]["caso"]}">{ui["casos"]}</a><a href="{inicio}#preguntas">{ui["nav"][3]}</a><a href="{pre}{RUTAS[lang]["privacidad"]}">{ui["privacidad"]}</a></nav>
-        <nav aria-label="{ui["pie_contacto"]}"><h4>{ui["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="{inicio}#proyecto">{ui["cta_form"]}</a><a href="{pre}{ruta_otra or './'}">{ui["otra_nombre"]}</a></nav>
+        <nav class="pie__contacto" aria-label="{ui["pie_contacto"]}"><h4>{ui["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="{inicio}#proyecto">{ui["cta_form"]}</a><a href="{pre}{ruta_otra or './'}">{ui["otra_nombre"]}</a></nav>
       </div>
       <div class="pie"><span>{ui["derechos"]}</span><span>{ui["hecho"]}</span></div>
     </div>

@@ -266,7 +266,14 @@
     caja.style.setProperty('--duracion', DURACION / 1000 + 's');
     if (quieto) caja.classList.add('pausado');
     tabs.forEach((t, j) => {
-      t.addEventListener('click', () => { pausar(); elegir(j); });
+      t.addEventListener('click', () => {
+        pausar(); elegir(j);
+        // en celular la maqueta queda debajo de las pestañas: se lleva a la vista
+        if (matchMedia('(max-width: 1020px)').matches) {
+          const v = $('.vitrina');
+          if (v) setTimeout(() => v.scrollIntoView({ behavior: quieto ? 'auto' : 'smooth', block: 'center' }), 120);
+        }
+      });
       t.addEventListener('keydown', e => {
         const d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
         if (!d) return;
