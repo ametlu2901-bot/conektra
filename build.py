@@ -5,6 +5,7 @@ Los datos de contacto se cambian en CONFIG. Los textos, en ES y EN.
 """
 import json, os, urllib.parse
 import servicios
+import paginas
 
 CONFIG = {
     "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://integrafy.dev/ cuando se compre el dominio
@@ -229,7 +230,8 @@ def pagina(T):
 <div class="cuadro" data-cuadro="2"><div class="tarjeta"><div class="tarjeta__cab"><b>{e3["cab"]}</b><span class="estado estado--ambar">{e3["est"]}</span></div>{filas(e3["filas"])}</div></div>
 <div class="cuadro" data-cuadro="3"><div class="tarjeta"><div class="tarjeta__cab"><b>{e4["cab"]}</b><span class="estado">{e4["est"]}</span></div>{filas(e4["filas"])}<div class="total"><span>{e4["total"][0]}</span><span>{e4["total"][1]}</span></div></div></div>'''
 
-    pestanas, paneles = servicios.seccion(T["lang"], I)
+    enlaces = [paginas.RUTAS[T["lang"]][k].replace("en/", "", 1) if T["ruta"] else paginas.RUTAS[T["lang"]][k] for k in paginas.ORDEN_SERVICIOS]
+    pestanas, paneles = servicios.seccion(T["lang"], I, enlaces=enlaces)
 
     logros = "\n".join(f'<li><i>{I["check"]}</i><span><b>{t}</b><span>{d}</span></span></li>' for t, d in T["logros"])
     ICONOS_PROC = ["lupa", "plano", "codigo", "soporte"]
@@ -260,7 +262,10 @@ def pagina(T):
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
 
     marquesina = "".join(f'<span>{m}</span><i>✦</i>' for m in T["marquesina"])
-    servicios_pie = "".join(f'<a href="#servicios" data-ir-tab="{j}">{t[0]}</a>' for j, t in enumerate(servicios.TEXTOS[T["lang"]]["tabs"]))
+    rel = lambda k: paginas.RUTAS[T["lang"]][k].replace("en/", "", 1) if T["ruta"] else paginas.RUTAS[T["lang"]][k]
+    servicios_pie = "".join(f'<a href="{rel(k)}">{paginas.SERVICIOS[T["lang"]][k]["titulo"]}</a>' for k in paginas.ORDEN_SERVICIOS)
+    enlace_caso = rel("caso")
+    enlace_privacidad = rel("privacidad")
     boton_correo = f'<a class="boton boton--contorno" href="{correo}">{T["cierre_correo"]}</a>' if correo else ""
 
     return f'''<!doctype html>
@@ -297,7 +302,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=11">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=12">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -388,7 +393,7 @@ def pagina(T):
             <h3>{T["caso_nombre"]}</h3>
             <p class="caso__sector">{T["caso_sector"]}</p>
             <ul class="logros">{logros}</ul>
-            <a class="boton boton--marca" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{T["caso_cta"]} {I["flecha"]}</a>
+            <div class="portada__botones" style="margin-top:0"><a class="boton boton--marca" href="{enlace_caso}">{"Ver el caso completo" if T["lang"] == "es" else "Read the full case"} {I["flecha"]}</a><a class="boton boton--claro" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{T["caso_cta"]} {I["flecha"]}</a></div>
             <div class="medida"><i>{I["rayo"]}</i><span><b>{T["medida_t"]}</b>{T["medida_p"]}</span></div>
           </div>
         </div>
@@ -466,7 +471,7 @@ def pagina(T):
           <p>{T["descripcion"]}</p>
         </div>
         <nav aria-label="{T["pie_servicios"]}"><h4>{T["pie_servicios"]}</h4>{servicios_pie}</nav>
-        <nav aria-label="{T["pie_empresa"]}"><h4>{T["pie_empresa"]}</h4><a href="#como-funciona">{T["nav"][1]}</a><a href="#caso">{T["nav"][2]}</a><a href="#preguntas">{T["nav"][3]}</a><a href="#proyecto">{T["form"]["etiqueta"]}</a></nav>
+        <nav aria-label="{T["pie_empresa"]}"><h4>{T["pie_empresa"]}</h4><a href="#como-funciona">{T["nav"][1]}</a><a href="#caso">{T["nav"][2]}</a><a href="#preguntas">{T["nav"][3]}</a><a href="{enlace_caso}">{T["caso_etiqueta"]}</a><a href="{enlace_privacidad}">{"Privacidad" if T["lang"] == "es" else "Privacy"}</a></nav>
         <nav aria-label="{T["pie_contacto"]}"><h4>{T["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="#proyecto">{T["form"]["h2"]}</a><a href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}">{T["otra_nombre"]}</a></nav>
       </div>
       <div class="pie">
@@ -477,7 +482,7 @@ def pagina(T):
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=5" defer></script>
+  <script src="{pre}js/main.js?v=6" defer></script>
 </body>
 </html>
 '''
@@ -489,5 +494,8 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
+    cfg = dict(CONFIG, v_css="12", v_js="6")
+    hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
+    print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:
         print("AVISO: falta el número de WhatsApp en CONFIG; los botones llevan a #contacto.")

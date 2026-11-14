@@ -3,7 +3,7 @@ y una maqueta tipo aplicación por servicio, con tarjetas flotantes encima."""
 
 TEXTOS = {
     "es": dict(
-        incluye="Incluye",
+        incluye="Incluye", ver_mas="Ver el servicio",
         tabs=[
             ("Páginas web y SEO", "Diseñadas a la medida de tu marca, rápidas en celular y listas para aparecer en Google.", "web",
              ["Diseño a la medida de tu marca", "SEO técnico y páginas por servicio", "Formularios conectados a tu CRM"]),
@@ -34,7 +34,7 @@ TEXTOS = {
                  alerta_t="Stock bajo en 3 productos", alerta_p="Orden de compra creada sola"),
     ),
     "en": dict(
-        incluye="Includes",
+        incluye="Includes", ver_mas="See the service",
         tabs=[
             ("Websites and SEO", "Custom-designed for your brand, fast on mobile and built to show up on Google.", "web",
              ["Designed around your brand", "Technical SEO and service pages", "Forms connected to your CRM"]),
@@ -76,7 +76,7 @@ def flotante(icono, titulo, texto, clase):
     return f'<div class="flotante {clase}"><span class="flotante__ico">{icono}</span><span><b>{titulo}</b><small>{texto}</small></span></div>'
 
 
-def seccion(lang, I):
+def seccion(lang, I, solo_maquetas=False, enlaces=None):
     X = TEXTOS[lang]
     # ---------- pestañas ----------
     pestanas = []
@@ -148,7 +148,12 @@ def seccion(lang, I):
                   f'<div class="caja"><span class="caja__t">{e["tabla_t"]}</span><div class="tabla">{filas}</div></div></div></div>')
     panel_erp = ventana("ERP", erp_cuerpo, "ventana--erp") + flotante(I["erp"], e["alerta_t"], e["alerta_p"], "flotante--arriba flotante--ambar")
 
+    lista = [panel_web, panel_crm, panel_api, panel_erp]
+    if solo_maquetas:
+        return lista
+    # en la portada, cada maqueta lleva un enlace a la página completa del servicio
+    mas = (lambda i: f'<a class="vitrina__mas" href="{enlaces[i]}">{X["ver_mas"]} {I["flecha"]}</a>') if enlaces else (lambda i: "")
     paneles = "".join(
-        f'<div class="panel{" activo" if i == 0 else ""}" role="tabpanel" id="panel-{i}" aria-labelledby="tab-{i}"{"" if i == 0 else " hidden"}>{p}</div>'
-        for i, p in enumerate([panel_web, panel_crm, panel_api, panel_erp]))
+        f'<div class="panel{" activo" if i == 0 else ""}" role="tabpanel" id="panel-{i}" aria-labelledby="tab-{i}"{"" if i == 0 else " hidden"}>{p}{mas(i)}</div>'
+        for i, p in enumerate(lista))
     return "\n".join(pestanas), paneles
