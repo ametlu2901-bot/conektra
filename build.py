@@ -25,6 +25,13 @@ I = {
     "chat": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5Z"/></svg>',
     "pago": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg>',
     "hoja": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M4 9h16M4 15h16M10 3v18"/></svg>',
+    "lupa": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/></svg>',
+    "plano": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2Z"/><path d="M9 4v14M15 6v14"/></svg>',
+    "codigo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg>',
+    "soporte": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19a4 4 0 0 1-4 3h-2"/></svg>',
+    "nube": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18Z"/></svg>',
+    "base": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>',
+    "enlace": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     "rayo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>',
 }
 LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
@@ -81,6 +88,7 @@ ES = dict(
              ("Propuesta", "Te mostramos qué conectar, cómo y en qué orden, con alcance, tiempos y precio claros."),
              ("Desarrollo", "Construimos por etapas y te mostramos avances para que pruebes desde temprano."),
              ("Soporte", "Te acompañamos después de entregar: ajustes, mejoras y nuevas integraciones.")],
+    proc_recibes="Recibes", proc_entregables=["Mapa de tus procesos", "Plan con precio y tiempos", "Avances que puedes probar", "Soporte y mejoras"],
     tec_titulo="Trabajamos con",
     tecnologias=["APIs REST", "Webhooks", "WhatsApp", "Google Workspace", "Google Sheets", "Bases de datos SQL", "Pasarelas de pago", "Facturación electrónica", "CRMs y ERPs del mercado", "SEO técnico"],
     faq_etiqueta="Preguntas frecuentes", faq_h2="Lo que más nos preguntan.",
@@ -146,6 +154,7 @@ EN = dict(
              ("Proposal", "We show you what to connect, how and in what order, with clear scope, timeline and price."),
              ("Build", "We build in stages and show you progress so you can test early."),
              ("Support", "We stay with you after launch: tweaks, improvements and new integrations.")],
+    proc_recibes="You get", proc_entregables=["A map of your processes", "A plan with price and timeline", "Progress you can test", "Support and improvements"],
     tec_titulo="We work with",
     tecnologias=["REST APIs", "Webhooks", "WhatsApp", "Google Workspace", "Google Sheets", "SQL databases", "Payment gateways", "E-invoicing", "Off-the-shelf CRMs and ERPs", "Technical SEO"],
     faq_etiqueta="FAQ", faq_h2="What people ask us most.",
@@ -194,8 +203,19 @@ def pagina(T):
     pestanas, paneles = servicios.seccion(T["lang"], I)
 
     logros = "\n".join(f'<li><i>{I["check"]}</i><span><b>{t}</b><span>{d}</span></span></li>' for t, d in T["logros"])
-    proceso = "\n".join(f'<li data-revelar style="transition-delay:{i * .08}s"><h3>{t}</h3><p>{d}</p></li>' for i, (t, d) in enumerate(T["proceso"]))
-    tecnologias = "".join(f"<span>{t}</span>" for t in T["tecnologias"])
+    ICONOS_PROC = ["lupa", "plano", "codigo", "soporte"]
+    proceso = "\n".join(
+        f'<li class="hito" data-revelar style="transition-delay:{i * .1}s"><span class="hito__punto"><b>0{i + 1}</b></span>'
+        f'<div class="hito__tarjeta"><span class="hito__ico">{I[ICONOS_PROC[i]]}</span><h3>{t}</h3><p>{d}</p>'
+        f'<span class="hito__recibes"><small>{T["proc_recibes"]}</small>{T["proc_entregables"][i]}</span></div></li>'
+        for i, (t, d) in enumerate(T["proceso"]))
+    ICONOS_TEC = ["enlace", "rayo", "chat", "nube", "hoja", "base", "pago", "erp", "crm", "lupa"]
+    chips = [f'<span class="cinta__chip"><i>{I[ICONOS_TEC[j % len(ICONOS_TEC)]]}</i>{t}</span>' for j, t in enumerate(T["tecnologias"])]
+    mitad = (len(chips) + 1) // 2
+    fila1, fila2 = "".join(chips[:mitad]), "".join(chips[mitad:])
+    # cada fila se repite para que el movimiento sea continuo
+    tecnologias = (f'<div class="cinta"><div class="cinta__pista">{fila1}{fila1}</div></div>'
+                   f'<div class="cinta cinta--reves"><div class="cinta__pista">{fila2}{fila2}</div></div>')
     faqs = "\n".join(f'<details class="pregunta"><summary>{q}</summary><p>{a}</p></details>' for q, a in T["faqs"])
     avisos_json = json.dumps(T["avisos"], ensure_ascii=False).replace("</", "<\\/")
 
@@ -230,7 +250,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=5">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=6">
 </head>
 <body>
   <header class="cabecera">
@@ -322,9 +342,9 @@ def pagina(T):
     <section class="seccion">
       <div class="contenedor">
         <header class="cabeza cabeza--centro" data-revelar><p class="etiqueta">{T["proc_etiqueta"]}</p><h2>{T["proc_h2"]}</h2></header>
-        <ol class="proceso">{proceso}</ol>
-        <p class="etiqueta" style="text-align:center;margin-top:60px">{T["tec_titulo"]}</p>
-        <div class="tecnologias">{tecnologias}</div>
+        <ol class="proceso" id="proceso"><span class="proceso__linea" aria-hidden="true"><i></i></span>{proceso}</ol>
+        <p class="etiqueta" style="text-align:center;margin-top:80px">{T["tec_titulo"]}</p>
+        <div class="tecnologias" aria-label="{T["tec_titulo"]}">{tecnologias}</div>
       </div>
     </section>
 
@@ -357,7 +377,7 @@ def pagina(T):
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json};</script>
-  <script src="{pre}js/main.js?v=2" defer></script>
+  <script src="{pre}js/main.js?v=3" defer></script>
 </body>
 </html>
 '''

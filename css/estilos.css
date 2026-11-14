@@ -359,17 +359,36 @@ button { font: inherit; }
 .logros b { display: block; }
 .logros span { color: var(--gris); font-size: .95rem; }
 
-/* ---------- Proceso ---------- */
-.proceso { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; counter-reset: paso; }
-.proceso li { background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio); padding: 26px; position: relative; transition: transform .35s var(--curva), box-shadow .35s; }
-.proceso li:hover { transform: translateY(-6px); box-shadow: var(--sombra); }
-.proceso li::before { counter-increment: paso; content: "0" counter(paso); font-family: var(--titulo); font-weight: 800; font-size: 2.6rem; letter-spacing: -.04em; background: linear-gradient(120deg, var(--marca), var(--marca-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.proceso h3 { font-size: 1.25rem; margin: 14px 0 8px; letter-spacing: -.01em; }
-.proceso p { color: var(--gris); font-size: .95rem; }
+/* ---------- Proceso (línea de tiempo) ---------- */
+.proceso { list-style: none; margin: 0; padding: 0; position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.proceso__linea { position: absolute; left: 12.5%; right: 12.5%; top: 27px; height: 3px; border-radius: 3px; background: var(--linea); overflow: hidden; }
+.proceso__linea i { display: block; height: 100%; width: var(--avance, 0%); background: linear-gradient(90deg, var(--marca), var(--marca-2)); border-radius: inherit; transition: width .2s linear; }
+.hito { position: relative; display: flex; flex-direction: column; align-items: center; }
+.hito__punto { position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--fondo); }
+.hito__punto b { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: var(--titulo); font-size: .95rem; background: var(--blanco); border: 2px solid var(--linea); color: var(--gris); transition: background-color .4s, border-color .4s, color .4s, box-shadow .4s; }
+.hito.pasado .hito__punto b { background: var(--tinta); border-color: var(--tinta); color: var(--blanco); box-shadow: 0 0 0 6px rgba(59, 91, 255, .14); }
+.hito__tarjeta { margin-top: 22px; width: 100%; height: 100%; background: var(--blanco); border: 1px solid var(--linea); border-radius: var(--radio); padding: 24px; position: relative; overflow: hidden; transition: transform .4s var(--curva), box-shadow .4s, border-color .4s; }
+.hito__tarjeta::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, var(--marca), var(--marca-2)); transform: scaleX(0); transform-origin: left; transition: transform .5s var(--curva); }
+.hito:hover .hito__tarjeta { transform: translateY(-6px); box-shadow: var(--sombra); border-color: #cfd8f2; }
+.hito:hover .hito__tarjeta::before, .hito.pasado .hito__tarjeta::before { transform: scaleX(1); }
+.hito__ico { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: linear-gradient(140deg, #e6ebff, #dff7f1); color: var(--marca); }
+.hito__ico svg { width: 21px; height: 21px; }
+.hito h3 { font-size: 1.25rem; margin: 16px 0 8px; letter-spacing: -.015em; }
+.hito p { color: var(--gris); font-size: .94rem; }
+.hito__recibes { display: flex; flex-direction: column; gap: 2px; margin-top: 18px; padding: 10px 12px; border-radius: 12px; background: var(--fondo); font-weight: 700; font-size: .88rem; color: var(--tinta-2); }
+.hito__recibes small { font-size: .68rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--marca); }
 
-/* ---------- Tecnologías ---------- */
-.tecnologias { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 40px; }
-.tecnologias span { padding: 10px 16px; border-radius: 999px; background: var(--blanco); border: 1px solid var(--linea); font-weight: 600; font-size: .9rem; color: var(--tinta-2); }
+/* ---------- Tecnologías (cinta en movimiento) ---------- */
+.tecnologias { margin-top: 30px; display: grid; gap: 14px; -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+.cinta { overflow: hidden; }
+.cinta__pista { display: flex; gap: 12px; width: max-content; animation: deslizar 38s linear infinite; }
+.cinta--reves .cinta__pista { animation-direction: reverse; animation-duration: 44s; }
+.tecnologias:hover .cinta__pista { animation-play-state: paused; }
+@keyframes deslizar { to { transform: translateX(calc(-50% - 6px)); } }
+.cinta__chip { display: inline-flex; align-items: center; gap: 10px; padding: 10px 18px 10px 10px; border-radius: 16px; background: var(--blanco); border: 1px solid var(--linea); font-weight: 700; font-size: .92rem; color: var(--tinta-2); white-space: nowrap; box-shadow: 0 6px 16px -12px rgba(11, 18, 32, .4); }
+.cinta__chip i { width: 32px; height: 32px; border-radius: 10px; display: grid; place-items: center; background: var(--fondo-2); color: var(--marca); }
+.cinta__chip:nth-child(even) i { color: #0b8f77; background: rgba(19, 194, 163, .12); }
+.cinta__chip i svg { width: 16px; height: 16px; }
 
 /* ---------- Preguntas ---------- */
 .preguntas { max-width: 820px; margin: 0 auto; display: grid; gap: 10px; }
@@ -476,4 +495,14 @@ button { font: inherit; }
   .flotante--arriba { top: -16px; right: -6px; }
   .flotante--abajo { bottom: -14px; left: -6px; }
   .cadena__nodo { padding: 6px 8px; font-size: .7rem; }
+}
+
+/* proceso en pantallas medianas y celular: línea vertical a la izquierda */
+@media (max-width: 1020px) {
+  .proceso { grid-template-columns: 1fr; gap: 16px; padding-left: 0; }
+  .proceso__linea { left: 27px; right: auto; top: 28px; bottom: 28px; width: 3px; height: auto; }
+  .proceso__linea i { width: 100%; height: var(--avance, 0%); transition: height .2s linear; }
+  .hito { flex-direction: row; align-items: flex-start; gap: 16px; }
+  .hito__punto { flex: none; }
+  .hito__tarjeta { margin-top: 0; }
 }

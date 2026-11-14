@@ -65,6 +65,26 @@
     arrancar();
   }
 
+  // Línea del proceso: se llena al bajar por la página y marca los pasos alcanzados
+  const proceso = $('#proceso');
+  if (proceso) {
+    const hitos = $$('.hito', proceso);
+    const vertical = () => matchMedia('(max-width: 1020px)').matches;
+    let pendiente = false;
+    const actualizar = () => {
+      pendiente = false;
+      const r = proceso.getBoundingClientRect();
+      // avance: 0 cuando el proceso entra por abajo, 1 cuando llega a la mitad de la pantalla
+      const avance = quieto ? 1 : Math.min(1, Math.max(0, (innerHeight * .85 - r.top) / (r.height * (vertical() ? 1 : .6) + innerHeight * .2)));
+      proceso.style.setProperty('--avance', (avance * 100).toFixed(1) + '%');
+      hitos.forEach((h, j) => h.classList.toggle('pasado', avance >= (hitos.length > 1 ? j / (hitos.length - 1) : 0) - .001));
+    };
+    const pedir = () => { if (!pendiente) { pendiente = true; requestAnimationFrame(actualizar); } };
+    addEventListener('scroll', pedir, { passive: true });
+    addEventListener('resize', pedir);
+    actualizar();
+  }
+
   // Pestañas de servicios: avanzan solas con barra de progreso; al tocar una, se quedan quietas
   const caja = $('.servicios');
   const tabs = $$('.pestana');
