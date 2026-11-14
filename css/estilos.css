@@ -289,7 +289,8 @@ button { font: inherit; }
 .telefono__cta svg { width: 12px; height: 12px; }
 
 /* maqueta: CRM */
-.kanban { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.kanban { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.kanban__col, .lead { min-width: 0; }
 .kanban__col { background: var(--fondo); border-radius: 14px; padding: 10px; }
 .kanban__col h5 { margin: 2px 4px 10px; font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--gris); display: flex; justify-content: space-between; }
 .kanban__col h5 span { background: var(--blanco); border-radius: 999px; padding: 0 7px; color: var(--tinta); }
@@ -485,7 +486,7 @@ button { font: inherit; }
   .telefono { display: none; }
   .sitio__hero { grid-template-columns: 1fr; }
   .sitio__foto { display: none; }
-  .kanban { grid-template-columns: 1fr 1fr; }
+  .kanban { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .kanban__col:last-child { display: none; }
   .erp { grid-template-columns: 1fr; }
   .erp__menu { display: none; }

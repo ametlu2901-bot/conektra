@@ -146,7 +146,7 @@ def seccion(lang, I):
                   f'<div class="kpis">{kpis}</div>'
                   f'<div class="caja"><span class="caja__t">{e["grafico"]}</span>{grafico}</div>'
                   f'<div class="caja"><span class="caja__t">{e["tabla_t"]}</span><div class="tabla">{filas}</div></div></div></div>')
-    panel_erp = ventana("ERP", erp_cuerpo, "ventana--erp") + flotante(I["erp"], e["alerta_t"], e["alerta_p"], "flotante--abajo flotante--derecha flotante--ambar")
+    panel_erp = ventana("ERP", erp_cuerpo, "ventana--erp") + flotante(I["erp"], e["alerta_t"], e["alerta_p"], "flotante--arriba flotante--ambar")
 
     paneles = "".join(
         f'<div class="panel{" activo" if i == 0 else ""}" role="tabpanel" id="panel-{i}" aria-labelledby="tab-{i}"{"" if i == 0 else " hidden"}>{p}</div>'
