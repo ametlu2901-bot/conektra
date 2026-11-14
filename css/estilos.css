@@ -897,7 +897,7 @@ button { font: inherit; }
 .flujo-panel__cuerpo { position: relative; padding: 26px 28px 10px; background-image: radial-gradient(circle, rgba(59, 91, 255, .14) 1px, transparent 1.4px); background-size: 22px 22px; }
 .flujo-panel__columnas { display: flex; justify-content: space-between; padding: 0 3%; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); }
 .flujo-panel__lienzo { position: relative; width: 100%; }
-.flujo-panel__lienzo svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.flujo-panel__lienzo > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .flujo-panel__lienzo--alto { display: none; }
 .flujo-panel .ruta { fill: none; stroke: rgba(59, 91, 255, .18); stroke-width: 10; stroke-linecap: round; filter: blur(3px); }
 .flujo-panel .flujo { fill: none; stroke: url(#g-flujo-panel); stroke: rgba(59, 91, 255, .45); stroke-width: 2; stroke-dasharray: 4 7; stroke-linecap: round; animation: fluir 1.6s linear infinite; }
@@ -938,3 +938,6 @@ button { font: inherit; }
   .flujo-panel__pie .aviso { font-size: .76rem; border-radius: 16px; }
   .prueba--centro { width: 100%; }
 }
+/* cabecera más opaca al bajar, también en computadora */
+.cabecera.compacta .cabecera__barra { background: rgba(255, 255, 255, .92); }
+@media (prefers-color-scheme: dark) { .cabecera.compacta .cabecera__barra { background: rgba(17, 24, 41, .94); } }
