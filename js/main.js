@@ -65,6 +65,44 @@
     arrancar();
   }
 
+  // Formulario de contacto → hoja «Integrafy — CRM» (y WhatsApp como respaldo)
+  const form = $('#formulario');
+  const cfg = window.INTEGRAFY_FORM || {};
+  if (form) {
+    const error = $('#form-error');
+    const boton = $('button[type="submit"]', form);
+    $$('input', form).forEach(i => i.addEventListener('input', () => i.classList.remove('con-error')));
+    form.addEventListener('submit', ev => {
+      ev.preventDefault();
+      const fd = new FormData(form);
+      const dato = k => String(fd.get(k) || '').trim();
+      const faltan = ['nombre', 'contacto'].filter(k => !dato(k));
+      faltan.forEach(k => form.elements[k].classList.add('con-error'));
+      if (faltan.length) { error.textContent = cfg.error; form.elements[faltan[0]].focus(); return; }
+      error.textContent = '';
+      const necesita = fd.getAll('necesita').join(', ');
+      const datos = { nombre: dato('nombre'), empresa: dato('empresa'), contacto: dato('contacto'), necesita, presupuesto: dato('presupuesto'), mensaje: dato('mensaje'), idioma: cfg.lang, web: dato('web') };
+      // resumen para seguir la conversación por WhatsApp
+      const resumen = (cfg.lang === 'en'
+        ? [`Hi Integrafy, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]
+        : [`Hola Integrafy, soy ${datos.nombre}${datos.empresa ? ` de ${datos.empresa}` : ''}.`, necesita && `Necesito: ${necesita}.`, datos.mensaje]
+      ).filter(Boolean).join('\n');
+      const enlaceWa = cfg.wa ? `https://wa.me/${cfg.wa}?text=${encodeURIComponent(resumen)}` : '';
+      const listo = () => {
+        form.hidden = true;
+        $('#gracias').hidden = false;
+        if (enlaceWa) $('#gracias-wa').href = enlaceWa;
+      };
+      if (!cfg.crm) { if (enlaceWa) window.open(enlaceWa, '_blank', 'noopener'); listo(); return; }
+      boton.disabled = true;
+      boton.firstChild.textContent = cfg.enviando + ' ';
+      fetch(cfg.crm, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(datos) })
+        .then(listo)
+        .catch(() => { if (enlaceWa) window.open(enlaceWa, '_blank', 'noopener'); listo(); })
+        .finally(() => { boton.disabled = false; boton.firstChild.textContent = cfg.enviar + ' '; });
+    });
+  }
+
   // Línea del proceso: se llena al bajar por la página y marca los pasos alcanzados
   const proceso = $('#proceso');
   if (proceso) {

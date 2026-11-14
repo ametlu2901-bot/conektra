@@ -9,7 +9,8 @@ import servicios
 CONFIG = {
     "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://integrafy.dev/ cuando se compre el dominio
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
-    "correo": "",                               # p. ej. hola@integrafy.dev
+    "correo": "",
+    "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",  # URL /exec de la hoja «Integrafy — CRM» (crm/Codigo.gs)                               # p. ej. hola@integrafy.dev
 }
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
@@ -97,6 +98,15 @@ ES = dict(
           ("¿Trabajan con negocios fuera de Panamá?", "Sí. Trabajamos de forma remota con negocios de Panamá y de otros países, en español o en inglés."),
           ("¿Qué pasa después de la entrega?", "Te acompañamos con soporte y mejoras. Tus sistemas crecen contigo, así que siempre podemos agregar nuevas integraciones."),
           ("¿Mis datos quedan seguros?", "Tus datos quedan en tus cuentas y sistemas. Usamos accesos con permisos mínimos y te entregamos todo documentado.")],
+    form=dict(etiqueta="Contacto", h2="Cuéntanos tu proyecto.", p="Respondemos en menos de un día hábil con los próximos pasos. Sin compromiso.",
+              puntos=["Diagnóstico de tus sistemas actuales", "Propuesta con alcance y precio claros", "Te escribimos por el medio que prefieras"],
+              nombre="Tu nombre", empresa="Empresa", contacto="Correo o WhatsApp", necesita="¿Qué necesitas?",
+              opciones=["Página web", "CRM", "Integraciones", "ERP", "Otro"],
+              presupuesto="Presupuesto aproximado", rangos=["Aún no lo sé", "Menos de $1,000", "$1,000 – $3,000", "$3,000 – $10,000", "Más de $10,000"],
+              mensaje="Cuéntanos un poco", ph_mensaje="¿Qué sistemas usas hoy y qué te gustaría conectar o automatizar?",
+              enviar="Enviar mensaje", enviando="Enviando…", error="Escribe tu nombre y un correo o WhatsApp para responderte.",
+              ok_t="¡Recibimos tu mensaje!", ok_p="Te escribimos muy pronto. Si es urgente, sigue la conversación por WhatsApp.", ok_wa="Seguir por WhatsApp",
+              privacidad="Usamos tus datos solo para responderte."),
     cierre_h2="Tu negocio, <em>conectado.</em>",
     cierre_p="Escríbenos y cuéntanos qué sistemas usas hoy. Te decimos cómo hacer que trabajen juntos.",
     cierre_wa="Escríbenos por WhatsApp", cierre_correo="Enviar un correo",
@@ -163,6 +173,15 @@ EN = dict(
           ("Do you work with businesses outside Panama?", "Yes. We work remotely with businesses in Panama and abroad, in English or Spanish."),
           ("What happens after delivery?", "We stay with you for support and improvements. Your systems grow with you, so we can always add new integrations."),
           ("Is my data safe?", "Your data stays in your own accounts and systems. We use least-privilege access and hand everything over documented.")],
+    form=dict(etiqueta="Contact", h2="Tell us about your project.", p="We reply within one business day with next steps. No commitment.",
+              puntos=["A review of your current systems", "A proposal with clear scope and price", "We reach out the way you prefer"],
+              nombre="Your name", empresa="Company", contacto="Email or WhatsApp", necesita="What do you need?",
+              opciones=["Website", "CRM", "Integrations", "ERP", "Other"],
+              presupuesto="Approximate budget", rangos=["Not sure yet", "Under $1,000", "$1,000 – $3,000", "$3,000 – $10,000", "Over $10,000"],
+              mensaje="Tell us a bit more", ph_mensaje="Which systems do you use today and what would you like to connect or automate?",
+              enviar="Send message", enviando="Sending…", error="Add your name and an email or WhatsApp so we can reply.",
+              ok_t="We got your message!", ok_p="We'll get back to you very soon. If it's urgent, continue on WhatsApp.", ok_wa="Continue on WhatsApp",
+              privacidad="We only use your details to reply to you."),
     cierre_h2="Your business, <em>connected.</em>",
     cierre_p="Message us and tell us which systems you use today. We'll show you how to make them work together.",
     cierre_wa="Message us on WhatsApp", cierre_correo="Send an email",
@@ -218,6 +237,11 @@ def pagina(T):
                    f'<div class="cinta cinta--reves"><div class="cinta__pista">{fila2}{fila2}</div></div>')
     faqs = "\n".join(f'<details class="pregunta"><summary>{q}</summary><p>{a}</p></details>' for q, a in T["faqs"])
     avisos_json = json.dumps(T["avisos"], ensure_ascii=False).replace("</", "<\\/")
+    F = T["form"]
+    opciones = "".join(f'<label class="opcion"><input type="checkbox" name="necesita" value="{o}"><span>{o}</span></label>' for o in F["opciones"])
+    rangos = "".join(f'<option>{r}</option>' for r in F["rangos"])
+    puntos_form = "".join(f'<li>{I["check"]}{x}</li>' for x in F["puntos"])
+    form_cfg = json.dumps({"crm": CONFIG["crm"], "wa": CONFIG["whatsapp"], "lang": T["lang"], "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]}, ensure_ascii=False).replace("</", "<\\/")
 
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Integrafy", "url": CONFIG["dominio"],
@@ -259,7 +283,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=8">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=9">
 </head>
 <body>
   <header class="cabecera">
@@ -363,6 +387,39 @@ def pagina(T):
         <div class="preguntas">{faqs}</div>
       </div>
     </section>
+    <section class="seccion proyecto" id="proyecto">
+      <div class="contenedor proyecto__grid">
+        <div class="proyecto__texto" data-revelar>
+          <p class="etiqueta">{F["etiqueta"]}</p>
+          <h2>{F["h2"]}</h2>
+          <p>{F["p"]}</p>
+          <ul class="proyecto__puntos">{puntos_form}</ul>
+          <a class="proyecto__wa" href="{wa}"{wa_attr}>{I["wa"]} +507 6552-3134</a>
+        </div>
+        <div class="proyecto__caja" data-revelar>
+          <form class="formulario" id="formulario" novalidate>
+            <div class="campos">
+              <label class="campo"><span>{F["nombre"]} *</span><input name="nombre" autocomplete="name" maxlength="80" required></label>
+              <label class="campo"><span>{F["empresa"]}</span><input name="empresa" autocomplete="organization" maxlength="100"></label>
+              <label class="campo campo--ancho"><span>{F["contacto"]} *</span><input name="contacto" autocomplete="email" maxlength="120" required></label>
+              <fieldset class="campo campo--ancho"><legend>{F["necesita"]}</legend><div class="opciones">{opciones}</div></fieldset>
+              <label class="campo campo--ancho"><span>{F["presupuesto"]}</span><select name="presupuesto">{rangos}</select></label>
+              <label class="campo campo--ancho"><span>{F["mensaje"]}</span><textarea name="mensaje" rows="4" maxlength="1500" placeholder="{F["ph_mensaje"]}"></textarea></label>
+              <label class="trampa" aria-hidden="true">Web <input name="web" tabindex="-1" autocomplete="off"></label>
+            </div>
+            <p class="formulario__error" id="form-error" role="alert"></p>
+            <button class="boton boton--marca boton--ancho" type="submit">{F["enviar"]} {I["flecha"]}</button>
+            <p class="formulario__nota">{F["privacidad"]}</p>
+          </form>
+          <div class="gracias" id="gracias" hidden>
+            <span class="gracias__ico">{I["check"]}</span>
+            <h3>{F["ok_t"]}</h3>
+            <p>{F["ok_p"]}</p>
+            <a class="boton boton--marca" id="gracias-wa" href="{wa}"{wa_attr}>{I["wa"]} {F["ok_wa"]}</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="cierre" id="contacto">
@@ -385,8 +442,8 @@ def pagina(T):
     </div>
   </footer>
 
-  <script>window.INTEGRAFY_AVISOS = {avisos_json};</script>
-  <script src="{pre}js/main.js?v=3" defer></script>
+  <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
+  <script src="{pre}js/main.js?v=4" defer></script>
 </body>
 </html>
 '''
