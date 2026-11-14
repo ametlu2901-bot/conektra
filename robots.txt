@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://ametlu2901-bot.github.io/integrafy/sitemap.xml
+Sitemap: https://ametlu2901-bot.github.io/conektra/sitemap.xml

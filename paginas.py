@@ -257,6 +257,10 @@ def pie_html(ui, I, LOGO, cfg, ruta, ruta_otra, lang, wa, wa_attr, descripcion):
       <div class="pie"><span>{ui["derechos"]}</span><span>{ui["hecho"]}</span></div>
     </div>
   </footer>
+  <div class="barra-wa" id="barra-wa" aria-hidden="true">
+    <span class="barra-wa__txt"><b>{"¿Tienes un proyecto?" if lang == "es" else "Have a project?"}</b>{"Respondemos por WhatsApp" if lang == "es" else "We reply on WhatsApp"}</span>
+    <a class="boton boton--wa" href="{wa}"{wa_attr} tabindex="-1">{I["wa"]} WhatsApp</a>
+  </div>
   <script src="{pre}js/main.js?v={cfg["v_js"]}" defer></script>
 </body>
 </html>

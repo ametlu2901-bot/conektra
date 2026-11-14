@@ -8,7 +8,7 @@ import servicios
 import paginas
 
 CONFIG = {
-    "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://conektra.dev/ cuando se compre el dominio
+    "dominio": "https://ametlu2901-bot.github.io/conektra/",  # cambiar a https://conektra.dev/ cuando se compre el dominio
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
     "correo": "",                               # p. ej. hola@conektra.dev
     # URL /exec de la hoja «Conektra — CRM» (programa en crm/Codigo.gs)
@@ -318,7 +318,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=17">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=18">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -501,8 +501,12 @@ def pagina(T):
     </div>
   </footer>
 
+  <div class="barra-wa" id="barra-wa" aria-hidden="true">
+    <span class="barra-wa__txt"><b>{"¿Tienes un proyecto?" if T["lang"] == "es" else "Have a project?"}</b>{"Respondemos por WhatsApp" if T["lang"] == "es" else "We reply on WhatsApp"}</span>
+    <a class="boton boton--wa" href="{wa}"{wa_attr} tabindex="-1">{I["wa"]} WhatsApp</a>
+  </div>
   <script>window.CONEKTRA_AVISOS = {avisos_json}; window.CONEKTRA_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=9" defer></script>
+  <script src="{pre}js/main.js?v=10" defer></script>
 </body>
 </html>
 '''
@@ -514,7 +518,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="17", v_js="9")
+    cfg = dict(CONFIG, v_css="18", v_js="10")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

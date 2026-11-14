@@ -105,6 +105,22 @@
     new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) { ir(actual); arrancar(); } else clearTimeout(reloj); }, { threshold: .3 }).observe(listaPasos);
   }
 
+  // Celular: barra de WhatsApp que aparece al bajar y se esconde al llegar al cierre
+  const barraWa = $('#barra-wa');
+  if (barraWa) {
+    const cierre = $('.cierre');
+    let cierreVisible = false;
+    if (cierre) new IntersectionObserver(([e]) => { cierreVisible = e.isIntersecting; revisarBarra(); }, { threshold: .05 }).observe(cierre);
+    function revisarBarra() {
+      const mostrar = scrollY > innerHeight * .5 && !cierreVisible;
+      barraWa.classList.toggle('visible', mostrar);
+      barraWa.setAttribute('aria-hidden', String(!mostrar));
+      $('a', barraWa).tabIndex = mostrar ? 0 : -1;
+    }
+    addEventListener('scroll', revisarBarra, { passive: true });
+    revisarBarra();
+  }
+
   // Barra de lectura arriba y cabecera más compacta al bajar
   const lectura = $('#lectura');
   const cabecera = $('#cabecera');
