@@ -116,7 +116,7 @@ def seccion(lang, I):
     crm_cuerpo = (f'<div class="app-cab"><b>{c["titulo"]}</b><span class="buscador">{c["buscar"]}</span></div>'
                   f'<div class="kanban">{"".join(cols)}</div>'
                   f'<div class="app-pie"><span>{c["total"]}</span><b>{"B/. 1,650" if lang == "es" else "$1,650"}</b></div>')
-    panel_crm = ventana("CRM", crm_cuerpo) + flotante(I["crm"], c["rec_t"], c["rec_p"], "flotante--abajo")
+    panel_crm = ventana("CRM", crm_cuerpo) + flotante(I["crm"], c["rec_t"], c["rec_p"], "flotante--arriba")
 
     # ---------- maqueta 3: integraciones ----------
     a = X["api"]
@@ -135,7 +135,7 @@ def seccion(lang, I):
     kpis = "".join(f'<div class="kpi"><span>{n}</span><b>{v}</b><em>{d}</em></div>' for n, v, d in e["kpis"])
     filas = "".join(
         f'<div class="tabla__fila"><span>#{n}</span><span>{cli}</span><b>{monto}</b><span class="pill {"pill--ok" if j < 2 else "pill--pend"}">{est}</span></div>'
-        for j, (n, cli, monto, est) in enumerate(e["facturas"]))
+        for j, (n, cli, monto, est) in enumerate(e["facturas"][:2]))
     grafico = ('<svg class="grafico" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">'
                '<defs><linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5bff" stop-opacity=".28"/><stop offset="1" stop-color="#3b5bff" stop-opacity="0"/></linearGradient></defs>'
                '<path d="M0 70 C30 64 45 52 75 55 S120 40 150 42 S200 22 225 28 S270 12 300 8 V90 H0Z" fill="url(#g-area)"/>'
@@ -146,7 +146,7 @@ def seccion(lang, I):
                   f'<div class="kpis">{kpis}</div>'
                   f'<div class="caja"><span class="caja__t">{e["grafico"]}</span>{grafico}</div>'
                   f'<div class="caja"><span class="caja__t">{e["tabla_t"]}</span><div class="tabla">{filas}</div></div></div></div>')
-    panel_erp = ventana("ERP", erp_cuerpo, "ventana--erp") + flotante(I["erp"], e["alerta_t"], e["alerta_p"], "flotante--abajo flotante--ambar")
+    panel_erp = ventana("ERP", erp_cuerpo, "ventana--erp") + flotante(I["erp"], e["alerta_t"], e["alerta_p"], "flotante--abajo flotante--derecha flotante--ambar")
 
     paneles = "".join(
         f'<div class="panel{" activo" if i == 0 else ""}" role="tabpanel" id="panel-{i}" aria-labelledby="tab-{i}"{"" if i == 0 else " hidden"}>{p}</div>'
