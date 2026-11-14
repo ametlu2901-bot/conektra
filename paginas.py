@@ -1,4 +1,4 @@
-"""Páginas internas de Integrafy: servicios, caso Acarreos Makena, privacidad y 404.
+"""Páginas internas de Conektra: servicios, caso Acarreos Makena, privacidad y 404.
 
 Se generan desde build.py. Cada página comparte cabecera y pie con la portada.
 """
@@ -17,16 +17,16 @@ UI = {
     "es": dict(nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Agenda una llamada", otra="EN", otra_nombre="English",
                incluye="Qué incluye", ideal="Ideal si…", como="Cómo lo hacemos", faq="Preguntas frecuentes", otros="Otros servicios",
                cta_h="¿Hablamos de tu proyecto?", cta_p="Cuéntanos qué sistemas usas hoy y te proponemos cómo conectarlos.", cta_form="Cuéntanos tu proyecto",
-               wa_msg="Hola Integrafy, quiero información sobre ", inicio="Inicio", servicios="Servicios", casos="Casos",
-               pie_servicios="Servicios", pie_empresa="Integrafy", pie_contacto="Contacto", privacidad="Privacidad",
-               derechos="© 2026 Integrafy. Integraciones API, CRM, ERP y páginas web.", hecho="Hecho en Panamá, para todo el mundo.",
+               wa_msg="Hola Conektra, quiero información sobre ", inicio="Inicio", servicios="Servicios", casos="Casos",
+               pie_servicios="Servicios", pie_empresa="Conektra", pie_contacto="Contacto", privacidad="Privacidad",
+               derechos="© 2026 Conektra. Integraciones API, CRM, ERP y páginas web.", hecho="Hecho en Panamá, para todo el mundo.",
                pasos=[("Diagnóstico", "Entendemos cómo trabajas hoy."), ("Propuesta", "Alcance, tiempos y precio claros."), ("Desarrollo", "Por etapas, con avances que pruebas."), ("Soporte", "Ajustes y mejoras después de entregar.")]),
     "en": dict(nav=["Services", "How it works", "Case study", "FAQ"], cta="Book a call", otra="ES", otra_nombre="Español",
                incluye="What's included", ideal="A good fit if…", como="How we do it", faq="FAQ", otros="Other services",
                cta_h="Shall we talk about your project?", cta_p="Tell us which systems you use today and we'll propose how to connect them.", cta_form="Tell us about your project",
-               wa_msg="Hi Integrafy, I'd like information about ", inicio="Home", servicios="Services", casos="Case studies",
-               pie_servicios="Services", pie_empresa="Integrafy", pie_contacto="Contact", privacidad="Privacy",
-               derechos="© 2026 Integrafy. API integrations, CRM, ERP and websites.", hecho="Made in Panama, for the world.",
+               wa_msg="Hi Conektra, I'd like information about ", inicio="Home", servicios="Services", casos="Case studies",
+               pie_servicios="Services", pie_empresa="Conektra", pie_contacto="Contact", privacidad="Privacy",
+               derechos="© 2026 Conektra. API integrations, CRM, ERP and websites.", hecho="Made in Panama, for the world.",
                pasos=[("Discovery", "We learn how you work today."), ("Proposal", "Clear scope, timeline and price."), ("Build", "In stages, with progress you can test."), ("Support", "Tweaks and improvements after launch.")]),
 }
 
@@ -161,17 +161,17 @@ CASO = {
 }
 
 PRIVACIDAD = {
-    "es": dict(titulo="Política de privacidad", meta="Cómo Integrafy usa los datos que nos envías por el formulario de contacto o por WhatsApp.", fecha="Última actualización: 14 de noviembre de 2026",
+    "es": dict(titulo="Política de privacidad", meta="Cómo Conektra usa los datos que nos envías por el formulario de contacto o por WhatsApp.", fecha="Última actualización: 14 de noviembre de 2026",
                bloques=[("Qué datos recogemos", "Solo los que tú nos envías por el formulario de contacto: nombre, empresa, correo o WhatsApp, qué necesitas, presupuesto aproximado y tu mensaje. Si nos escribes por WhatsApp, también tu número y lo que nos cuentes."),
                         ("Para qué los usamos", "Únicamente para responderte, preparar una propuesta y dar seguimiento a tu solicitud. No los vendemos ni los compartimos con terceros para publicidad."),
-                        ("Dónde se guardan", "Los mensajes del formulario se guardan en una hoja de cálculo privada de Google a la que solo tiene acceso Integrafy."),
+                        ("Dónde se guardan", "Los mensajes del formulario se guardan en una hoja de cálculo privada de Google a la que solo tiene acceso Conektra."),
                         ("Servicios de terceros", "La página se aloja en GitHub Pages y usa fuentes de Google Fonts; estos servicios pueden registrar datos técnicos de la visita, como la dirección IP, según sus propias políticas. No usamos cookies de publicidad ni herramientas de seguimiento."),
                         ("Tus derechos", "Puedes pedirnos en cualquier momento que te digamos qué datos tenemos tuyos, que los corrijamos o que los borremos. Escríbenos por WhatsApp y lo hacemos.")],
                contacto="Contacto"),
-    "en": dict(titulo="Privacy policy", meta="How Integrafy uses the information you send us through the contact form or WhatsApp.", fecha="Last updated: November 14, 2026",
+    "en": dict(titulo="Privacy policy", meta="How Conektra uses the information you send us through the contact form or WhatsApp.", fecha="Last updated: November 14, 2026",
                bloques=[("What we collect", "Only what you send us through the contact form: name, company, email or WhatsApp, what you need, approximate budget and your message. If you message us on WhatsApp, also your number and what you tell us."),
                         ("How we use it", "Only to reply to you, prepare a proposal and follow up on your request. We don't sell it or share it with third parties for advertising."),
-                        ("Where it's stored", "Form messages are stored in a private Google spreadsheet that only Integrafy can access."),
+                        ("Where it's stored", "Form messages are stored in a private Google spreadsheet that only Conektra can access."),
                         ("Third-party services", "The site is hosted on GitHub Pages and uses Google Fonts; these services may log technical visit data, such as your IP address, under their own policies. We don't use advertising cookies or tracking tools."),
                         ("Your rights", "You can ask us at any time what information we have about you, to correct it or to delete it. Message us on WhatsApp and we'll take care of it.")],
                contacto="Contact"),
@@ -193,7 +193,7 @@ def cabeza_html(T, ui, cfg, ruta, ruta_otra, titulo, meta, lang, extra_ld=None):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{titulo} | Integrafy</title>
+  <title>{titulo} | Conektra</title>
   <meta name="description" content="{meta}">
   <link rel="canonical" href="{url}">
   <link rel="alternate" hreflang="{lang}" href="{url}">
@@ -202,9 +202,9 @@ def cabeza_html(T, ui, cfg, ruta, ruta_otra, titulo, meta, lang, extra_ld=None):
   <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Integrafy">
+  <meta property="og:site_name" content="Conektra">
   <meta property="og:url" content="{url}">
-  <meta property="og:title" content="{titulo} | Integrafy">
+  <meta property="og:title" content="{titulo} | Conektra">
   <meta property="og:description" content="{meta}">
   <meta property="og:image" content="{cfg["dominio"]}img/{imagen}">
   <meta name="twitter:card" content="summary_large_image">
@@ -227,7 +227,7 @@ def cabecera_html(ui, I, LOGO, cfg, ruta, ruta_otra, lang, wa, wa_attr):
     return f'''  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
   <header class="cabecera" id="cabecera">
     <div class="contenedor cabecera__barra">
-      <a class="marca" href="{inicio}" aria-label="Integrafy">{LOGO}Integrafy</a>
+      <a class="marca" href="{inicio}" aria-label="Conektra">{LOGO}Conektra</a>
       <nav class="menu" id="menu" aria-label="Principal">
         <a href="{inicio}#servicios">{ui["nav"][0]}</a>
         <a href="{inicio}#como-funciona">{ui["nav"][1]}</a>
@@ -249,7 +249,7 @@ def pie_html(ui, I, LOGO, cfg, ruta, ruta_otra, lang, wa, wa_attr, descripcion):
     return f'''  <footer class="cierre cierre--interna">
     <div class="contenedor">
       <div class="pie__cols">
-        <div class="pie__marca"><a class="marca" href="{inicio}">{LOGO}Integrafy</a><p>{descripcion}</p></div>
+        <div class="pie__marca"><a class="marca" href="{inicio}">{LOGO}Conektra</a><p>{descripcion}</p></div>
         <nav aria-label="{ui["pie_servicios"]}"><h4>{ui["pie_servicios"]}</h4>{serv}</nav>
         <nav aria-label="{ui["pie_empresa"]}"><h4>{ui["pie_empresa"]}</h4><a href="{inicio}#como-funciona">{ui["nav"][1]}</a><a href="{pre}{RUTAS[lang]["caso"]}">{ui["casos"]}</a><a href="{inicio}#preguntas">{ui["nav"][3]}</a><a href="{pre}{RUTAS[lang]["privacidad"]}">{ui["privacidad"]}</a></nav>
         <nav aria-label="{ui["pie_contacto"]}"><h4>{ui["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="{inicio}#proyecto">{ui["cta_form"]}</a><a href="{pre}{ruta_otra or './'}">{ui["otra_nombre"]}</a></nav>
@@ -420,7 +420,7 @@ def generar(raiz, cfg, I, LOGO, descripciones):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Página no encontrada | Integrafy</title>
+  <title>Página no encontrada | Conektra</title>
   <meta name="robots" content="noindex">
   <meta name="color-scheme" content="light dark">
   <link rel="icon" href="{d}img/favicon.svg" type="image/svg+xml">
@@ -431,7 +431,7 @@ def generar(raiz, cfg, I, LOGO, descripciones):
 </head>
 <body class="pagina-404">
   <main class="e404">
-    <a class="marca" href="{d}">{LOGO}Integrafy</a>
+    <a class="marca" href="{d}">{LOGO}Conektra</a>
     <div class="e404__cable" aria-hidden="true"><span></span><i></i><span></span></div>
     <p class="etiqueta">Error 404</p>
     <h1>Esta conexión <em>se perdió.</em></h1>

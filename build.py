@@ -1,4 +1,4 @@
-"""Genera la página de Integrafy en español (index.html) y en inglés (en/index.html).
+"""Genera la página de Conektra en español (index.html) y en inglés (en/index.html).
 
 Uso:  python build.py
 Los datos de contacto se cambian en CONFIG. Los textos, en ES y EN.
@@ -8,10 +8,10 @@ import servicios
 import paginas
 
 CONFIG = {
-    "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://integrafy.dev/ cuando se compre el dominio
+    "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://conektra.dev/ cuando se compre el dominio
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
-    "correo": "",                               # p. ej. hola@integrafy.dev
-    # URL /exec de la hoja «Integrafy — CRM» (programa en crm/Codigo.gs)
+    "correo": "",                               # p. ej. hola@conektra.dev
+    # URL /exec de la hoja «Conektra — CRM» (programa en crm/Codigo.gs)
     "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",
 }
 
@@ -43,10 +43,10 @@ NUCLEO = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="11" r=
 
 ES = dict(
     lang="es", ruta="", otra_ruta="en/", otra_etiqueta="EN", otra_nombre="English",
-    titulo="Integrafy | Integraciones API, CRM, ERP y páginas web",
+    titulo="Conektra | Integraciones API, CRM, ERP y páginas web",
     descripcion="Conectamos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que tu negocio trabaje en automático. Integraciones API, CRM a la medida, ERP y páginas web con SEO.",
     nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Agenda una llamada",
-    wa_msg="Hola Integrafy, quiero conectar los sistemas de mi negocio.",
+    wa_msg="Hola Conektra, quiero conectar los sistemas de mi negocio.",
     chip="Integraciones · CRM · ERP · Web",
     h1='Tus sistemas, <em>conectados.</em> Tu negocio, en automático.',
     lead="Unimos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que los datos viajen solos y tu equipo deje de copiar y pegar.",
@@ -60,7 +60,7 @@ ES = dict(
     palabras=["tu página web", "WhatsApp", "tu CRM", "tu ERP", "Google Sheets", "tus pagos", "tu facturación", "cualquier API"],
     franja_cta="Cuéntanos tu caso",
     escena_chip="Automático", escena_paso="Paso",
-    pie_servicios="Servicios", pie_empresa="Integrafy", pie_contacto="Contacto", pie_hecho="Hecho en Panamá, para todo el mundo.",
+    pie_servicios="Servicios", pie_empresa="Conektra", pie_contacto="Contacto", pie_hecho="Hecho en Panamá, para todo el mundo.",
     marquesina=["Páginas web", "CRM", "ERP", "Integraciones API", "Automatización", "WhatsApp", "SEO"],
     flujo_etiqueta="Cómo funciona", flujo_h2="De un mensaje a una venta cerrada.",
     flujo_p="Así se mueve un cliente cuando tus sistemas hablan entre sí: sin hojas sueltas ni datos perdidos.",
@@ -118,15 +118,15 @@ ES = dict(
     cierre_h2="Tu negocio, <em>conectado.</em>",
     cierre_p="Escríbenos y cuéntanos qué sistemas usas hoy. Te decimos cómo hacer que trabajen juntos.",
     cierre_wa="Escríbenos por WhatsApp", cierre_correo="Enviar un correo",
-    pie_derechos="© 2026 Integrafy. Integraciones API, CRM, ERP y páginas web.",
+    pie_derechos="© 2026 Conektra. Integraciones API, CRM, ERP y páginas web.",
 )
 
 EN = dict(
     lang="en", ruta="en/", otra_ruta="", otra_etiqueta="ES", otra_nombre="Español",
-    titulo="Integrafy | API integrations, CRM, ERP and websites",
+    titulo="Conektra | API integrations, CRM, ERP and websites",
     descripcion="We connect your website, CRM, ERP, WhatsApp and payments so your business runs on autopilot. API integrations, custom CRM, ERP and SEO-ready websites.",
     nav=["Services", "How it works", "Case study", "FAQ"], cta="Book a call",
-    wa_msg="Hi Integrafy, I want to connect my business systems.",
+    wa_msg="Hi Conektra, I want to connect my business systems.",
     chip="Integrations · CRM · ERP · Web",
     h1='Your systems, <em>connected.</em> Your business, on autopilot.',
     lead="We link your website, CRM, ERP, WhatsApp and payments so data flows on its own and your team stops copying and pasting.",
@@ -140,7 +140,7 @@ EN = dict(
     palabras=["your website", "WhatsApp", "your CRM", "your ERP", "Google Sheets", "your payments", "your invoicing", "any API"],
     franja_cta="Tell us about your project",
     escena_chip="Automatic", escena_paso="Step",
-    pie_servicios="Services", pie_empresa="Integrafy", pie_contacto="Contact", pie_hecho="Made in Panama, for the world.",
+    pie_servicios="Services", pie_empresa="Conektra", pie_contacto="Contact", pie_hecho="Made in Panama, for the world.",
     marquesina=["Websites", "CRM", "ERP", "API integrations", "Automation", "WhatsApp", "SEO"],
     flujo_etiqueta="How it works", flujo_h2="From a message to a closed deal.",
     flujo_p="This is how a customer moves when your systems talk to each other: no loose spreadsheets, no lost data.",
@@ -198,7 +198,7 @@ EN = dict(
     cierre_h2="Your business, <em>connected.</em>",
     cierre_p="Message us and tell us which systems you use today. We'll show you how to make them work together.",
     cierre_wa="Message us on WhatsApp", cierre_correo="Send an email",
-    pie_derechos="© 2026 Integrafy. API integrations, CRM, ERP and websites.",
+    pie_derechos="© 2026 Conektra. API integrations, CRM, ERP and websites.",
 )
 
 # posiciones de los nodos alrededor del núcleo (porcentajes del diagrama)
@@ -272,7 +272,7 @@ def pagina(T):
     form_cfg = json.dumps({"crm": CONFIG["crm"], "wa": CONFIG["whatsapp"], "lang": T["lang"], "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]}, ensure_ascii=False).replace("</", "<\\/")
 
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Integrafy", "url": CONFIG["dominio"],
+        {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Conektra", "url": CONFIG["dominio"],
          "description": T["descripcion"], "areaServed": ["Panamá", "Latinoamérica", "Worldwide"],
          "knowsAbout": ["API integrations", "CRM", "ERP", "Web development", "SEO", "Automation"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
@@ -299,7 +299,7 @@ def pagina(T):
   <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
   <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Integrafy">
+  <meta property="og:site_name" content="Conektra">
   <meta property="og:url" content="{url}">
   <meta property="og:title" content="{T["titulo"]}">
   <meta property="og:description" content="{T["descripcion"]}">
@@ -307,7 +307,7 @@ def pagina(T):
   <meta property="og:image" content="{CONFIG["dominio"]}img/{"compartir.jpg" if T["lang"] == "es" else "compartir-en.jpg"}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Integrafy">
+  <meta property="og:image:alt" content="Conektra">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{CONFIG["dominio"]}img/{"compartir.jpg" if T["lang"] == "es" else "compartir-en.jpg"}">
   <link rel="icon" href="{pre}img/favicon.svg" type="image/svg+xml">
@@ -318,13 +318,13 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=16">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=17">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
   <header class="cabecera" id="cabecera">
     <div class="contenedor cabecera__barra">
-      <a class="marca" href="{pre or './'}" aria-label="Integrafy">{LOGO}Integrafy</a>
+      <a class="marca" href="{pre or './'}" aria-label="Conektra">{LOGO}Conektra</a>
       <nav class="menu" id="menu" aria-label="Principal">
         <a href="#servicios">{T["nav"][0]}</a>
         <a href="#como-funciona">{T["nav"][1]}</a>
@@ -487,7 +487,7 @@ def pagina(T):
     <div class="contenedor">
       <div class="pie__cols">
         <div class="pie__marca">
-          <a class="marca" href="{pre or './'}">{LOGO}Integrafy</a>
+          <a class="marca" href="{pre or './'}">{LOGO}Conektra</a>
           <p>{T["descripcion"]}</p>
         </div>
         <nav aria-label="{T["pie_servicios"]}"><h4>{T["pie_servicios"]}</h4>{servicios_pie}</nav>
@@ -501,8 +501,8 @@ def pagina(T):
     </div>
   </footer>
 
-  <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=8" defer></script>
+  <script>window.CONEKTRA_AVISOS = {avisos_json}; window.CONEKTRA_FORM = {form_cfg};</script>
+  <script src="{pre}js/main.js?v=9" defer></script>
 </body>
 </html>
 '''
@@ -514,7 +514,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="16", v_js="8")
+    cfg = dict(CONFIG, v_css="17", v_js="9")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

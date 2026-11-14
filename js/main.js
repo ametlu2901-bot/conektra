@@ -1,4 +1,4 @@
-/* Integrafy — interacciones */
+/* Conektra — interacciones */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -42,7 +42,7 @@
   $$('[data-revelar]').forEach(el => obs.observe(el));
 
   // Avisos que cambian en la ilustración
-  const avisos = window.INTEGRAFY_AVISOS || [];
+  const avisos = window.CONEKTRA_AVISOS || [];
   const aviso = $('#aviso');
   if (aviso && avisos.length > 1 && !quieto) {
     let n = 0;
@@ -165,9 +165,9 @@
     if (t) setTimeout(() => t.click(), 400);
   }));
 
-  // Formulario de contacto → hoja «Integrafy — CRM» (y WhatsApp como respaldo)
+  // Formulario de contacto → hoja «Conektra — CRM» (y WhatsApp como respaldo)
   const form = $('#formulario');
-  const cfg = window.INTEGRAFY_FORM || {};
+  const cfg = window.CONEKTRA_FORM || {};
   if (form) {
     const error = $('#form-error');
     const boton = $('button[type="submit"]', form);
@@ -184,8 +184,8 @@
       const datos = { nombre: dato('nombre'), empresa: dato('empresa'), contacto: dato('contacto'), necesita, presupuesto: dato('presupuesto'), mensaje: dato('mensaje'), idioma: cfg.lang, web: dato('web') };
       // resumen para seguir la conversación por WhatsApp
       const resumen = (cfg.lang === 'en'
-        ? [`Hi Integrafy, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]
-        : [`Hola Integrafy, soy ${datos.nombre}${datos.empresa ? ` de ${datos.empresa}` : ''}.`, necesita && `Necesito: ${necesita}.`, datos.mensaje]
+        ? [`Hi Conektra, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]
+        : [`Hola Conektra, soy ${datos.nombre}${datos.empresa ? ` de ${datos.empresa}` : ''}.`, necesita && `Necesito: ${necesita}.`, datos.mensaje]
       ).filter(Boolean).join('\n');
       const enlaceWa = cfg.wa ? `https://wa.me/${cfg.wa}?text=${encodeURIComponent(resumen)}` : '';
       const listo = () => {

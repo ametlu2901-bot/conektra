@@ -1,6 +1,6 @@
 {
-  "name": "Integrafy",
-  "short_name": "Integrafy",
+  "name": "Conektra",
+  "short_name": "Conektra",
   "description": "Integraciones API, CRM, ERP y páginas web",
   "start_url": "./",
   "display": "standalone",
