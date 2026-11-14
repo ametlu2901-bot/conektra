@@ -963,3 +963,6 @@ button { font: inherit; }
   .prueba--centro .prueba__foto { width: 84px; height: 58px; }
   .prueba--centro .prueba__flecha { margin-left: auto; }
 }
+/* franja: la palabra que rota queda a la misma altura que el resto de la frase */
+.franja__frase { align-items: center; }
+.franja__frase > span:first-child { line-height: 1.18; }
