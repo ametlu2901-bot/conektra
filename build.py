@@ -5,6 +5,7 @@ Los datos de contacto se cambian en CONFIG. Los textos, en ES y EN.
 """
 import json, os, urllib.parse
 import servicios
+import portada
 import paginas
 
 CONFIG = {
@@ -48,7 +49,7 @@ ES = dict(
     nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Agenda una llamada",
     wa_msg="Hola Conektra, quiero conectar los sistemas de mi negocio.",
     chip="Integraciones · CRM · ERP · Web",
-    h1='Tus sistemas, <em>conectados.</em> Tu negocio, en automático.',
+    h1='Tus sistemas, <em>conectados.</em><br>Tu negocio, en automático.',
     lead="Unimos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que los datos viajen solos y tu equipo deje de copiar y pegar.",
     ver_casos="Mira un caso real",
     prueba='<b>Acarreos Makena:</b> web, SEO y CRM conectados',
@@ -128,7 +129,7 @@ EN = dict(
     nav=["Services", "How it works", "Case study", "FAQ"], cta="Book a call",
     wa_msg="Hi Conektra, I want to connect my business systems.",
     chip="Integrations · CRM · ERP · Web",
-    h1='Your systems, <em>connected.</em> Your business, on autopilot.',
+    h1='Your systems, <em>connected.</em><br>Your business, on autopilot.',
     lead="We link your website, CRM, ERP, WhatsApp and payments so data flows on its own and your team stops copying and pasting.",
     ver_casos="See a real case",
     prueba='<b>Acarreos Makena:</b> website, SEO and CRM connected',
@@ -318,7 +319,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=19">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=20">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -338,28 +339,20 @@ def pagina(T):
   </header>
 
   <main>
-    <section class="portada">
-      <div class="contenedor portada__grid">
-        <div>
-          <a class="chip chip--vivo" href="#proyecto"><span class="chip__punto" aria-hidden="true"></span>{T["chip"]}<span class="chip__sep" aria-hidden="true"></span><b>{T["chip_cta"]}</b>{I["flecha"]}</a>
-          <h1 class="titulo-animado">{T["h1"]}</h1>
-          <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
-          <div class="portada__botones aparece" style="--a:.7s">
-            <a class="boton boton--marca boton--destello boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
-            <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
-          </div>
-          <ul class="confianza aparece" style="--a:.85s">{"".join(f'<li>{I["check"]}{x}</li>' for x in T["confianza"])}</ul>
-          <a class="prueba aparece" style="--a:1s" href="#caso"><span class="prueba__foto"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"></span><span class="prueba__txt"><small>{T["prueba_etiqueta"]}</small><b>Acarreos Makena</b><span>{T["prueba_texto"]}</span></span><span class="prueba__flecha">{I["flecha"]}</span></a>
+    <section class="portada portada--centrada">
+      <div class="contenedor portada__centro">
+        <a class="chip chip--vivo" href="#proyecto"><span class="chip__punto" aria-hidden="true"></span>{T["chip"]}<span class="chip__sep" aria-hidden="true"></span><b>{T["chip_cta"]}</b>{I["flecha"]}</a>
+        <h1 class="titulo-animado">{T["h1"]}</h1>
+        <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
+        <div class="portada__botones aparece" style="--a:.7s">
+          <a class="boton boton--marca boton--destello boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
+          <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
         </div>
-        <div class="diagrama" aria-hidden="true">
-          <div class="diagrama__fondo"></div>
-          <svg class="lineas" viewBox="0 0 100 92" preserveAspectRatio="none"><defs><linearGradient id="g-flujo" x1="0" x2="1"><stop offset="0" stop-color="#3b5bff"/><stop offset="1" stop-color="#13c2a3"/></linearGradient><radialGradient id="g-halo"><stop offset="0" stop-color="#8fe9ff" stop-opacity=".9"/><stop offset=".45" stop-color="#3b5bff" stop-opacity=".45"/><stop offset="1" stop-color="#3b5bff" stop-opacity="0"/></radialGradient></defs>{rutas}{flujos}{paquetes}</svg>
-          <div class="orbita orbita--1"><i></i></div>
-          <div class="orbita orbita--2"><i></i><i></i></div>
-          <div class="nucleo"><span class="onda"></span><span class="onda"></span><span class="onda"></span><span class="nucleo__cara">{NUCLEO}</span></div>
-          {nodos}
-          <div class="aviso" id="aviso"><span class="aviso__ico">{I["rayo"]}</span><span><b id="aviso-titulo">{T["avisos"][0][0]}</b><span id="aviso-texto">{T["avisos"][0][1]}</span></span></div>
-        </div>
+        <ul class="confianza aparece" style="--a:.85s">{"".join(f'<li>{I["check"]}{x}</li>' for x in T["confianza"])}</ul>
+      </div>
+      <div class="contenedor">
+        {portada.panel(T, I, NUCLEO)}
+        <a class="prueba prueba--centro aparece" style="--a:1.2s" href="#caso"><span class="prueba__foto"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"></span><span class="prueba__txt"><small>{T["prueba_etiqueta"]}</small><b>Acarreos Makena</b><span>{T["prueba_texto"]}</span></span><span class="prueba__flecha">{I["flecha"]}</span></a>
       </div>
     </section>
 
@@ -506,7 +499,7 @@ def pagina(T):
     <a class="boton boton--wa" href="{wa}"{wa_attr} tabindex="-1">{I["wa"]} WhatsApp</a>
   </div>
   <script>window.CONEKTRA_AVISOS = {avisos_json}; window.CONEKTRA_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=11" defer></script>
+  <script src="{pre}js/main.js?v=12" defer></script>
 </body>
 </html>
 '''
@@ -518,7 +511,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="19", v_js="11")
+    cfg = dict(CONFIG, v_css="20", v_js="12")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:
