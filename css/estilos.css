@@ -730,3 +730,46 @@ button { font: inherit; }
   .vitrina__mas { position: relative; right: auto; bottom: auto; margin-top: 30px; }
   .hecho { grid-template-columns: 1fr; gap: 6px; }
 }
+
+/* ---------- Portada: diagrama más vivo ---------- */
+.diagrama__fondo { position: absolute; inset: 4% 6%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(59, 91, 255, .16), transparent 62%);
+  -webkit-mask-image: radial-gradient(circle, #000 40%, transparent 70%); mask-image: radial-gradient(circle, #000 40%, transparent 70%); }
+.diagrama__fondo::before { content: ""; position: absolute; inset: 0; opacity: .55;
+  background-image: radial-gradient(circle, rgba(59, 91, 255, .35) 1px, transparent 1.4px); background-size: 18px 18px; }
+.diagrama .ruta { stroke: rgba(59, 91, 255, .22); stroke-width: 6; filter: blur(1.5px); }
+.diagrama .flujo { stroke-width: 1.6; stroke-dasharray: none; opacity: .55; animation: none; }
+.paquete { filter: drop-shadow(0 0 1.2px #8fe9ff); }
+/* nodos: laten cuando reciben o envían un paquete */
+.nodo { transition: translate .25s linear; }
+.nodo::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; border: 2px solid var(--marca-2);
+  opacity: 0; animation: recibir var(--ciclo, 3s) linear var(--llegada, 0s) infinite; }
+.nodo i { animation: iconoLatido var(--ciclo, 3s) linear var(--llegada, 0s) infinite; }
+@keyframes recibir { 0% { opacity: .95; transform: scale(1); box-shadow: 0 0 0 0 rgba(19, 194, 163, .45); } 22% { opacity: 0; transform: scale(1.12); box-shadow: 0 0 0 10px rgba(19, 194, 163, 0); } 100% { opacity: 0; } }
+@keyframes iconoLatido { 0% { background: var(--marca-2); color: #fff; } 25%, 100% { background: var(--fondo-2); color: var(--marca); } }
+/* núcleo: borde de luz giratorio y ondas tipo radar */
+.nucleo { overflow: visible; isolation: isolate; }
+.nucleo::after { content: none; }
+.nucleo::before { content: ""; position: absolute; inset: -3px; border-radius: 32%; z-index: -1;
+  background: conic-gradient(from var(--giro, 0deg), transparent 0deg, #3b5bff 70deg, #13c2a3 140deg, transparent 200deg, transparent 360deg);
+  animation: girarBorde 4s linear infinite; }
+@property --giro { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+@keyframes girarBorde { to { --giro: 360deg; } }
+.nucleo__cara { position: absolute; inset: 0; border-radius: 30%; display: grid; place-items: center; background: inherit; }
+.nucleo__cara svg { width: 46%; height: 46%; }
+.onda { position: absolute; inset: 0; border-radius: 34%; border: 1.5px solid rgba(59, 91, 255, .5); z-index: -2; animation: onda 3.6s cubic-bezier(.2, .6, .3, 1) infinite; }
+.onda:nth-child(2) { animation-delay: 1.2s; } .onda:nth-child(3) { animation-delay: 2.4s; }
+@keyframes onda { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(2.1); opacity: 0; } }
+/* órbitas con puntos girando alrededor del núcleo */
+.orbita { position: absolute; left: 50%; top: 50%; border-radius: 50%; border: 1px dashed rgba(59, 91, 255, .25); transform: translate(-50%, -50%); pointer-events: none; }
+.orbita--1 { width: 46%; aspect-ratio: 1; animation: girarOrbita 18s linear infinite; }
+.orbita--2 { width: 64%; aspect-ratio: 1; border-style: solid; border-color: rgba(19, 194, 163, .14); animation: girarOrbita 30s linear infinite reverse; }
+.orbita i { position: absolute; top: -5px; left: calc(50% - 5px); width: 10px; height: 10px; border-radius: 50%; background: var(--marca); box-shadow: 0 0 12px 2px rgba(59, 91, 255, .7); }
+.orbita--2 i { background: var(--marca-2); box-shadow: 0 0 12px 2px rgba(19, 194, 163, .7); width: 8px; height: 8px; top: -4px; }
+.orbita--2 i:nth-child(2) { top: auto; bottom: -4px; }
+@keyframes girarOrbita { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@media (prefers-color-scheme: dark) {
+  .diagrama .ruta { stroke: rgba(111, 134, 255, .3); }
+  .onda { border-color: rgba(111, 134, 255, .55); }
+}
+@media (max-width: 640px) { .orbita--2 { display: none; } }

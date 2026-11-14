@@ -208,12 +208,24 @@ def pagina(T):
     wa_attr = ' target="_blank" rel="noopener"' if CONFIG["whatsapp"] else ""
     correo = f'mailto:{CONFIG["correo"]}' if CONFIG["correo"] else ""
 
+    # ritmo de cada línea: cuánto tarda un paquete en recorrerla y cuándo arranca
+    CICLOS = [(2.6, 0.0), (3.1, 0.7), (2.8, 1.4), (3.4, 0.3), (2.9, 1.1), (3.2, 1.8)]
+    PROFUNDIDAD = [1.0, 0.6, 1.3, 0.8, 1.2, 0.7]
+    # los paquetes impares viajan del sistema hacia el núcleo; los pares, del núcleo hacia el sistema
     nodos = "\n".join(
-        f'<div class="nodo" style="left:{x}%;top:{y}%"><i>{I[ico]}</i><span>{n}<small>{s}</small></span></div>'
-        for (n, s, ico), (x, y) in zip(T["nodos"], POS))
-    # curvas desde el núcleo (50,50) hacia cada nodo, en un lienzo de 100x92
-    rutas = "".join(f'<path class="ruta" d="M50 46 Q {(50 + x) / 2 + (8 if i % 2 else -8)} {(46 + y * .92) / 2} {x} {y * .92}"/>' for i, (x, y) in enumerate(POS))
-    flujos = "".join(f'<path class="flujo" d="M50 46 Q {(50 + x) / 2 + (8 if i % 2 else -8)} {(46 + y * .92) / 2} {x} {y * .92}"/>' for i, (x, y) in enumerate(POS))
+        f'<div class="nodo" data-prof="{PROFUNDIDAD[i]}" style="left:{x}%;top:{y}%;--ciclo:{CICLOS[i][0]}s;'
+        f'--llegada:{CICLOS[i][1]}s">'
+        f'<i>{I[ico]}</i><span>{n}<small>{s}</small></span></div>'
+        for i, ((n, s, ico), (x, y)) in enumerate(zip(T["nodos"], POS)))
+    # curvas desde el núcleo (50,46) hacia cada nodo, en un lienzo de 100x92
+    curva = lambda i, x, y: f'M50 46 Q {(50 + x) / 2 + (8 if i % 2 else -8)} {(46 + y * .92) / 2} {x} {y * .92}'
+    rutas = "".join(f'<path class="ruta" id="ruta-{i}" d="{curva(i, x, y)}"/>' for i, (x, y) in enumerate(POS))
+    flujos = "".join(f'<path class="flujo" d="{curva(i, x, y)}"/>' for i, (x, y) in enumerate(POS))
+    paquetes = "".join(
+        f'<g class="paquete"><circle r="2.4" fill="url(#g-halo)"/><circle r=".75" fill="#fff"/>'
+        f'<animateMotion dur="{CICLOS[i][0]}s" begin="{CICLOS[i][1]}s" repeatCount="indefinite"'
+        f'{"" if i % 2 == 0 else " keyPoints=\"1;0\" keyTimes=\"0;1\""}><mpath href="#ruta-{i}"/></animateMotion></g>'
+        for i, _ in enumerate(POS))
 
     ICONOS_PAL = ["web", "chat", "crm", "erp", "hoja", "pago", "factura", "codigo"]
     palabras = "".join(f'<span class="rotador__palabra">{p}</span>' for p in T["palabras"])
@@ -302,7 +314,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=12">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=13">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -335,8 +347,11 @@ def pagina(T):
           <a class="prueba" href="#caso"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"><span>{T["prueba"]}</span></a>
         </div>
         <div class="diagrama" aria-hidden="true">
-          <svg class="lineas" viewBox="0 0 100 92" preserveAspectRatio="none"><defs><linearGradient id="g-flujo" x1="0" x2="1"><stop offset="0" stop-color="#3b5bff"/><stop offset="1" stop-color="#13c2a3"/></linearGradient></defs>{rutas}{flujos}</svg>
-          <div class="nucleo">{NUCLEO}</div>
+          <div class="diagrama__fondo"></div>
+          <svg class="lineas" viewBox="0 0 100 92" preserveAspectRatio="none"><defs><linearGradient id="g-flujo" x1="0" x2="1"><stop offset="0" stop-color="#3b5bff"/><stop offset="1" stop-color="#13c2a3"/></linearGradient><radialGradient id="g-halo"><stop offset="0" stop-color="#8fe9ff" stop-opacity=".9"/><stop offset=".45" stop-color="#3b5bff" stop-opacity=".45"/><stop offset="1" stop-color="#3b5bff" stop-opacity="0"/></radialGradient></defs>{rutas}{flujos}{paquetes}</svg>
+          <div class="orbita orbita--1"><i></i></div>
+          <div class="orbita orbita--2"><i></i><i></i></div>
+          <div class="nucleo"><span class="onda"></span><span class="onda"></span><span class="onda"></span><span class="nucleo__cara">{NUCLEO}</span></div>
           {nodos}
           <div class="aviso" id="aviso"><span class="aviso__ico">{I["rayo"]}</span><span><b id="aviso-titulo">{T["avisos"][0][0]}</b><span id="aviso-texto">{T["avisos"][0][1]}</span></span></div>
         </div>
@@ -482,7 +497,7 @@ def pagina(T):
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=6" defer></script>
+  <script src="{pre}js/main.js?v=7" defer></script>
 </body>
 </html>
 '''
@@ -494,7 +509,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="12", v_js="6")
+    cfg = dict(CONFIG, v_css="13", v_js="7")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

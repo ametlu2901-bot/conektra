@@ -98,6 +98,26 @@
 
   // Solo en computadora: luz que sigue al cursor y botones magnéticos
   if (matchMedia('(hover: hover) and (pointer: fine)').matches && !quieto) {
+    // Profundidad en el diagrama: cada nodo se mueve según su «capa»
+    const portada = $('.portada');
+    const nodosProf = $$('.diagrama .nodo');
+    const nucleo = $('.diagrama .nucleo');
+    if (portada && nodosProf.length) {
+      portada.addEventListener('pointermove', e => {
+        const r = portada.getBoundingClientRect();
+        const dx = (e.clientX - r.left) / r.width - .5;
+        const dy = (e.clientY - r.top) / r.height - .5;
+        nodosProf.forEach(n => {
+          const p = parseFloat(n.dataset.prof || 1);
+          n.style.translate = `${dx * 26 * p}px ${dy * 22 * p}px`;
+        });
+        if (nucleo) nucleo.style.transform = `translate(-50%, -50%) perspective(600px) rotateY(${dx * 14}deg) rotateX(${-dy * 14}deg)`;
+      });
+      portada.addEventListener('pointerleave', () => {
+        nodosProf.forEach(n => { n.style.translate = ''; });
+        if (nucleo) nucleo.style.transform = '';
+      });
+    }
     $$('.hito__tarjeta, .pregunta, .proyecto__caja, .prueba, .pestana, .paso, .medida').forEach(el => {
       el.classList.add('luz');
       el.addEventListener('pointermove', e => {
