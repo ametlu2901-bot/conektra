@@ -244,7 +244,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=1">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=2">
 </head>
 <body>
   <header class="cabecera">
@@ -273,7 +273,7 @@ def pagina(T):
             <a class="boton boton--marca" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
             <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
           </div>
-          <a class="prueba" href="#caso"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900">{T["prueba"]}</a>
+          <a class="prueba" href="#caso"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"><span>{T["prueba"]}</span></a>
         </div>
         <div class="diagrama" aria-hidden="true">
           <svg class="lineas" viewBox="0 0 100 92" preserveAspectRatio="none"><defs><linearGradient id="g-flujo" x1="0" x2="1"><stop offset="0" stop-color="#3b5bff"/><stop offset="1" stop-color="#13c2a3"/></linearGradient></defs>{rutas}{flujos}</svg>
