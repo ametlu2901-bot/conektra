@@ -9,8 +9,9 @@ import servicios
 CONFIG = {
     "dominio": "https://ametlu2901-bot.github.io/integrafy/",  # cambiar a https://integrafy.dev/ cuando se compre el dominio
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
-    "correo": "",
-    "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",  # URL /exec de la hoja «Integrafy — CRM» (crm/Codigo.gs)                               # p. ej. hola@integrafy.dev
+    "correo": "",                               # p. ej. hola@integrafy.dev
+    # URL /exec de la hoja «Integrafy — CRM» (programa en crm/Codigo.gs)
+    "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",
 }
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
