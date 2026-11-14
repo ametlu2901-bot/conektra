@@ -819,3 +819,9 @@ button { font: inherit; }
 .prueba:hover .prueba__flecha { transform: translateX(4px); background: var(--solido); color: #fff; }
 @media (prefers-reduced-motion: reduce) { .titulo-animado .palabra { opacity: 1; transform: none; filter: none; } }
 @media (max-width: 640px) { .chip--vivo { font-size: .78rem; gap: 8px; } .confianza { gap: 8px 14px; } }
+
+/* ---------- Botones de WhatsApp en verde ---------- */
+.boton--wa, .boton--marca.boton--wa, .boton--blanco.boton--wa { background: #25d366; color: #052e16; box-shadow: 0 14px 30px -14px rgba(37, 211, 102, .65); }
+.boton--wa:hover, .boton--marca.boton--wa:hover, .boton--blanco.boton--wa:hover { background: #1fbd5b; color: #052e16; }
+.boton--wa svg { color: #052e16; }
+.boton--wa.boton--destello::after { background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .55), transparent); }

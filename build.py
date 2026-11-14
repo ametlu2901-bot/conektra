@@ -318,7 +318,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=15">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=16">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -331,7 +331,7 @@ def pagina(T):
         <a href="#caso">{T["nav"][2]}</a>
         <a href="#preguntas">{T["nav"][3]}</a>
         <a class="idioma" href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}" lang="{"en" if T["lang"] == "es" else "es"}" title="{T["otra_nombre"]}">{T["otra_etiqueta"]}</a>
-        <a class="boton boton--marca" href="{wa}"{wa_attr}>{T["cta"]}</a>
+        <a class="boton boton--marca boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
       </nav>
       <button class="hamburguesa" id="hamburguesa" type="button" aria-label="Menú" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
     </div>
@@ -345,7 +345,7 @@ def pagina(T):
           <h1 class="titulo-animado">{T["h1"]}</h1>
           <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
           <div class="portada__botones aparece" style="--a:.7s">
-            <a class="boton boton--marca boton--destello" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
+            <a class="boton boton--marca boton--destello boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
             <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
           </div>
           <ul class="confianza aparece" style="--a:.85s">{"".join(f'<li>{I["check"]}{x}</li>' for x in T["confianza"])}</ul>
@@ -463,7 +463,7 @@ def pagina(T):
             <span class="gracias__ico">{I["check"]}</span>
             <h3>{F["ok_t"]}</h3>
             <p>{F["ok_p"]}</p>
-            <a class="boton boton--marca" id="gracias-wa" href="{wa}"{wa_attr}>{I["wa"]} {F["ok_wa"]}</a>
+            <a class="boton boton--marca boton--wa" id="gracias-wa" href="{wa}"{wa_attr}>{I["wa"]} {F["ok_wa"]}</a>
           </div>
         </div>
       </div>
@@ -477,7 +477,7 @@ def pagina(T):
         <div class="cierre__texto">
           <p>{T["cierre_p"]}</p>
           <div class="cierre__botones">
-            <a class="boton boton--blanco" href="{wa}"{wa_attr}>{I["wa"]} {T["cierre_wa"]}</a>
+            <a class="boton boton--blanco boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cierre_wa"]}</a>
             {boton_correo}
           </div>
         </div>
@@ -514,7 +514,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="15", v_js="8")
+    cfg = dict(CONFIG, v_css="16", v_js="8")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

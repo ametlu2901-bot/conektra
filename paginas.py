@@ -234,7 +234,7 @@ def cabecera_html(ui, I, LOGO, cfg, ruta, ruta_otra, lang, wa, wa_attr):
         <a href="{pre}{RUTAS[lang]["caso"]}">{ui["nav"][2]}</a>
         <a href="{inicio}#preguntas">{ui["nav"][3]}</a>
         <a class="idioma" href="{pre}{ruta_otra or './'}" hreflang="{"en" if lang == "es" else "es"}" lang="{"en" if lang == "es" else "es"}" title="{ui["otra_nombre"]}">{ui["otra"]}</a>
-        <a class="boton boton--marca" href="{wa}"{wa_attr}>{ui["cta"]}</a>
+        <a class="boton boton--marca boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {ui["cta"]}</a>
       </nav>
       <button class="hamburguesa" id="hamburguesa" type="button" aria-label="Menú" aria-expanded="false" aria-controls="menu"><span></span><span></span><span></span></button>
     </div>
@@ -274,7 +274,7 @@ def banda_cta(ui, I, pre, lang, wa, wa_attr, h=None, p=None):
     return f'''    <section class="seccion" style="padding-top:0">
       <div class="contenedor"><div class="banda" data-revelar>
         <div><h2>{h or ui["cta_h"]}</h2><p>{p or ui["cta_p"]}</p></div>
-        <div class="banda__botones"><a class="boton boton--blanco" href="{wa}"{wa_attr}>{I["wa"]} WhatsApp</a><a class="boton boton--contorno" href="{inicio}#proyecto">{ui["cta_form"]} {I["flecha"]}</a></div>
+        <div class="banda__botones"><a class="boton boton--blanco boton--wa" href="{wa}"{wa_attr}>{I["wa"]} WhatsApp</a><a class="boton boton--contorno" href="{inicio}#proyecto">{ui["cta_form"]} {I["flecha"]}</a></div>
       </div></div>
     </section>
 '''
@@ -314,7 +314,7 @@ def generar(raiz, cfg, I, LOGO, descripciones):
           {migas(ui, pre, lang, [(ui["servicios"], (pre + RUTAS[lang]["inicio"] if RUTAS[lang]["inicio"] else (pre or "./")) + "#servicios"), (S["titulo"], None)])}
           <h1>{S["h1"]}</h1>
           <p class="portada__lead">{S["lead"]}</p>
-          <div class="portada__botones"><a class="boton boton--marca" href="{wa}"{wa_attr}>{I["wa"]} {ui["cta"]}</a><a class="boton boton--claro" href="#incluye">{ui["incluye"]} {I["flecha"]}</a></div>
+          <div class="portada__botones"><a class="boton boton--marca boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {ui["cta"]}</a><a class="boton boton--claro" href="#incluye">{ui["incluye"]} {I["flecha"]}</a></div>
         </div>
         <div class="vitrina vitrina--interna"><div class="vitrina__rejilla" aria-hidden="true"></div><div class="panel activo">{maquetas[n]}</div></div>
       </div>
