@@ -244,8 +244,17 @@ def pagina(T):
   <meta property="og:url" content="{url}">
   <meta property="og:title" content="{T["titulo"]}">
   <meta property="og:description" content="{T["descripcion"]}">
+  <meta property="og:locale" content="{"es_PA" if T["lang"] == "es" else "en_US"}">
+  <meta property="og:image" content="{CONFIG["dominio"]}img/{"compartir.jpg" if T["lang"] == "es" else "compartir-en.jpg"}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Integrafy">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{CONFIG["dominio"]}img/{"compartir.jpg" if T["lang"] == "es" else "compartir-en.jpg"}">
   <link rel="icon" href="{pre}img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="{pre}img/favicon-48.png" sizes="48x48" type="image/png">
+  <link rel="apple-touch-icon" href="{pre}img/apple-touch-icon.png">
+  <link rel="manifest" href="{pre}manifest.webmanifest">
   <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
