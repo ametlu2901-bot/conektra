@@ -57,7 +57,7 @@ ES = dict(
     esc4=dict(cab="Factura #A-2381", est="Pagada", filas=[("Cliente", "María Pérez"), ("Concepto", "Mudanza residencial"), ("Impuesto", "Calculado")], total=("Total", "Sincronizado")),
     serv_etiqueta="Servicios", serv_h2="Todo lo que tu negocio necesita para trabajar conectado.",
     servicios=[
-        ("Páginas web y SEO", "Páginas rápidas, bonitas en celular y listas para aparecer en Google, con formularios que alimentan tu CRM."),
+        ("Páginas web y SEO", "Diseñadas a la medida de tu marca: rápidas, bonitas en celular y listas para aparecer en Google, con formularios que alimentan tu CRM."),
         ("CRM a la medida", "Tus clientes, cotizaciones y seguimientos en un solo lugar, con etapas, recordatorios y reportes."),
         ("Integraciones API", "Conectamos tus sistemas entre sí y con servicios externos: WhatsApp, pagos, facturación, Google y más."),
         ("ERP y automatizaciones", "Inventario, facturación y procesos internos que se actualizan solos, con tableros para decidir con datos."),
@@ -67,6 +67,8 @@ ES = dict(
     mock_api=dict(c="// webhook: formulario web → CRM → WhatsApp", log=[("POST /clientes", "200 · 84 ms"), ("Mensaje de confirmación enviado", "WhatsApp"), ("Fila agregada al reporte", "Sheets")]),
     mock_erp=dict(m=[("Ventas del mes", "B/. 12.4k"), ("Facturas", "86"), ("Inventario", "OK")]),
     caso_etiqueta="Caso real", caso_h2="Del WhatsApp suelto a un negocio conectado.",
+    caso_intro="Un ejemplo de lo que hacemos. Cada proyecto se diseña desde cero: tu página no se parecerá a esta, se parecerá a tu negocio.",
+    medida_t="Hecho a tu medida", medida_p="Tu marca, tus colores, tu estilo y las funciones que tu negocio necesita. Diseñamos tu página y tus integraciones según tu industria y tu forma de trabajar, no con plantillas.",
     caso_nombre="Acarreos Makena", caso_sector="Mudanzas, acarreos y fletes en Panamá",
     logros=[("Página web con dominio propio", "Diseño a la medida, rápida en celular y con botón directo a WhatsApp."),
             ("SEO con páginas por servicio y por zona", "Páginas pensadas para cada búsqueda, sitemap y Search Console configurados."),
@@ -120,7 +122,7 @@ EN = dict(
     esc4=dict(cab="Invoice #A-2381", est="Paid", filas=[("Customer", "Maria Perez"), ("Item", "Home move"), ("Tax", "Calculated")], total=("Total", "Synced")),
     serv_etiqueta="Services", serv_h2="Everything your business needs to run connected.",
     servicios=[
-        ("Websites and SEO", "Fast, mobile-friendly websites built to show up on Google, with forms that feed your CRM."),
+        ("Websites and SEO", "Custom-designed for your brand: fast, mobile-friendly and built to show up on Google, with forms that feed your CRM."),
         ("Custom CRM", "Your customers, quotes and follow-ups in one place, with stages, reminders and reports."),
         ("API integrations", "We connect your systems to each other and to external services: WhatsApp, payments, invoicing, Google and more."),
         ("ERP and automation", "Inventory, invoicing and internal processes that update themselves, with dashboards to decide with data."),
@@ -130,6 +132,8 @@ EN = dict(
     mock_api=dict(c="// webhook: website form → CRM → WhatsApp", log=[("POST /customers", "200 · 84 ms"), ("Confirmation message sent", "WhatsApp"), ("Row added to report", "Sheets")]),
     mock_erp=dict(m=[("Monthly sales", "$12.4k"), ("Invoices", "86"), ("Inventory", "OK")]),
     caso_etiqueta="Case study", caso_h2="From scattered WhatsApp chats to a connected business.",
+    caso_intro="One example of what we do. Every project is designed from scratch: your website won't look like this one, it will look like your business.",
+    medida_t="Made to measure", medida_p="Your brand, your colors, your style and the features your business needs. We design your website and integrations around your industry and the way you work, not templates.",
     caso_nombre="Acarreos Makena", caso_sector="Moving, hauling and freight in Panama",
     logros=[("Website on its own domain", "Custom design, fast on mobile, with a direct WhatsApp button."),
             ("SEO with service and location pages", "Pages built for each search, plus sitemap and Search Console set up."),
@@ -244,7 +248,7 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=2">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=3">
 </head>
 <body>
   <header class="cabecera">
@@ -316,7 +320,7 @@ def pagina(T):
 
     <section class="seccion" id="caso" style="background:var(--blanco);border-block:1px solid var(--linea)">
       <div class="contenedor">
-        <header class="cabeza" data-revelar><p class="etiqueta">{T["caso_etiqueta"]}</p><h2>{T["caso_h2"]}</h2></header>
+        <header class="cabeza" data-revelar><p class="etiqueta">{T["caso_etiqueta"]}</p><h2>{T["caso_h2"]}</h2><p>{T["caso_intro"]}</p></header>
         <div class="caso">
           <div class="caso__fotos" data-revelar>
             <div class="caso__escritorio"><div class="ventana__barra"><i></i><i></i><i></i><span>acarreosmakena.com</span></div><img src="{pre}img/caso-acarreos-escritorio.webp" alt="Página web de Acarreos Makena en computadora" width="1440" height="900" loading="lazy"></div>
@@ -327,6 +331,7 @@ def pagina(T):
             <p class="caso__sector">{T["caso_sector"]}</p>
             <ul class="logros">{logros}</ul>
             <a class="boton boton--marca" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{T["caso_cta"]} {I["flecha"]}</a>
+            <div class="medida"><i>{I["rayo"]}</i><span><b>{T["medida_t"]}</b>{T["medida_p"]}</span></div>
           </div>
         </div>
       </div>
