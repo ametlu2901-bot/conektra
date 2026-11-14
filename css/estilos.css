@@ -941,3 +941,25 @@ button { font: inherit; }
 /* cabecera más opaca al bajar, también en computadora */
 .cabecera.compacta .cabecera__barra { background: rgba(255, 255, 255, .92); }
 @media (prefers-color-scheme: dark) { .cabecera.compacta .cabecera__barra { background: rgba(17, 24, 41, .94); } }
+
+/* ---------- Tarjeta del caso real: más visible ---------- */
+.prueba--centro { position: relative; padding: 12px 14px 12px 12px; gap: 18px; border-radius: 22px; border: 1px solid transparent;
+  background: linear-gradient(var(--superficie), var(--superficie)) padding-box, linear-gradient(110deg, rgba(59, 91, 255, .9), rgba(19, 194, 163, .9)) border-box;
+  box-shadow: 0 20px 50px -22px rgba(59, 91, 255, .55), 0 0 0 6px rgba(59, 91, 255, .06); }
+.prueba--centro::before { content: ""; position: absolute; inset: -14px; z-index: -1; border-radius: 30px; pointer-events: none;
+  background: radial-gradient(60% 80% at 50% 50%, rgba(59, 91, 255, .28), transparent 70%); filter: blur(18px); animation: latir 4s ease-in-out infinite; }
+.prueba--centro .prueba__foto { width: 104px; height: 70px; border-radius: 14px; }
+.prueba--centro .prueba__txt small { font-size: .72rem; color: #5b78ff; }
+.prueba--centro .prueba__txt b { font-size: 1.12rem; }
+.prueba--centro .prueba__txt span { font-size: .92rem; }
+.prueba--centro .prueba__flecha { width: 42px; height: 42px; margin-left: 18px; color: #fff; background: linear-gradient(135deg, var(--marca), var(--marca-2)); box-shadow: 0 10px 22px -10px rgba(59, 91, 255, .8); }
+.prueba--centro:hover { transform: translateY(-3px); box-shadow: 0 26px 60px -22px rgba(59, 91, 255, .7), 0 0 0 6px rgba(59, 91, 255, .1); }
+.prueba--centro:hover .prueba__flecha { transform: translateX(4px); background: linear-gradient(135deg, var(--marca), var(--marca-2)); }
+@media (prefers-color-scheme: dark) {
+  .prueba--centro .prueba__txt small { color: #8fa6ff; }
+  .prueba--centro .prueba__txt span { color: #b6bfd4; }
+}
+@media (max-width: 640px) {
+  .prueba--centro .prueba__foto { width: 84px; height: 58px; }
+  .prueba--centro .prueba__flecha { margin-left: auto; }
+}
