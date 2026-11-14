@@ -480,8 +480,10 @@ button { font: inherit; }
   .flotante--derecha { right: -6px; left: auto; }
   .pestana { grid-template-columns: 40px 1fr; padding: 16px; gap: 12px; }
   .pestana__ico { width: 40px; height: 40px; border-radius: 12px; }
-  .vitrina { height: 470px; padding: 28px 16px; border-radius: 24px; }
-  .panel { inset: 28px 16px; }
+  .vitrina { height: auto; padding: 30px 14px 26px; border-radius: 24px; }
+  .panel { position: relative; inset: auto; }
+  .sitio__nav span { display: none; }
+  .sitio__nav em { white-space: nowrap; }
   .ventana--sitio { width: 100%; }
   .telefono { display: none; }
   .sitio__hero { grid-template-columns: 1fr; }
