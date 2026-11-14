@@ -9,7 +9,9 @@
   <link rel="alternate" hreflang="es" href="https://ametlu2901-bot.github.io/integrafy/">
   <link rel="alternate" hreflang="en" href="https://ametlu2901-bot.github.io/integrafy/en/">
   <link rel="alternate" hreflang="x-default" href="https://ametlu2901-bot.github.io/integrafy/">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Integrafy">
   <meta property="og:url" content="https://ametlu2901-bot.github.io/integrafy/en/">
@@ -30,10 +32,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../css/estilos.css?v=9">
+  <link rel="stylesheet" href="../css/estilos.css?v=10">
 </head>
 <body>
-  <header class="cabecera">
+  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
+  <header class="cabecera" id="cabecera">
     <div class="contenedor cabecera__barra">
       <a class="marca" href="../" aria-label="Integrafy"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>Integrafy</a>
       <nav class="menu" id="menu" aria-label="Principal">
@@ -76,10 +79,13 @@
     </section>
 
     <section class="franja">
-      <div class="contenedor franja__grid">
-        <p class="franja__texto">We connect your business with</p>
-        <div class="palabras" aria-label="We connect your business with"><ul class="palabras__pista" id="palabras"><li>your website</li><li>WhatsApp</li><li>your CRM</li><li>your ERP</li><li>Google Sheets</li><li>your payments</li><li>your invoicing</li><li>any API</li></ul></div>
-        <a class="boton boton--marca franja__accion" href="https://wa.me/50765523134?text=Hi%20Integrafy%2C%20I%20want%20to%20connect%20my%20business%20systems." target="_blank" rel="noopener">Tell us about your project</a>
+      <div class="contenedor franja__caja">
+        <p class="franja__frase" aria-label="We connect your business with your website, WhatsApp, your CRM, your ERP, Google Sheets, your payments, your invoicing, any API">
+          <span aria-hidden="true">We connect your business with</span>
+          <span class="rotador" aria-hidden="true"><span class="rotador__pista" id="palabras"><span class="rotador__palabra">your website</span><span class="rotador__palabra">WhatsApp</span><span class="rotador__palabra">your CRM</span><span class="rotador__palabra">your ERP</span><span class="rotador__palabra">Google Sheets</span><span class="rotador__palabra">your payments</span><span class="rotador__palabra">your invoicing</span><span class="rotador__palabra">any API</span></span></span>
+        </p>
+        <div class="franja__iconos" id="franja-iconos" aria-hidden="true"><span class="franja__ico" data-i="0" title="your website"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 9h18"/></svg></span><span class="franja__ico" data-i="1" title="WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4V5Z"/></svg></span><span class="franja__ico" data-i="2" title="your CRM"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20a6 6 0 0 1 12 0M16 6h5M16 10h5M18 14h3"/></svg></span><span class="franja__ico" data-i="3" title="your ERP"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></span><span class="franja__ico" data-i="4" title="Google Sheets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M4 9h16M4 15h16M10 3v18"/></svg></span><span class="franja__ico" data-i="5" title="your payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h4"/></svg></span><span class="franja__ico" data-i="6" title="your invoicing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></svg></span><span class="franja__ico" data-i="7" title="any API"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></svg></span></div>
+        <a class="boton boton--marca" href="#proyecto">Tell us about your project <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></a>
       </div>
     </section>
 
@@ -88,15 +94,20 @@
         <div class="contenedor">
           <header class="cabeza" data-revelar><p class="etiqueta">How it works</p><h2>From a message to a closed deal.</h2><p>This is how a customer moves when your systems talk to each other: no loose spreadsheets, no lost data.</p></header>
           <div class="flujo-grid">
-            <ol class="pasos"><li><button type="button" class="paso activo" data-paso="0" aria-pressed="true"><b>01</b><span><h3>The customer reaches out</h3><p>From your website or on WhatsApp, at any time.</p></span></button></li>
-<li><button type="button" class="paso" data-paso="1" aria-pressed="false"><b>02</b><span><h3>It lands in your CRM</h3><p>Their details are saved automatically and your team gets notified.</p></span></button></li>
-<li><button type="button" class="paso" data-paso="2" aria-pressed="false"><b>03</b><span><h3>You quote and follow up</h3><p>Every opportunity moves through stages until it closes.</p></span></button></li>
-<li><button type="button" class="paso" data-paso="3" aria-pressed="false"><b>04</b><span><h3>It's invoiced in your ERP</h3><p>The sale flows into invoicing and accounting without retyping it.</p></span></button></li></ol>
+            <ol class="pasos"><li><button type="button" class="paso activo" data-paso="0" aria-pressed="true"><b>01</b><span><h3>The customer reaches out</h3><p>From your website or on WhatsApp, at any time.</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>
+<li><button type="button" class="paso" data-paso="1" aria-pressed="false"><b>02</b><span><h3>It lands in your CRM</h3><p>Their details are saved automatically and your team gets notified.</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>
+<li><button type="button" class="paso" data-paso="2" aria-pressed="false"><b>03</b><span><h3>You quote and follow up</h3><p>Every opportunity moves through stages until it closes.</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>
+<li><button type="button" class="paso" data-paso="3" aria-pressed="false"><b>04</b><span><h3>It's invoiced in your ERP</h3><p>The sale flows into invoicing and accounting without retyping it.</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li></ol>
             <div class="escena" aria-live="polite">
+              <div class="escena__rejilla" aria-hidden="true"></div>
+              <span class="escena__brillo" aria-hidden="true"></span>
+              
 <div class="cuadro activo" data-cuadro="0"><div class="tarjeta"><div class="tarjeta__cab"><b>WhatsApp</b><span class="estado">Online</span></div><div class="burbuja">Hi, can I get a quote for a move this Saturday?</div><div class="burbuja burbuja--mia">Of course! We've logged your request. Your quote is on its way in a few minutes.</div></div></div>
 <div class="cuadro" data-cuadro="1"><div class="tarjeta"><div class="tarjeta__cab"><b>New customer</b><span class="estado estado--azul">CRM</span></div><div class="fila"><span>Name</span><b>Maria Perez</b></div><div class="fila"><span>Channel</span><b>Website form</b></div><div class="fila"><span>Service</span><b>Moving</b></div><div class="fila"><span>Stage</span><b>New</b></div></div></div>
 <div class="cuadro" data-cuadro="2"><div class="tarjeta"><div class="tarjeta__cab"><b>Quote #1042</b><span class="estado estado--ambar">Sent</span></div><div class="fila"><span>Service</span><b>Home move</b></div><div class="fila"><span>Date</span><b>Saturday 9:00</b></div><div class="fila"><span>Follow-up</span><b>Reminder in 24 h</b></div></div></div>
-<div class="cuadro" data-cuadro="3"><div class="tarjeta"><div class="tarjeta__cab"><b>Invoice #A-2381</b><span class="estado">Paid</span></div><div class="fila"><span>Customer</span><b>Maria Perez</b></div><div class="fila"><span>Item</span><b>Home move</b></div><div class="fila"><span>Tax</span><b>Calculated</b></div><div class="total"><span>Total</span><span>Synced</span></div></div></div></div>
+<div class="cuadro" data-cuadro="3"><div class="tarjeta"><div class="tarjeta__cab"><b>Invoice #A-2381</b><span class="estado">Paid</span></div><div class="fila"><span>Customer</span><b>Maria Perez</b></div><div class="fila"><span>Item</span><b>Home move</b></div><div class="fila"><span>Tax</span><b>Calculated</b></div><div class="total"><span>Total</span><span>Synced</span></div></div></div>
+              <div class="escena__pie" aria-hidden="true"><span class="escena__chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg> Automatic</span><span class="escena__contador"><b id="escena-n">1</b> / 4</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -121,7 +132,7 @@
       </div>
     </section>
 
-    <section class="seccion" id="caso" style="background:var(--blanco);border-block:1px solid var(--linea)">
+    <section class="seccion" id="caso" style="background:var(--superficie);border-block:1px solid var(--linea)">
       <div class="contenedor">
         <header class="cabeza" data-revelar><p class="etiqueta">Case study</p><h2>From scattered WhatsApp chats to a connected business.</h2><p>One example of what we do. Every project is designed from scratch: your website won't look like this one, it will look like your business.</p></header>
         <div class="caso">
@@ -212,15 +223,26 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="marquesina" aria-hidden="true"><div class="marquesina__pista"><span>Websites</span><i>✦</i><span>CRM</span><i>✦</i><span>ERP</span><i>✦</i><span>API integrations</span><i>✦</i><span>Automation</span><i>✦</i><span>WhatsApp</span><i>✦</i><span>SEO</span><i>✦</i><span>Websites</span><i>✦</i><span>CRM</span><i>✦</i><span>ERP</span><i>✦</i><span>API integrations</span><i>✦</i><span>Automation</span><i>✦</i><span>WhatsApp</span><i>✦</i><span>SEO</span><i>✦</i></div></div>
+    <div class="contenedor">
+      <div class="pie__cols">
+        <div class="pie__marca">
+          <a class="marca" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>Integrafy</a>
+          <p>We connect your website, CRM, ERP, WhatsApp and payments so your business runs on autopilot. API integrations, custom CRM, ERP and SEO-ready websites.</p>
+        </div>
+        <nav aria-label="Services"><h4>Services</h4><a href="#servicios" data-ir-tab="0">Websites and SEO</a><a href="#servicios" data-ir-tab="1">Custom CRM</a><a href="#servicios" data-ir-tab="2">API integrations</a><a href="#servicios" data-ir-tab="3">ERP and automation</a></nav>
+        <nav aria-label="Integrafy"><h4>Integrafy</h4><a href="#como-funciona">How it works</a><a href="#caso">Case study</a><a href="#preguntas">FAQ</a><a href="#proyecto">Contact</a></nav>
+        <nav aria-label="Contact"><h4>Contact</h4><a href="https://wa.me/50765523134?text=Hi%20Integrafy%2C%20I%20want%20to%20connect%20my%20business%20systems." target="_blank" rel="noopener">WhatsApp +507 6552-3134</a><a href="#proyecto">Tell us about your project.</a><a href=".././" hreflang="es">Español</a></nav>
+      </div>
       <div class="pie">
-        <a class="marca" href="../"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>Integrafy</a>
-        <nav><a href="#servicios">Services</a><a href="#como-funciona">How it works</a><a href="#caso">Case study</a><a href=".././">Español</a></nav>
         <span>© 2026 Integrafy. API integrations, CRM, ERP and websites.</span>
+        <span>Made in Panama, for the world.</span>
       </div>
     </div>
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = [["New customer", "Saved to the CRM"], ["Invoice created", "Sent to the ERP"], ["Message sent", "WhatsApp confirmation"], ["Payment received", "Reconciled automatically"]]; window.INTEGRAFY_FORM = {"crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec", "wa": "50765523134", "lang": "en", "enviando": "Sending…", "enviar": "Send message", "error": "Add your name and an email or WhatsApp so we can reply."};</script>
-  <script src="../js/main.js?v=4" defer></script>
+  <script src="../js/main.js?v=5" defer></script>
 </body>
 </html>

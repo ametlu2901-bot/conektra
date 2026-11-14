@@ -35,35 +35,93 @@
     }, 3200);
   }
 
-  // Lista de palabras que va pasando
+  // Franja: la palabra rota, el recuadro se ajusta a su ancho y se enciende su ícono
   const pista = $('#palabras');
   if (pista) {
-    const items = $$('li', pista);
-    const alto = () => items[0].getBoundingClientRect().height;
+    const rotador = pista.parentElement;
+    const palabras = $$('.rotador__palabra', pista);
+    const iconos = $$('#franja-iconos .franja__ico');
     let i = 0;
     const mostrar = () => {
-      items.forEach((li, j) => li.classList.toggle('activa', j === i));
-      pista.style.transform = `translateY(${(2 - i) * alto()}px)`;
+      const p = palabras[i];
+      rotador.style.width = p.scrollWidth + 'px';
+      pista.style.transform = `translateY(${-p.offsetTop}px)`;
+      iconos.forEach((ic, j) => ic.classList.toggle('activo', j === i));
     };
+    document.fonts && document.fonts.ready.then(mostrar);
     mostrar();
-    if (!quieto) setInterval(() => { i = (i + 1) % items.length; mostrar(); }, 2000);
+    if (!quieto) setInterval(() => { i = (i + 1) % palabras.length; mostrar(); }, 2200);
     addEventListener('resize', mostrar);
   }
 
-  // Pasos del flujo (se avanzan solos y también al tocarlos)
+  // Pasos del flujo: avanzan solos con barra de progreso; al tocar uno, se quedan quietos
+  const listaPasos = $('.pasos');
   const pasos = $$('.paso');
   const cuadros = $$('.cuadro');
   if (pasos.length) {
-    let actual = 0, reloj;
+    const DUR = 4500;
+    let actual = 0, reloj, visible = false;
+    listaPasos.style.setProperty('--duracion-paso', DUR / 1000 + 's');
+    const contador = $('#escena-n');
     const ir = n => {
       actual = n;
-      pasos.forEach((p, j) => { p.classList.toggle('activo', j === n); p.setAttribute('aria-pressed', String(j === n)); });
+      pasos.forEach((p, j) => {
+        p.classList.toggle('activo', j === n); p.setAttribute('aria-pressed', String(j === n));
+        const barra = $('.paso__progreso i', p);
+        if (barra) { barra.style.animation = 'none'; void barra.offsetWidth; barra.style.animation = ''; }
+      });
       cuadros.forEach((c, j) => c.classList.toggle('activo', j === n));
+      if (contador) contador.textContent = n + 1;
     };
-    const arrancar = () => { clearInterval(reloj); if (!quieto) reloj = setInterval(() => ir((actual + 1) % pasos.length), 4000); };
-    pasos.forEach((p, j) => p.addEventListener('click', () => { ir(j); arrancar(); }));
-    arrancar();
+    const arrancar = () => {
+      clearTimeout(reloj);
+      if (quieto || !visible || listaPasos.classList.contains('pausado')) return;
+      reloj = setTimeout(() => { ir((actual + 1) % pasos.length); arrancar(); }, DUR);
+    };
+    if (quieto) listaPasos.classList.add('pausado');
+    pasos.forEach((p, j) => p.addEventListener('click', () => { listaPasos.classList.add('pausado'); clearTimeout(reloj); ir(j); }));
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) { ir(actual); arrancar(); } else clearTimeout(reloj); }, { threshold: .3 }).observe(listaPasos);
   }
+
+  // Barra de lectura arriba y cabecera más compacta al bajar
+  const lectura = $('#lectura');
+  const cabecera = $('#cabecera');
+  let pendienteLectura = false;
+  const alBajar = () => {
+    pendienteLectura = false;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    if (lectura) lectura.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`;
+    if (cabecera) cabecera.classList.toggle('compacta', scrollY > 40);
+  };
+  addEventListener('scroll', () => { if (!pendienteLectura) { pendienteLectura = true; requestAnimationFrame(alBajar); } }, { passive: true });
+  alBajar();
+
+  // Solo en computadora: luz que sigue al cursor y botones magnéticos
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches && !quieto) {
+    $$('.hito__tarjeta, .pregunta, .proyecto__caja, .prueba, .pestana, .paso, .medida').forEach(el => {
+      el.classList.add('luz');
+      el.addEventListener('pointermove', e => {
+        const r = el.getBoundingClientRect();
+        el.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        el.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
+    });
+    $$('.boton--marca, .boton--blanco').forEach(b => {
+      b.addEventListener('pointermove', e => {
+        const r = b.getBoundingClientRect();
+        const x = (e.clientX - r.left - r.width / 2) * .18;
+        const y = (e.clientY - r.top - r.height / 2) * .28;
+        b.style.transform = `translate(${x}px, ${y - 2}px)`;
+      });
+      b.addEventListener('pointerleave', () => { b.style.transform = ''; });
+    });
+  }
+
+  // Los enlaces de servicios del pie abren su pestaña
+  $$('[data-ir-tab]').forEach(a => a.addEventListener('click', () => {
+    const t = document.getElementById('tab-' + a.dataset.irTab);
+    if (t) setTimeout(() => t.click(), 400);
+  }));
 
   // Formulario de contacto → hoja «Integrafy — CRM» (y WhatsApp como respaldo)
   const form = $('#formulario');

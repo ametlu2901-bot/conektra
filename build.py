@@ -34,6 +34,7 @@ I = {
     "nube": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18Z"/></svg>',
     "base": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>',
     "enlace": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+    "factura": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></svg>',
     "rayo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>',
 }
 LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
@@ -55,6 +56,9 @@ ES = dict(
     franja_texto="Conectamos tu negocio con",
     palabras=["tu página web", "WhatsApp", "tu CRM", "tu ERP", "Google Sheets", "tus pagos", "tu facturación", "cualquier API"],
     franja_cta="Cuéntanos tu caso",
+    escena_chip="Automático", escena_paso="Paso",
+    pie_servicios="Servicios", pie_empresa="Integrafy", pie_contacto="Contacto", pie_hecho="Hecho en Panamá, para todo el mundo.",
+    marquesina=["Páginas web", "CRM", "ERP", "Integraciones API", "Automatización", "WhatsApp", "SEO"],
     flujo_etiqueta="Cómo funciona", flujo_h2="De un mensaje a una venta cerrada.",
     flujo_p="Así se mueve un cliente cuando tus sistemas hablan entre sí: sin hojas sueltas ni datos perdidos.",
     pasos=[("El cliente te escribe", "Desde tu página web o por WhatsApp, a cualquier hora."),
@@ -130,6 +134,9 @@ EN = dict(
     franja_texto="We connect your business with",
     palabras=["your website", "WhatsApp", "your CRM", "your ERP", "Google Sheets", "your payments", "your invoicing", "any API"],
     franja_cta="Tell us about your project",
+    escena_chip="Automatic", escena_paso="Step",
+    pie_servicios="Services", pie_empresa="Integrafy", pie_contacto="Contact", pie_hecho="Made in Panama, for the world.",
+    marquesina=["Websites", "CRM", "ERP", "API integrations", "Automation", "WhatsApp", "SEO"],
     flujo_etiqueta="How it works", flujo_h2="From a message to a closed deal.",
     flujo_p="This is how a customer moves when your systems talk to each other: no loose spreadsheets, no lost data.",
     pasos=[("The customer reaches out", "From your website or on WhatsApp, at any time."),
@@ -207,9 +214,11 @@ def pagina(T):
     rutas = "".join(f'<path class="ruta" d="M50 46 Q {(50 + x) / 2 + (8 if i % 2 else -8)} {(46 + y * .92) / 2} {x} {y * .92}"/>' for i, (x, y) in enumerate(POS))
     flujos = "".join(f'<path class="flujo" d="M50 46 Q {(50 + x) / 2 + (8 if i % 2 else -8)} {(46 + y * .92) / 2} {x} {y * .92}"/>' for i, (x, y) in enumerate(POS))
 
-    palabras = "".join(f"<li>{p}</li>" for p in T["palabras"])
+    ICONOS_PAL = ["web", "chat", "crm", "erp", "hoja", "pago", "factura", "codigo"]
+    palabras = "".join(f'<span class="rotador__palabra">{p}</span>' for p in T["palabras"])
+    iconos_franja = "".join(f'<span class="franja__ico" data-i="{j}" title="{p}">{I[ICONOS_PAL[j % len(ICONOS_PAL)]]}</span>' for j, p in enumerate(T["palabras"]))
     pasos = "\n".join(
-        f'<li><button type="button" class="paso{" activo" if i == 0 else ""}" data-paso="{i}" aria-pressed="{str(i == 0).lower()}"><b>0{i + 1}</b><span><h3>{t}</h3><p>{d}</p></span></button></li>'
+        f'<li><button type="button" class="paso{" activo" if i == 0 else ""}" data-paso="{i}" aria-pressed="{str(i == 0).lower()}"><b>0{i + 1}</b><span><h3>{t}</h3><p>{d}</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>'
         for i, (t, d) in enumerate(T["pasos"]))
 
     def filas(lst): return "".join(f'<div class="fila"><span>{a}</span><b>{b}</b></div>' for a, b in lst)
@@ -250,6 +259,8 @@ def pagina(T):
          "knowsAbout": ["API integrations", "CRM", "ERP", "Web development", "SEO", "Automation"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
 
+    marquesina = "".join(f'<span>{m}</span><i>✦</i>' for m in T["marquesina"])
+    servicios_pie = "".join(f'<a href="#servicios" data-ir-tab="{j}">{t[0]}</a>' for j, t in enumerate(servicios.TEXTOS[T["lang"]]["tabs"]))
     boton_correo = f'<a class="boton boton--contorno" href="{correo}">{T["cierre_correo"]}</a>' if correo else ""
 
     return f'''<!doctype html>
@@ -263,7 +274,9 @@ def pagina(T):
   <link rel="alternate" hreflang="es" href="{CONFIG["dominio"]}">
   <link rel="alternate" hreflang="en" href="{CONFIG["dominio"]}en/">
   <link rel="alternate" hreflang="x-default" href="{CONFIG["dominio"]}">
-  <meta name="theme-color" content="#0b1220">
+  <meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
+  <meta name="color-scheme" content="light dark">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Integrafy">
   <meta property="og:url" content="{url}">
@@ -284,10 +297,11 @@ def pagina(T):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=9">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=10">
 </head>
 <body>
-  <header class="cabecera">
+  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
+  <header class="cabecera" id="cabecera">
     <div class="contenedor cabecera__barra">
       <a class="marca" href="{pre or './'}" aria-label="Integrafy">{LOGO}Integrafy</a>
       <nav class="menu" id="menu" aria-label="Principal">
@@ -325,10 +339,13 @@ def pagina(T):
     </section>
 
     <section class="franja">
-      <div class="contenedor franja__grid">
-        <p class="franja__texto">{T["franja_texto"]}</p>
-        <div class="palabras" aria-label="{T["franja_texto"]}"><ul class="palabras__pista" id="palabras">{palabras}</ul></div>
-        <a class="boton boton--marca franja__accion" href="{wa}"{wa_attr}>{T["franja_cta"]}</a>
+      <div class="contenedor franja__caja">
+        <p class="franja__frase" aria-label="{T["franja_texto"]} {", ".join(T["palabras"])}">
+          <span aria-hidden="true">{T["franja_texto"]}</span>
+          <span class="rotador" aria-hidden="true"><span class="rotador__pista" id="palabras">{palabras}</span></span>
+        </p>
+        <div class="franja__iconos" id="franja-iconos" aria-hidden="true">{iconos_franja}</div>
+        <a class="boton boton--marca" href="#proyecto">{T["franja_cta"]} {I["flecha"]}</a>
       </div>
     </section>
 
@@ -338,7 +355,12 @@ def pagina(T):
           <header class="cabeza" data-revelar><p class="etiqueta">{T["flujo_etiqueta"]}</p><h2>{T["flujo_h2"]}</h2><p>{T["flujo_p"]}</p></header>
           <div class="flujo-grid">
             <ol class="pasos">{pasos}</ol>
-            <div class="escena" aria-live="polite">{escenas}</div>
+            <div class="escena" aria-live="polite">
+              <div class="escena__rejilla" aria-hidden="true"></div>
+              <span class="escena__brillo" aria-hidden="true"></span>
+              {escenas}
+              <div class="escena__pie" aria-hidden="true"><span class="escena__chip">{I["rayo"]} {T["escena_chip"]}</span><span class="escena__contador"><b id="escena-n">1</b> / 4</span></div>
+            </div>
           </div>
         </div>
       </div>
@@ -354,7 +376,7 @@ def pagina(T):
       </div>
     </section>
 
-    <section class="seccion" id="caso" style="background:var(--blanco);border-block:1px solid var(--linea)">
+    <section class="seccion" id="caso" style="background:var(--superficie);border-block:1px solid var(--linea)">
       <div class="contenedor">
         <header class="cabeza" data-revelar><p class="etiqueta">{T["caso_etiqueta"]}</p><h2>{T["caso_h2"]}</h2><p>{T["caso_intro"]}</p></header>
         <div class="caso">
@@ -435,16 +457,27 @@ def pagina(T):
           </div>
         </div>
       </div>
+    </div>
+    <div class="marquesina" aria-hidden="true"><div class="marquesina__pista">{marquesina}{marquesina}</div></div>
+    <div class="contenedor">
+      <div class="pie__cols">
+        <div class="pie__marca">
+          <a class="marca" href="{pre or './'}">{LOGO}Integrafy</a>
+          <p>{T["descripcion"]}</p>
+        </div>
+        <nav aria-label="{T["pie_servicios"]}"><h4>{T["pie_servicios"]}</h4>{servicios_pie}</nav>
+        <nav aria-label="{T["pie_empresa"]}"><h4>{T["pie_empresa"]}</h4><a href="#como-funciona">{T["nav"][1]}</a><a href="#caso">{T["nav"][2]}</a><a href="#preguntas">{T["nav"][3]}</a><a href="#proyecto">{T["form"]["etiqueta"]}</a></nav>
+        <nav aria-label="{T["pie_contacto"]}"><h4>{T["pie_contacto"]}</h4><a href="{wa}"{wa_attr}>WhatsApp +507 6552-3134</a><a href="#proyecto">{T["form"]["h2"]}</a><a href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}">{T["otra_nombre"]}</a></nav>
+      </div>
       <div class="pie">
-        <a class="marca" href="{pre or './'}">{LOGO}Integrafy</a>
-        <nav><a href="#servicios">{T["nav"][0]}</a><a href="#como-funciona">{T["nav"][1]}</a><a href="#caso">{T["nav"][2]}</a><a href="{pre}{T["otra_ruta"] or './'}">{T["otra_nombre"]}</a></nav>
         <span>{T["pie_derechos"]}</span>
+        <span>{T["pie_hecho"]}</span>
       </div>
     </div>
   </footer>
 
   <script>window.INTEGRAFY_AVISOS = {avisos_json}; window.INTEGRAFY_FORM = {form_cfg};</script>
-  <script src="{pre}js/main.js?v=4" defer></script>
+  <script src="{pre}js/main.js?v=5" defer></script>
 </body>
 </html>
 '''
