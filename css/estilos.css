@@ -145,7 +145,7 @@ button { font: inherit; }
 .franja__caja { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 30px; }
 .franja__frase { font-family: var(--titulo); font-weight: 800; font-size: clamp(1.9rem, 4.6vw, 3.6rem); letter-spacing: -.035em; line-height: 1.12; display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 .32em; }
 .rotador { display: inline-block; position: relative; height: 1.18em; overflow: hidden; vertical-align: bottom; transition: width .55s var(--curva); }
-.rotador__pista { display: flex; flex-direction: column; transition: transform .6s var(--curva); }
+.rotador__pista { display: flex; flex-direction: column; align-items: flex-start; transition: transform .6s var(--curva); }
 .rotador__palabra { display: block; height: 1.18em; line-height: 1.18em; white-space: nowrap; background: linear-gradient(100deg, var(--marca), var(--marca-2)); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: .04em; }
 .franja__iconos { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
 .franja__ico { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; background: var(--fondo); border: 1px solid var(--linea); color: var(--gris); transition: transform .45s var(--curva), background-color .35s, color .35s, box-shadow .35s, border-color .35s; }
