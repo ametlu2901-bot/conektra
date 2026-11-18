@@ -10,6 +10,8 @@ import servicios
 import paginas
 import integraciones
 import marco
+import inicio
+import textos3
 from iconos import I, LOGO, NUCLEO
 from textos import ES, EN
 
@@ -24,6 +26,21 @@ CONFIG = {
 }
 
 RAIZ = os.path.dirname(os.path.abspath(__file__))
+PORTAL = os.path.join(os.path.dirname(RAIZ), "conektra-portal")  # el portal vive en su propio proyecto
+
+
+def copiar_portal():
+    """Copia la interfaz del portal (modo demostración) a app/ para publicarla en /conektra/app/."""
+    import shutil
+    if not os.path.isdir(PORTAL):
+        return False
+    destino = os.path.join(RAIZ, "app")
+    shutil.rmtree(destino, ignore_errors=True)
+    os.makedirs(destino)
+    shutil.copy2(os.path.join(PORTAL, "index.html"), destino)
+    for carpeta in ("css", "js", "img"):
+        shutil.copytree(os.path.join(PORTAL, carpeta), os.path.join(destino, carpeta))
+    return True
 
 
 def wa_link(texto):
@@ -378,9 +395,12 @@ def pagina(T):
 
 if __name__ == "__main__":
     os.makedirs(os.path.join(RAIZ, "en"), exist_ok=True)
-    for T, destino in ((ES, "index.html"), (EN, "en/index.html")):
+    # portada 3.0 (inicio.py + textos3.py); pagina() queda como referencia de la versión 2.0
+    for T, destino in ((textos3.ES, "index.html"), (textos3.EN, "en/index.html")):
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
-            f.write(pagina(T))
+            f.write(inicio.pagina(T, CONFIG, wa_link))
         print("ok", destino)
     hechas = paginas.generar(RAIZ, CONFIG, I, LOGO)
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
+    if copiar_portal():
+        print("ok portal -> app/")
