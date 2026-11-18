@@ -351,52 +351,6 @@ def generar(raiz, cfg, I, LOGO):
 '''
             escribir(ruta, marco_pagina(lang, ruta, ruta_otra, S["titulo"], S["meta"], ld, wa, cuerpo))
 
-        # ---------- caso ----------
-        C = CASO[lang]
-        ruta, ruta_otra = RUTAS[lang]["caso"], RUTAS[otro]["caso"]
-        wa = f'https://wa.me/{cfg["whatsapp"]}?text={urllib.parse.quote(ui["wa_msg"] + "Acarreos Makena")}'
-
-        def cuerpo_caso(pre, inicio, wa, wa_attr, C=C):
-            reto = "".join(f'<li><i>{I["mas"]}</i>{x}</li>' for x in C["reto"])
-            hicimos = "".join(f'<li class="hecho" data-revelar><span class="hecho__n">0{j + 1}</span><div><h3>{t}</h3><p>{x}</p></div></li>' for j, (t, x) in enumerate(C["hicimos"]))
-            entregado = "".join(f'<li>{I["check"]}{x}</li>' for x in C["entregado"])
-            herramientas = "".join(f'<li>{h}</li>' for h in C["herramientas"])
-            return f'''
-  <main>
-    <section class="hero hero--interna hero--caso">
-      <div class="hero__ambiente" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
-      <div class="contenedor">
-        {migas(ui, inicio, [(ui["casos"], None), ("Acarreos Makena", None)])}
-        <p class="sello"><span class="sello__punto" aria-hidden="true"></span>{C["sector"]}</p>
-        <h1 class="titular titular--interna">{C["h1"]}</h1>
-        <div class="hero__botones"><a class="boton boton--menta" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{C["ver"]} {I["flecha"]}</a></div>
-        <figure class="vitrina-caso vitrina-caso--grande" data-revelar>
-          <div class="vitrina-caso__escritorio"><div class="vitrina-caso__barra" aria-hidden="true"><i></i><i></i><i></i><span>acarreosmakena.com</span></div>
-            <img src="{pre}img/caso-acarreos-escritorio.webp" alt="{"Página web de Acarreos Makena en computadora" if lang == "es" else "Acarreos Makena website on desktop"}" width="1440" height="900"></div>
-          <div class="vitrina-caso__movil"><img src="{pre}img/caso-acarreos-movil.webp" alt="{"Página web de Acarreos Makena en celular" if lang == "es" else "Acarreos Makena website on mobile"}" width="390" height="844" loading="lazy"></div>
-        </figure>
-      </div>
-    </section>
-
-    <section class="seccion">
-      <div class="contenedor caso-detalle">
-        <div class="reto" data-revelar><p class="etiqueta">{C["reto_t"]}</p><ul class="resuelve__lista">{reto}</ul></div>
-        <div><header class="cabeza" data-revelar><p class="etiqueta">{C["hicimos_t"]}</p></header><ol class="hechos">{hicimos}</ol></div>
-      </div>
-    </section>
-
-    <section class="seccion seccion--crema">
-      <div class="contenedor ideal-grid">
-        <div class="ideal" data-revelar><h2>{C["entregado_t"]}</h2><ul>{entregado}</ul></div>
-        <div class="herramientas" data-revelar><h2>{C["herramientas_t"]}</h2><ul>{herramientas}</ul></div>
-      </div>
-    </section>
-{banda_cta(ui, I, inicio, wa, wa_attr, C["cta_h"], C["cta_p"])}  </main>
-'''
-        ld = [{"@type": "Article", "headline": C["titulo"], "about": {"@type": "Organization", "name": "Acarreos Makena", "url": "https://acarreosmakena.com/"},
-               "author": {"@id": d + "#empresa"}, "image": d + "img/caso-acarreos-escritorio.webp"}]
-        escribir(ruta, marco_pagina(lang, ruta, ruta_otra, C["titulo"], C["meta"], ld, wa, cuerpo_caso))
-
         # ---------- privacidad ----------
         P = PRIVACIDAD[lang]
         ruta, ruta_otra = RUTAS[lang]["privacidad"], RUTAS[otro]["privacidad"]

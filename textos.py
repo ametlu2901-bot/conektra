@@ -8,7 +8,7 @@ ES = dict(
     titulo="Conektra | Tu negocio, mejor conectado · Páginas web, CRM y automatización en Panamá",
     descripcion="Estudio tecnológico para pequeños negocios de Panamá: páginas web con SEO local, un CRM para ordenar clientes y cotizaciones, e integraciones con WhatsApp y Google Sheets.",
     eslogan="Tu negocio, mejor conectado.",
-    nav=["Servicios", "Cómo funciona", "Casos de éxito", "Preguntas frecuentes"], cta="Hablemos",
+    nav=["Servicios", "Cómo funciona", "Preguntas frecuentes"], cta="Hablemos",
     wa_msg="Hola Conektra, quiero mejorar cómo funciona mi negocio.",
 
     # portada
@@ -165,7 +165,7 @@ EN = dict(
     titulo="Conektra | Your business, better connected · Websites, CRM and automation in Panama",
     descripcion="Tech studio for small businesses in Panama: websites with local SEO, a CRM to organize customers and quotes, and integrations with WhatsApp and Google Sheets.",
     eslogan="Your business, better connected.",
-    nav=["Services", "How it works", "Success stories", "FAQ"], cta="Let's talk",
+    nav=["Services", "How it works", "FAQ"], cta="Let's talk",
     wa_msg="Hi Conektra, I want to improve how my business runs.",
 
     etiqueta="Technology for businesses that want to grow",

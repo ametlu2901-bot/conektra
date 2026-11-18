@@ -10,13 +10,13 @@ FUENTES = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wg
            "&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&display=swap")
 
 UI = {
-    "es": dict(nav=["Servicios", "Cómo funciona", "Casos de éxito", "Preguntas frecuentes"], cta="Hablemos", otra="EN", otra_nombre="English",
+    "es": dict(nav=["Servicios", "Cómo funciona", "Preguntas frecuentes"], cta="Hablemos", otra="EN", otra_nombre="English",
                menu="Menú", servicios_t="Servicios", nav_t="Navegación", contacto_t="Contacto", privacidad="Política de privacidad",
                form="Escríbenos por el formulario", derechos="© 2026 Conektra. Todos los derechos reservados.", hecho="Hecho en Panamá.",
                eslogan="Tu negocio, mejor conectado.",
                desc="Estudio tecnológico que ayuda a pequeños negocios a conseguir clientes, ordenar su trabajo y conectar sus herramientas.",
                barra_t="¿Hablamos de tu negocio?", barra_p="Te respondemos por WhatsApp"),
-    "en": dict(nav=["Services", "How it works", "Success stories", "FAQ"], cta="Let's talk", otra="ES", otra_nombre="Español",
+    "en": dict(nav=["Services", "How it works", "FAQ"], cta="Let's talk", otra="ES", otra_nombre="Español",
                menu="Menu", servicios_t="Services", nav_t="Navigation", contacto_t="Contact", privacidad="Privacy policy",
                form="Write to us through the form", derechos="© 2026 Conektra. All rights reserved.", hecho="Made in Panama.",
                eslogan="Your business, better connected.",
@@ -68,8 +68,7 @@ def cabecera(lang, inicio, otra_href, wa, wa_attr, I, LOGO, en_portada=False):
     """inicio: enlace a la portada del idioma ('./' en la propia portada). Los enlaces del menú van a sus secciones."""
     U = UI[lang]
     base = "" if en_portada else inicio
-    caso = inicio + ("casos/" if lang == "es" else "cases/") + "acarreos-makena/"
-    destinos = [base + "#servicios", base + "#como-funciona", caso, base + "#preguntas"]
+    destinos = [base + "#servicios", base + "#como-funciona", base + "#preguntas"]
     enlaces = "".join(f'<a href="{d}">{t}</a>' for d, t in zip(destinos, U["nav"]))
     return f'''  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
   <header class="cabecera{" cabecera--portada" if en_portada else ""}" id="cabecera">
@@ -91,8 +90,7 @@ def pie(lang, pre, inicio, otra_href, wa, wa_attr, I, LOGO, servicios, privacida
     U = UI[lang]
     base = "" if en_portada else inicio
     serv = "".join(f'<a href="{h}">{t}</a>' for t, h in servicios)
-    caso = inicio + ("casos/" if lang == "es" else "cases/") + "acarreos-makena/"
-    nav = "".join(f'<a href="{d}">{t}</a>' for d, t in zip([base + "#como-funciona", caso, base + "#preguntas"], U["nav"][1:]))
+    nav = "".join(f'<a href="{d}">{t}</a>' for d, t in zip([base + "#como-funciona", base + "#preguntas"], U["nav"][1:]))
     return f'''  <footer class="pie-sitio cierre">
     <div class="contenedor">
       <div class="pie-sitio__grid">
