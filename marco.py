@@ -4,7 +4,7 @@ Las usan build.py (portada) y paginas.py (páginas internas), para que todo el s
 """
 import json
 
-V_CSS = "9"   # subir cuando cambie css/conektra.css
+V_CSS = "10"   # subir cuando cambie css/conektra.css
 V_JS = "13"   # subir cuando cambie js/main.js
 FUENTES = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800"
            "&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&display=swap")

@@ -330,6 +330,7 @@ def pagina(T):
             <a class="boton boton--linea" href="#servicios">{T["cta_secundario"]} <span class="boton__flecha">{I["flecha"]}</span></a>
           </div>
           <ul class="hero__linea aparece" style="--a:.85s">{linea}</ul>
+          <p class="hero__trabajo aparece" style="--a:1s">{T["trabajo_reciente"]} <a href="https://acarreosmakena.com/" target="_blank" rel="noopener">Acarreos Makena <span aria-hidden="true">↗</span></a></p>
         </div>
         <div class="escena-portada aparece" style="--a:.4s">
           <div class="escena-3d">
