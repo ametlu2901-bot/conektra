@@ -5,7 +5,7 @@ Los datos de contacto se cambian en CONFIG. Los textos, en ES y EN.
 """
 import json, os, urllib.parse
 import servicios
-import portada
+import integraciones
 import paginas
 
 CONFIG = {
@@ -13,6 +13,8 @@ CONFIG = {
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
     "correo": "",                               # p. ej. hola@conektra.dev
     # URL /exec de la hoja «Conektra — CRM» (programa en crm/Codigo.gs)
+    # testimonio real de Acarreos Makena: si "texto" está vacío se muestra un resumen, sin comillas ni persona
+    "testimonio": dict(texto="", nombre="", cargo=""),
     "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",
 }
 
@@ -37,169 +39,198 @@ I = {
     "base": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg>',
     "enlace": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
     "factura": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></svg>',
+    "play": '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.6v12.8a1 1 0 0 0 1.5.86l10.2-6.4a1 1 0 0 0 0-1.72L9.5 4.74A1 1 0 0 0 8 5.6Z"/></svg>',
+    "estrella": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z"/></svg>',
+    "escudo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.8 12.2 2.2 2.2 4.4-4.6"/></svg>',
     "rayo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>',
 }
-LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#0b1220"/><circle cx="10" cy="11" r="3.2" fill="#3b5bff"/><circle cx="22" cy="21" r="3.2" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
-NUCLEO = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="11" r="3.4" fill="#3b5bff"/><circle cx="22" cy="21" r="3.4" fill="#13c2a3"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
+LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#10241d"/><circle cx="10" cy="11" r="3.2" fill="#8fd9b0"/><circle cx="22" cy="21" r="3.2" fill="#2fbf71"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
+NUCLEO = '<svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="11" r="3.4" fill="#8fd9b0"/><circle cx="22" cy="21" r="3.4" fill="#2fbf71"/><path d="M10 14.5v2a4.5 4.5 0 0 0 4.5 4.5H18.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M22 17.5v-2A4.5 4.5 0 0 0 17.5 11H13.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" opacity=".55"/></svg>'
 
 ES = dict(
     lang="es", ruta="", otra_ruta="en/", otra_etiqueta="EN", otra_nombre="English",
-    titulo="Conektra | Integraciones API, CRM, ERP y páginas web",
-    descripcion="Conectamos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que tu negocio trabaje en automático. Integraciones API, CRM a la medida, ERP y páginas web con SEO.",
-    nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Agenda una llamada",
-    wa_msg="Hola Conektra, quiero conectar los sistemas de mi negocio.",
-    chip="Integraciones · CRM · ERP · Web",
-    h1='Tus sistemas, <em>conectados.</em> <br>Tu negocio, en automático.',
-    lead="Unimos tu página web, tu CRM, tu ERP, WhatsApp y tus pagos para que los datos viajen solos y tu equipo deje de copiar y pegar.",
-    ver_casos="Mira un caso real",
-    prueba='<b>Acarreos Makena:</b> web, SEO y CRM conectados',
-    chip_cta="Hablemos", prueba_etiqueta="Caso real", prueba_texto="Web, SEO y CRM conectados",
-    confianza=["Proyectos a la medida", "Español e inglés", "Soporte después de entregar"],
-    nodos=[("Web", "Formularios", "web"), ("CRM", "Clientes", "crm"), ("ERP", "Facturación", "erp"), ("WhatsApp", "Mensajes", "chat"), ("Pagos", "Cobros", "pago"), ("Sheets", "Reportes", "hoja")],
-    avisos=[("Nuevo cliente", "Guardado en el CRM"), ("Factura creada", "Enviada al ERP"), ("Mensaje enviado", "Confirmación por WhatsApp"), ("Pago recibido", "Conciliado automáticamente")],
-    franja_texto="Conectamos tu negocio con",
-    palabras=["tu página web", "WhatsApp", "tu CRM", "tu ERP", "Google Sheets", "tus pagos", "tu facturación", "cualquier API"],
-    franja_cta="Cuéntanos tu caso",
+    titulo="Conektra | Páginas web para negocios de servicios en Panamá",
+    descripcion="Páginas web para negocios de servicios en Panamá que cotizan por WhatsApp: aparece en Google, recibe cada solicitud de cotización en orden y muestra tus reseñas.",
+    nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Escríbenos",
+    wa_msg="Hola Conektra, tengo un negocio de servicios y quiero conseguir más clientes.",
+    chip="Para negocios de servicios en Panamá",
+    h1='<span class="titular__l1">Tus cotizaciones,</span> <em>en orden.</em> <span class="titular__l3">Tus clientes, desde Google.</span>',
+    lead="Para negocios que viven de cotizar por WhatsApp: mudanzas, técnicos, instalaciones, limpieza y más. Te armamos una página que te trae clientes desde Google y guarda cada solicitud para que ninguna se quede sin respuesta.",
+    ver_casos="Mira un caso real", ver_como="Mira cómo funciona",
+    portada_alt="Dueño de una empresa de mudanzas revisando en su celular los mensajes de clientes junto a su camión",
+    portada_pie="Menos chats perdidos. Más trabajos cerrados.",
+    prueba='<b>Acarreos Makena:</b> página, Google y cotizaciones en orden',
+    chip_cta="Hablemos", prueba_etiqueta="Caso de éxito · Mudanzas", prueba_texto="Página, Google y cotizaciones en orden",
+    confianza=["Hecho para negocios de servicios", "Cotizaciones en Google Sheets", "Soporte después de entregar"],
+    nodos=[("Google", "Te encuentran", "lupa"), ("Tu hoja", "Cotizaciones", "hoja"), ("Seguimiento", "Recordatorios", "rayo"), ("WhatsApp", "Mensajes", "chat"), ("Tu página", "Formulario", "web"), ("Reseñas", "Clientes felices", "check")],
+    avisos=[("Nueva cotización", "Guardada en tu hoja"), ("Cliente desde Google", "Pidió precio por la página"), ("Seguimiento", "A Ana le falta respuesta"), ("Nueva reseña", "★★★★★ lista para aprobar")],
+    franja_texto="Te ayudamos a",
+    palabras=["aparecer en Google", "ordenar tus cotizaciones", "responder a tiempo", "mostrar tus reseñas", "cerrar más trabajos"],
+    franja_cta="Cuéntanos de tu negocio",
     escena_chip="Automático", escena_paso="Paso",
-    pie_servicios="Servicios", pie_empresa="Conektra", pie_contacto="Contacto", pie_hecho="Hecho en Panamá, para todo el mundo.",
-    marquesina=["Páginas web", "CRM", "ERP", "Integraciones API", "Automatización", "WhatsApp", "SEO"],
-    flujo_etiqueta="Cómo funciona", flujo_h2="De un mensaje a una venta cerrada.",
-    flujo_p="Así se mueve un cliente cuando tus sistemas hablan entre sí: sin hojas sueltas ni datos perdidos.",
-    pasos=[("El cliente te escribe", "Desde tu página web o por WhatsApp, a cualquier hora."),
-           ("Queda en tu CRM", "Sus datos se guardan solos y tu equipo recibe el aviso."),
-           ("Cotizas y das seguimiento", "Cada oportunidad avanza por etapas hasta cerrar."),
-           ("Se factura en tu ERP", "La venta pasa a facturación y contabilidad sin volver a escribirla.")],
+    pie_servicios="Servicios", pie_empresa="Conektra", pie_contacto="Contacto", pie_hecho="Hecho en Panamá, para negocios de Panamá.",
+    marquesina=["Mudanzas", "Aire acondicionado", "Cámaras de seguridad", "Limpieza", "Fumigación", "Talleres", "Plomería", "Electricidad"],
+    dol_etiqueta="¿Te suena?", dol_h2="Lo que le pasa a todo negocio que vive de cotizar.",
+    dol_p="Si tu negocio es de servicios, seguro te pasa al menos uno de estos.", dol_con="Con Conektra",
+    dolores=[("«Te escribo luego»… y nunca respondiste", "Se te acumulan los chats y una cotización se queda sin respuesta. Ese cliente ya contrató a otro.", "Cada solicitud queda guardada con su estado. Sabes a quién te falta responder.", "chat"),
+             ("Nadie te encuentra en Google", "Buscan «mudanzas en Panamá» o «técnico de aire acondicionado» y salen otros, aunque tú trabajes mejor.", "Páginas por servicio y por zona, pensadas para lo que tus clientes buscan.", "lupa"),
+             ("Repites lo mismo en cada chat", "«¿Qué incluye?», «¿Van a mi zona?», «¿Cuánto cuesta?». Todos los días, a todos.", "Tu página responde por ti y el formulario pide los datos que necesitas para cotizar.", "web"),
+             ("Tu buen trabajo no se ve", "Tus clientes quedan contentos, pero alguien que no te conoce no tiene cómo saberlo.", "Reseñas con estrellas en tu página. Tú decides cuáles se publican.", "check")],
+    dol_minis=[("chat", "Hola, ¿me cotizan una mudanza para el sábado?", "Visto · hace 3 días"),
+               ("google", "mudanzas en panamá", "Tu negocio no aparece"),
+               ("chat", "¿Van a mi zona? ¿Cuánto cuesta?", "12 chats sin responder"),
+               ("estrellas", "☆☆☆☆☆", "0 reseñas a la vista")],
+    sectores_t="Hecho para negocios como",
+    flujo_etiqueta="Cómo funciona", flujo_h2="De «¿me cotizas?» a <em>trabajo cerrado.</em>", flujo_insignia=("Más clientes,", "menos trabajo manual."), flujo_ventana="Conektra · Cotizaciones",
+    flujo_p="Así se mueve un cliente cuando tu página, tu WhatsApp y tus cotizaciones trabajan juntos.",
+    pasos=[("Te encuentra y te escribe", "Llega a tu página desde Google y pide cotización, o te escribe por WhatsApp."),
+           ("Queda guardado", "La solicitud se guarda sola en tu hoja, con nombre, servicio y fecha."),
+           ("Cotizas y das seguimiento", "Cada cotización avanza por etapas y sabes a quién te falta responder."),
+           ("Cierras y te califica", "Haces el trabajo y el cliente deja su reseña en tu página.")],
     esc1=dict(cab="WhatsApp", est="En línea", b1="Hola, ¿me pueden cotizar una mudanza para el sábado?", b2="¡Claro! Ya registramos tu solicitud. Te enviamos la cotización en unos minutos."),
-    esc2=dict(cab="Nuevo cliente", est="CRM", filas=[("Nombre", "María Pérez"), ("Canal", "Formulario web"), ("Servicio", "Mudanza"), ("Etapa", "Nuevo")]),
-    esc3=dict(cab="Cotización #1042", est="Enviada", filas=[("Servicio", "Mudanza residencial"), ("Fecha", "Sábado 9:00"), ("Seguimiento", "Recordatorio en 24 h")]),
-    esc4=dict(cab="Factura #A-2381", est="Pagada", filas=[("Cliente", "María Pérez"), ("Concepto", "Mudanza residencial"), ("Impuesto", "Calculado")], total=("Total", "Sincronizado")),
-    serv_etiqueta="Servicios", serv_h2="Todo lo que tu negocio necesita para trabajar conectado.",
-    servicios=[
-        ("Páginas web y SEO", "Diseñadas a la medida de tu marca: rápidas, bonitas en celular y listas para aparecer en Google, con formularios que alimentan tu CRM."),
-        ("CRM a la medida", "Tus clientes, cotizaciones y seguimientos en un solo lugar, con etapas, recordatorios y reportes."),
-        ("Integraciones API", "Conectamos tus sistemas entre sí y con servicios externos: WhatsApp, pagos, facturación, Google y más."),
-        ("ERP y automatizaciones", "Inventario, facturación y procesos internos que se actualizan solos, con tableros para decidir con datos."),
-    ],
-    mock_web=dict(url="tunegocio.com", h="Mudanzas en todo el país", serp_t="Tu negocio | Mudanzas y acarreos", serp_u="tunegocio.com › mudanzas", serp_d="Cotiza en minutos por WhatsApp. Camiones, personal y cobertura nacional."),
-    mock_crm=dict(cols=[("Nuevos", [("María Pérez", "Mudanza · Web"), ("Carlos Ruiz", "Flete · WhatsApp")]), ("Cotizados", [("Ana Gómez", "Oficina · B/. 380"), ("Luis Díaz", "Escombros · B/. 120")]), ("Ganados", [("Rosa Vega", "Mudanza · B/. 450")])]),
-    mock_api=dict(c="// webhook: formulario web → CRM → WhatsApp", log=[("POST /clientes", "200 · 84 ms"), ("Mensaje de confirmación enviado", "WhatsApp"), ("Fila agregada al reporte", "Sheets")]),
-    mock_erp=dict(m=[("Ventas del mes", "B/. 12.4k"), ("Facturas", "86"), ("Inventario", "OK")]),
-    caso_etiqueta="Caso real", caso_h2="Del WhatsApp suelto a un negocio conectado.",
-    caso_intro="Un ejemplo de lo que hacemos. Cada proyecto se diseña desde cero: tu página no se parecerá a esta, se parecerá a tu negocio.",
-    medida_t="Hecho a tu medida", medida_p="Tu marca, tus colores, tu estilo y las funciones que tu negocio necesita. Diseñamos tu página y tus integraciones según tu industria y tu forma de trabajar, no con plantillas.",
+    esc2=dict(cab="Nueva solicitud", est="Hoja", filas=[("Nombre", "María Pérez"), ("Canal", "Formulario web"), ("Servicio", "Mudanza"), ("Etapa", "Nuevo")]),
+    esc3=dict(cab="Cotización #1042", est="En revisión", filas=[("Servicio", "Mudanza residencial"), ("Fecha", "Sábado 9:00"), ("Seguimiento", "Recordatorio en 24 h")]),
+    esc4=dict(cab="Trabajo #1042", est="Ganado", filas=[("Cliente", "María Pérez"), ("Servicio", "Mudanza residencial"), ("Reseña", "★★★★★")], total=("Total", "B/. 450")),
+    serv_etiqueta="Servicios", serv_h2="Empieza con lo que necesitas hoy. Agrega más cuando crezcas.",
+    servicios=[],
+    caso_etiqueta="La experiencia de nuestros clientes", caso_h2="Acarreos Makena pasó del WhatsApp suelto a <em>cotizaciones en orden.</em>",
+    caso_categoria="Mudanzas y servicios · Panamá", caso_estado="En línea", caso_tags_t="Qué incluyó el proyecto",
+    caso_tags=["Página web", "SEO local", "Google Sheets", "Reseñas"],
+    caso_chips=[("hoja", "Formulario → Google Sheets"), ("estrella", "Reseñas con aprobación"), ("lupa", "Páginas por servicio y zona")],
+    caso_bloques=[("El problema", "Las solicitudes de cotización llegaban sueltas por WhatsApp, sin un lugar donde verlas todas."),
+                  ("La solución", "Una página con sus servicios y sus zonas, un formulario conectado a Google Sheets y reseñas con estrellas."),
+                  ("Lo que consiguió", "Cada solicitud queda registrada con su estado: nuevo, cotizado, ganado. Y el dueño decide qué reseñas se publican.")],
+    caso_resumen="Le hicimos a Acarreos Makena una página con sus servicios y sus zonas, un formulario que guarda cada cotización en su hoja de Google Sheets y reseñas con estrellas que el dueño aprueba antes de publicarlas.",
+    cifras=[("10", "páginas listas para Google"), ("5", "servicios con página propia"), ("3", "zonas con página propia"), ("24/7", "recibiendo cotizaciones")],
+    caso_intro="Acarreos Makena es una empresa de mudanzas en Panamá, justo el tipo de negocio con el que trabajamos. Cada proyecto se diseña desde cero: tu página no se parecerá a esta, se parecerá a tu negocio.",
+    medida_t="Hecho a tu medida", medida_p="Tu marca, tus colores, tus servicios y tus zonas. Diseñamos tu página según tu rubro y tu forma de trabajar, no con plantillas.",
     caso_nombre="Acarreos Makena", caso_sector="Mudanzas, acarreos y fletes en Panamá",
     logros=[("Página web con dominio propio", "Diseño a la medida, rápida en celular y con botón directo a WhatsApp."),
             ("SEO con páginas por servicio y por zona", "Páginas pensadas para cada búsqueda, sitemap y Search Console configurados."),
-            ("CRM en Google Sheets", "Cada cotización del formulario queda registrada con su estado: nuevo, cotizado, ganado."),
+            ("Cotizaciones en Google Sheets", "Cada solicitud del formulario queda registrada con su estado: nuevo, cotizado, ganado."),
             ("Reseñas con aprobación", "Los clientes califican con estrellas y el dueño decide qué se publica.")],
     caso_cta="Ver la página en vivo",
     proc_etiqueta="Proceso", proc_h2="Así trabajamos contigo.",
-    proceso=[("Diagnóstico", "Entendemos cómo funciona tu negocio hoy y dónde se pierde tiempo o información."),
-             ("Propuesta", "Te mostramos qué conectar, cómo y en qué orden, con alcance, tiempos y precio claros."),
+    proceso=[("Diagnóstico", "Vemos cómo te llegan hoy los clientes y dónde se pierden cotizaciones."),
+             ("Propuesta", "Te mostramos qué necesita tu página, con tiempos y precio claros."),
              ("Desarrollo", "Construimos por etapas y te mostramos avances para que pruebes desde temprano."),
-             ("Soporte", "Te acompañamos después de entregar: ajustes, mejoras y nuevas integraciones.")],
-    proc_recibes="Recibes", proc_entregables=["Mapa de tus procesos", "Plan con precio y tiempos", "Avances que puedes probar", "Soporte y mejoras"],
+             ("Soporte", "Te acompañamos después de entregar: cambios, mejoras y nuevas funciones.")],
+    proc_recibes="Recibes", proc_entregables=["Mapa de cómo te llegan los clientes", "Plan con precio y tiempos", "Avances que puedes probar", "Soporte y mejoras"],
     tec_titulo="Trabajamos con",
-    tecnologias=["APIs REST", "Webhooks", "WhatsApp", "Google Workspace", "Google Sheets", "Bases de datos SQL", "Pasarelas de pago", "Facturación electrónica", "CRMs y ERPs del mercado", "SEO técnico"],
+    tecnologias=["WhatsApp", "Google Search Console", "Google Sheets", "Perfil de Empresa en Google", "SEO local", "Formularios de cotización", "Reseñas con estrellas", "Dominio propio", "APIs y webhooks", "Google Workspace"],
     faq_etiqueta="Preguntas frecuentes", faq_h2="Lo que más nos preguntan.",
-    faqs=[("¿Cuánto cuesta un proyecto?", "Depende de qué sistemas hay que conectar y cuánto hay que construir. Cuéntanos tu caso y te enviamos una propuesta con alcance y precio claros antes de empezar."),
-          ("¿Tengo que cambiar los sistemas que ya uso?", "No necesariamente. Muchas veces conectamos lo que ya tienes. Si algo no da para más, te lo decimos y te proponemos una alternativa."),
-          ("¿Trabajan con negocios fuera de Panamá?", "Sí. Trabajamos de forma remota con negocios de Panamá y de otros países, en español o en inglés."),
-          ("¿Qué pasa después de la entrega?", "Te acompañamos con soporte y mejoras. Tus sistemas crecen contigo, así que siempre podemos agregar nuevas integraciones."),
-          ("¿Mis datos quedan seguros?", "Tus datos quedan en tus cuentas y sistemas. Usamos accesos con permisos mínimos y te entregamos todo documentado.")],
-    form=dict(etiqueta="Contacto", h2="Cuéntanos tu proyecto.", p="Respondemos en menos de un día hábil con los próximos pasos. Sin compromiso.",
-              puntos=["Diagnóstico de tus sistemas actuales", "Propuesta con alcance y precio claros", "Te escribimos por el medio que prefieras"],
-              nombre="Tu nombre", empresa="Empresa", contacto="Correo o WhatsApp", necesita="¿Qué necesitas?",
-              opciones=["Página web", "CRM", "Integraciones", "ERP", "Otro"],
+    faqs=[("Ya tengo WhatsApp e Instagram, ¿para qué una página?", "Porque cuando alguien busca «mudanzas en Panamá» o «técnico de aire acondicionado» en Google, no ve tu Instagram: ve páginas web. Tu página te pone en esas búsquedas y manda a esa persona directo a tu WhatsApp."),
+          ("¿Cuánto cuesta?", "Depende de cuántos servicios y zonas quieras mostrar y de qué funciones necesites. Te enviamos una propuesta con precio claro antes de empezar."),
+          ("¿Tengo que saber de tecnología?", "No. Tus cotizaciones quedan en una hoja de Google Sheets que se usa como cualquier tabla, y te explicamos cómo funciona."),
+          ("¿Cómo funcionan las reseñas?", "Tus clientes te califican con estrellas desde la página y tú decides cuáles se publican."),
+          ("¿Qué pasa después de la entrega?", "Te acompañamos con soporte y mejoras. Si agregas un servicio o una zona nueva, lo sumamos a tu página."),
+          ("¿Mis datos quedan seguros?", "Tus datos quedan en tus propias cuentas, como tu Google Sheets. Usamos accesos con permisos mínimos y te entregamos todo documentado.")],
+    form=dict(etiqueta="Contacto", h2="Cuéntanos de tu negocio.", p="Respondemos en menos de un día hábil con los próximos pasos. Sin compromiso.",
+              puntos=["Revisamos cómo te llegan hoy los clientes", "Propuesta con alcance y precio claros", "Te escribimos por el medio que prefieras"],
+              nombre="Tu nombre", empresa="Negocio", contacto="Correo o WhatsApp", necesita="¿Qué necesitas?",
+              opciones=["Página web", "Aparecer en Google", "Cotizaciones en orden", "Reseñas", "Otro"],
               presupuesto="Presupuesto aproximado", rangos=["Aún no lo sé", "Menos de $1,000", "$1,000 – $3,000", "$3,000 – $10,000", "Más de $10,000"],
-              mensaje="Cuéntanos un poco", ph_mensaje="¿Qué sistemas usas hoy y qué te gustaría conectar o automatizar?",
+              mensaje="Cuéntanos un poco", ph_mensaje="¿A qué se dedica tu negocio y cómo te llegan hoy las cotizaciones?",
               enviar="Enviar mensaje", enviando="Enviando…", error="Escribe tu nombre y un correo o WhatsApp para responderte.",
               ok_t="¡Recibimos tu mensaje!", ok_p="Te escribimos muy pronto. Si es urgente, sigue la conversación por WhatsApp.", ok_wa="Seguir por WhatsApp",
               privacidad="Usamos tus datos solo para responderte."),
-    cierre_h2="Tu negocio, <em>conectado.</em>",
-    cierre_p="Escríbenos y cuéntanos qué sistemas usas hoy. Te decimos cómo hacer que trabajen juntos.",
+    cierre_h2="Más trabajos, <em>cero cotizaciones perdidas.</em>",
+    cierre_p="Escríbenos y cuéntanos a qué se dedica tu negocio. Te mostramos cómo conseguir más clientes desde Google y tener cada cotización en orden.",
     cierre_wa="Escríbenos por WhatsApp", cierre_correo="Enviar un correo",
-    pie_derechos="© 2026 Conektra. Integraciones API, CRM, ERP y páginas web.",
+    pie_derechos="© 2026 Conektra. Páginas web para negocios de servicios.",
 )
 
 EN = dict(
     lang="en", ruta="en/", otra_ruta="", otra_etiqueta="ES", otra_nombre="Español",
-    titulo="Conektra | API integrations, CRM, ERP and websites",
-    descripcion="We connect your website, CRM, ERP, WhatsApp and payments so your business runs on autopilot. API integrations, custom CRM, ERP and SEO-ready websites.",
-    nav=["Services", "How it works", "Case study", "FAQ"], cta="Book a call",
-    wa_msg="Hi Conektra, I want to connect my business systems.",
-    chip="Integrations · CRM · ERP · Web",
-    h1='Your systems, <em>connected.</em> <br>Your business, on autopilot.',
-    lead="We link your website, CRM, ERP, WhatsApp and payments so data flows on its own and your team stops copying and pasting.",
-    ver_casos="See a real case",
-    prueba='<b>Acarreos Makena:</b> website, SEO and CRM connected',
-    chip_cta="Let's talk", prueba_etiqueta="Case study", prueba_texto="Website, SEO and CRM connected",
-    confianza=["Made-to-measure projects", "English and Spanish", "Support after launch"],
-    nodos=[("Web", "Forms", "web"), ("CRM", "Customers", "crm"), ("ERP", "Invoicing", "erp"), ("WhatsApp", "Messages", "chat"), ("Payments", "Billing", "pago"), ("Sheets", "Reports", "hoja")],
-    avisos=[("New customer", "Saved to the CRM"), ("Invoice created", "Sent to the ERP"), ("Message sent", "WhatsApp confirmation"), ("Payment received", "Reconciled automatically")],
-    franja_texto="We connect your business with",
-    palabras=["your website", "WhatsApp", "your CRM", "your ERP", "Google Sheets", "your payments", "your invoicing", "any API"],
-    franja_cta="Tell us about your project",
+    titulo="Conektra | Websites for service businesses in Panama",
+    descripcion="Websites for service businesses in Panama that quote on WhatsApp: show up on Google, get every quote request organized and show off your reviews.",
+    nav=["Services", "How it works", "Case study", "FAQ"], cta="Message us",
+    wa_msg="Hi Conektra, I run a service business and want more customers.",
+    chip="For service businesses in Panama",
+    h1='<span class="titular__l1">Your quotes,</span> <em>organized.</em> <span class="titular__l3">Your customers, from Google.</span>',
+    lead="For businesses that live on quoting over WhatsApp: movers, technicians, installers, cleaners and more. We build you a website that brings customers from Google and saves every request so none goes unanswered.",
+    ver_casos="See a real case", ver_como="See how it works",
+    portada_alt="Owner of a moving company checking customer messages on the phone next to the truck",
+    portada_pie="Fewer lost chats. More closed jobs.",
+    prueba='<b>Acarreos Makena:</b> website, Google and organized quotes',
+    chip_cta="Let's talk", prueba_etiqueta="Success story · Moving", prueba_texto="Website, Google and organized quotes",
+    confianza=["Built for service businesses", "Quotes in Google Sheets", "Support after launch"],
+    nodos=[("Google", "They find you", "lupa"), ("Quotes", "In your sheet", "hoja"), ("Follow-up", "Reminders", "rayo"), ("WhatsApp", "Messages", "chat"), ("Your website", "Form", "web"), ("Reviews", "Happy customers", "check")],
+    avisos=[("New quote request", "Saved to your sheet"), ("Customer from Google", "Asked for a price on your site"), ("Follow-up", "Ana is waiting for a reply"), ("New review", "★★★★★ ready to approve")],
+    franja_texto="We help you",
+    palabras=["show up on Google", "organize your quotes", "reply on time", "show your reviews", "win more jobs"],
+    franja_cta="Tell us about your business",
     escena_chip="Automatic", escena_paso="Step",
-    pie_servicios="Services", pie_empresa="Conektra", pie_contacto="Contact", pie_hecho="Made in Panama, for the world.",
-    marquesina=["Websites", "CRM", "ERP", "API integrations", "Automation", "WhatsApp", "SEO"],
-    flujo_etiqueta="How it works", flujo_h2="From a message to a closed deal.",
-    flujo_p="This is how a customer moves when your systems talk to each other: no loose spreadsheets, no lost data.",
-    pasos=[("The customer reaches out", "From your website or on WhatsApp, at any time."),
-           ("It lands in your CRM", "Their details are saved automatically and your team gets notified."),
-           ("You quote and follow up", "Every opportunity moves through stages until it closes."),
-           ("It's invoiced in your ERP", "The sale flows into invoicing and accounting without retyping it.")],
+    pie_servicios="Services", pie_empresa="Conektra", pie_contacto="Contact", pie_hecho="Made in Panama, for Panama's businesses.",
+    marquesina=["Movers", "Air conditioning", "Security cameras", "Cleaning", "Pest control", "Auto repair", "Plumbing", "Electricians"],
+    dol_etiqueta="Sound familiar?", dol_h2="What happens to every business that lives on quotes.",
+    dol_p="If you run a service business, at least one of these is probably happening to you.", dol_con="With Conektra",
+    dolores=[("\"I'll get back to you\"… and you never did", "Chats pile up and a quote goes unanswered. That customer already hired someone else.", "Every request is saved with its status. You know exactly who's still waiting.", "chat"),
+             ("Nobody finds you on Google", "People search \"movers in Panama\" or \"AC technician\" and others show up, even if your work is better.", "Pages for each service and area, built around what your customers search for.", "lupa"),
+             ("You repeat yourself in every chat", "\"What's included?\", \"Do you cover my area?\", \"How much?\". Every day, to everyone.", "Your website answers for you, and the form asks for what you need to quote.", "web"),
+             ("Your good work goes unseen", "Your customers are happy, but someone new has no way of knowing it.", "Star reviews on your website. You decide which ones get published.", "check")],
+    dol_minis=[("chat", "Hi, can I get a quote for a move on Saturday?", "Seen · 3 days ago"),
+               ("google", "movers in panama", "Your business isn't there"),
+               ("chat", "Do you cover my area? How much?", "12 unanswered chats"),
+               ("estrellas", "☆☆☆☆☆", "0 reviews in sight")],
+    sectores_t="Built for businesses like",
+    flujo_etiqueta="How it works", flujo_h2="From \"can I get a quote?\" to <em>a closed job.</em>", flujo_insignia=("More customers,", "less manual work."), flujo_ventana="Conektra · Quotes",
+    flujo_p="This is how a customer moves when your website, your WhatsApp and your quotes work together.",
+    pasos=[("They find you and reach out", "They land on your website from Google and request a quote, or message you on WhatsApp."),
+           ("It gets saved", "The request is saved to your sheet automatically, with name, service and date."),
+           ("You quote and follow up", "Every quote moves through stages and you know who's still waiting."),
+           ("You close and they rate you", "You do the job and the customer leaves a review on your website.")],
     esc1=dict(cab="WhatsApp", est="Online", b1="Hi, can I get a quote for a move this Saturday?", b2="Of course! We've logged your request. Your quote is on its way in a few minutes."),
-    esc2=dict(cab="New customer", est="CRM", filas=[("Name", "Maria Perez"), ("Channel", "Website form"), ("Service", "Moving"), ("Stage", "New")]),
-    esc3=dict(cab="Quote #1042", est="Sent", filas=[("Service", "Home move"), ("Date", "Saturday 9:00"), ("Follow-up", "Reminder in 24 h")]),
-    esc4=dict(cab="Invoice #A-2381", est="Paid", filas=[("Customer", "Maria Perez"), ("Item", "Home move"), ("Tax", "Calculated")], total=("Total", "Synced")),
-    serv_etiqueta="Services", serv_h2="Everything your business needs to run connected.",
-    servicios=[
-        ("Websites and SEO", "Custom-designed for your brand: fast, mobile-friendly and built to show up on Google, with forms that feed your CRM."),
-        ("Custom CRM", "Your customers, quotes and follow-ups in one place, with stages, reminders and reports."),
-        ("API integrations", "We connect your systems to each other and to external services: WhatsApp, payments, invoicing, Google and more."),
-        ("ERP and automation", "Inventory, invoicing and internal processes that update themselves, with dashboards to decide with data."),
-    ],
-    mock_web=dict(url="yourbusiness.com", h="Moving services nationwide", serp_t="Your Business | Moving & hauling", serp_u="yourbusiness.com › moving", serp_d="Get a quote in minutes on WhatsApp. Trucks, crew and nationwide coverage."),
-    mock_crm=dict(cols=[("New", [("Maria Perez", "Moving · Web"), ("Carlos Ruiz", "Freight · WhatsApp")]), ("Quoted", [("Ana Gomez", "Office · $380"), ("Luis Diaz", "Debris · $120")]), ("Won", [("Rosa Vega", "Moving · $450")])]),
-    mock_api=dict(c="// webhook: website form → CRM → WhatsApp", log=[("POST /customers", "200 · 84 ms"), ("Confirmation message sent", "WhatsApp"), ("Row added to report", "Sheets")]),
-    mock_erp=dict(m=[("Monthly sales", "$12.4k"), ("Invoices", "86"), ("Inventory", "OK")]),
-    caso_etiqueta="Case study", caso_h2="From scattered WhatsApp chats to a connected business.",
-    caso_intro="One example of what we do. Every project is designed from scratch: your website won't look like this one, it will look like your business.",
-    medida_t="Made to measure", medida_p="Your brand, your colors, your style and the features your business needs. We design your website and integrations around your industry and the way you work, not templates.",
+    esc2=dict(cab="New request", est="Sheet", filas=[("Name", "Maria Perez"), ("Channel", "Website form"), ("Service", "Moving"), ("Stage", "New")]),
+    esc3=dict(cab="Quote #1042", est="In review", filas=[("Service", "Home move"), ("Date", "Saturday 9:00"), ("Follow-up", "Reminder in 24 h")]),
+    esc4=dict(cab="Job #1042", est="Won", filas=[("Customer", "Maria Perez"), ("Service", "Home move"), ("Review", "★★★★★")], total=("Total", "$450")),
+    serv_etiqueta="Services", serv_h2="Start with what you need today. Add more as you grow.",
+    servicios=[],
+    caso_etiqueta="What our clients experience", caso_h2="Acarreos Makena went from scattered WhatsApp chats to <em>organized quotes.</em>",
+    caso_categoria="Moving and services · Panama", caso_estado="Live", caso_tags_t="What the project included",
+    caso_tags=["Website", "Local SEO", "Google Sheets", "Reviews"],
+    caso_chips=[("hoja", "Form → Google Sheets"), ("estrella", "Reviews with approval"), ("lupa", "Pages per service and area")],
+    caso_bloques=[("The problem", "Quote requests arrived scattered across WhatsApp, with no single place to see them all."),
+                  ("The solution", "A website with its services and areas, a form connected to Google Sheets and star reviews."),
+                  ("What it achieved", "Every request is logged with its status: new, quoted, won. And the owner decides which reviews go live.")],
+    caso_resumen="We built Acarreos Makena a website with its services and areas, a form that saves every quote request to its Google Sheets spreadsheet, and star reviews the owner approves before they go live.",
+    cifras=[("10", "pages ready for Google"), ("5", "services with their own page"), ("3", "areas with their own page"), ("24/7", "receiving quote requests")],
+    caso_intro="Acarreos Makena is a moving company in Panama, exactly the kind of business we work with. Every project is designed from scratch: your website won't look like this one, it will look like your business.",
+    medida_t="Made to measure", medida_p="Your brand, your colors, your services and your areas. We design your website around your trade and the way you work, not templates.",
     caso_nombre="Acarreos Makena", caso_sector="Moving, hauling and freight in Panama",
     logros=[("Website on its own domain", "Custom design, fast on mobile, with a direct WhatsApp button."),
             ("SEO with service and location pages", "Pages built for each search, plus sitemap and Search Console set up."),
-            ("CRM on Google Sheets", "Every quote request from the form is logged with its status: new, quoted, won."),
+            ("Quotes in Google Sheets", "Every quote request from the form is logged with its status: new, quoted, won."),
             ("Reviews with approval", "Customers rate with stars and the owner decides what gets published.")],
     caso_cta="See the live website",
     proc_etiqueta="Process", proc_h2="How we work with you.",
-    proceso=[("Discovery", "We learn how your business runs today and where time or information gets lost."),
-             ("Proposal", "We show you what to connect, how and in what order, with clear scope, timeline and price."),
+    proceso=[("Discovery", "We look at how customers reach you today and where quotes get lost."),
+             ("Proposal", "We show you what your website needs, with clear timeline and price."),
              ("Build", "We build in stages and show you progress so you can test early."),
-             ("Support", "We stay with you after launch: tweaks, improvements and new integrations.")],
-    proc_recibes="You get", proc_entregables=["A map of your processes", "A plan with price and timeline", "Progress you can test", "Support and improvements"],
+             ("Support", "We stay with you after launch: changes, improvements and new features.")],
+    proc_recibes="You get", proc_entregables=["A map of how customers reach you", "A plan with price and timeline", "Progress you can test", "Support and improvements"],
     tec_titulo="We work with",
-    tecnologias=["REST APIs", "Webhooks", "WhatsApp", "Google Workspace", "Google Sheets", "SQL databases", "Payment gateways", "E-invoicing", "Off-the-shelf CRMs and ERPs", "Technical SEO"],
+    tecnologias=["WhatsApp", "Google Search Console", "Google Sheets", "Google Business Profile", "Local SEO", "Quote request forms", "Star reviews", "Your own domain", "APIs and webhooks", "Google Workspace"],
     faq_etiqueta="FAQ", faq_h2="What people ask us most.",
-    faqs=[("How much does a project cost?", "It depends on which systems need to be connected and how much needs to be built. Tell us about your case and we'll send a proposal with clear scope and price before we start."),
-          ("Do I have to replace the systems I already use?", "Not necessarily. We often connect what you already have. If something can't keep up, we'll tell you and suggest an alternative."),
-          ("Do you work with businesses outside Panama?", "Yes. We work remotely with businesses in Panama and abroad, in English or Spanish."),
-          ("What happens after delivery?", "We stay with you for support and improvements. Your systems grow with you, so we can always add new integrations."),
-          ("Is my data safe?", "Your data stays in your own accounts and systems. We use least-privilege access and hand everything over documented.")],
-    form=dict(etiqueta="Contact", h2="Tell us about your project.", p="We reply within one business day with next steps. No commitment.",
-              puntos=["A review of your current systems", "A proposal with clear scope and price", "We reach out the way you prefer"],
-              nombre="Your name", empresa="Company", contacto="Email or WhatsApp", necesita="What do you need?",
-              opciones=["Website", "CRM", "Integrations", "ERP", "Other"],
+    faqs=[("I already have WhatsApp and Instagram. Why a website?", "Because when someone searches \"movers in Panama\" or \"AC technician\" on Google, they don't see your Instagram: they see websites. Your website puts you in those searches and sends that person straight to your WhatsApp."),
+          ("How much does it cost?", "It depends on how many services and areas you want to show and which features you need. We send you a proposal with a clear price before we start."),
+          ("Do I need to know about technology?", "No. Your quotes land in a Google Sheets spreadsheet you use like any table, and we show you how it works."),
+          ("How do reviews work?", "Your customers rate you with stars from your website and you decide which ones get published."),
+          ("What happens after delivery?", "We stay with you for support and improvements. If you add a new service or area, we add it to your website."),
+          ("Is my data safe?", "Your data stays in your own accounts, like your Google Sheets. We use least-privilege access and hand everything over documented.")],
+    form=dict(etiqueta="Contact", h2="Tell us about your business.", p="We reply within one business day with next steps. No commitment.",
+              puntos=["We look at how customers reach you today", "A proposal with clear scope and price", "We reach out the way you prefer"],
+              nombre="Your name", empresa="Business", contacto="Email or WhatsApp", necesita="What do you need?",
+              opciones=["Website", "Show up on Google", "Organized quotes", "Reviews", "Other"],
               presupuesto="Approximate budget", rangos=["Not sure yet", "Under $1,000", "$1,000 – $3,000", "$3,000 – $10,000", "Over $10,000"],
-              mensaje="Tell us a bit more", ph_mensaje="Which systems do you use today and what would you like to connect or automate?",
+              mensaje="Tell us a bit more", ph_mensaje="What does your business do and how do quote requests reach you today?",
               enviar="Send message", enviando="Sending…", error="Add your name and an email or WhatsApp so we can reply.",
               ok_t="We got your message!", ok_p="We'll get back to you very soon. If it's urgent, continue on WhatsApp.", ok_wa="Continue on WhatsApp",
               privacidad="We only use your details to reply to you."),
-    cierre_h2="Your business, <em>connected.</em>",
-    cierre_p="Message us and tell us which systems you use today. We'll show you how to make them work together.",
+    cierre_h2="More jobs, <em>zero lost quotes.</em>",
+    cierre_p="Message us and tell us what your business does. We'll show you how to get more customers from Google and keep every quote organized.",
     cierre_wa="Message us on WhatsApp", cierre_correo="Send an email",
-    pie_derechos="© 2026 Conektra. API integrations, CRM, ERP and websites.",
+    pie_derechos="© 2026 Conektra. Websites for service businesses.",
 )
 
 # posiciones de los nodos alrededor del núcleo (porcentajes del diagrama)
@@ -232,11 +263,11 @@ def pagina(T):
         f'{"" if i % 2 == 0 else " keyPoints=\"1;0\" keyTimes=\"0;1\""}><mpath href="#ruta-{i}"/></animateMotion></g>'
         for i, _ in enumerate(POS))
 
-    ICONOS_PAL = ["web", "chat", "crm", "erp", "hoja", "pago", "factura", "codigo"]
+    ICONOS_PAL = ["lupa", "hoja", "chat", "check", "rayo"]
     palabras = "".join(f'<span class="rotador__palabra">{p}</span>' for p in T["palabras"])
     iconos_franja = "".join(f'<span class="franja__ico" data-i="{j}" title="{p}">{I[ICONOS_PAL[j % len(ICONOS_PAL)]]}</span>' for j, p in enumerate(T["palabras"]))
     pasos = "\n".join(
-        f'<li><button type="button" class="paso{" activo" if i == 0 else ""}" data-paso="{i}" aria-pressed="{str(i == 0).lower()}"><b>0{i + 1}</b><span><h3>{t}</h3><p>{d}</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>'
+        f'<li><button type="button" class="paso{" activo" if i == 0 else ""}" data-paso="{i}" aria-pressed="{str(i == 0).lower()}"><b>0{i + 1}</b><span class="paso__ico" aria-hidden="true">{I[("lupa", "hoja", "chat", "estrella")[i]]}</span><span><h3>{t}</h3><p>{d}</p></span><span class="paso__progreso" aria-hidden="true"><i></i></span></button></li>'
         for i, (t, d) in enumerate(T["pasos"]))
 
     def filas(lst): return "".join(f'<div class="fila"><span>{a}</span><b>{b}</b></div>' for a, b in lst)
@@ -264,6 +295,27 @@ def pagina(T):
     # cada fila se repite para que el movimiento sea continuo
     tecnologias = (f'<div class="cinta"><div class="cinta__pista">{fila1}{fila1}</div></div>'
                    f'<div class="cinta cinta--reves"><div class="cinta__pista">{fila2}{fila2}</div></div>')
+    # cada problema lleva una escena mini: un chat sin responder, una búsqueda en Google o unas estrellas vacías
+    def mini(tipo, texto, meta):
+        if tipo == "chat":
+            return f'<div class="mini mini--chat"><span class="mini__burbuja">{texto}</span><small>{meta}</small></div>'
+        if tipo == "google":
+            return f'<div class="mini mini--google"><span class="mini__buscador">{I["lupa"]}{texto}</span><small>{meta}</small></div>'
+        return f'<div class="mini mini--estrellas"><span class="mini__estrellas">{texto}</span><small>{meta}</small></div>'
+    dolores = "\n".join(
+        f'<li class="dolor" data-revelar style="transition-delay:{i * .08}s">{mini(*T["dol_minis"][i])}'
+        f'<h3>{t}</h3><p>{p}</p><p class="dolor__solucion"><i>{I["check"]}</i><span><b>{T["dol_con"]}:</b> {s}</span></p></li>'
+        for i, (t, p, s, _ico) in enumerate(T["dolores"]))
+    sectores = "".join(f'<li>{x}</li>' for x in T["marquesina"])
+    TS = CONFIG["testimonio"]
+    if TS["texto"]:
+        testimonio = (f'<blockquote class="cita"><p>{TS["texto"]}</p><footer><b>{TS["nombre"]}</b>'
+                      f'<span>{TS["cargo"]}, Acarreos Makena</span></footer></blockquote>')
+    else:
+        testimonio = f'<p class="ficha-caso__resumen">{T["caso_resumen"]}</p>'
+    cifras = "".join(f'<li style="--i:{j}"><span class="cifras-pro__idx">0{j + 1}</span><b>{n}</b><span class="cifras-pro__txt">{t}</span>'
+                     f'{"<i class=\"cifras-pro__vivo\"></i>" if n == "24/7" else ""}</li>' for j, (n, t) in enumerate(T["cifras"]))
+    bloques_caso = "".join(f'<li><span class="ficha-caso__marca">{et}</span><p>{tx}</p></li>' for et, tx in T["caso_bloques"])
     faqs = "\n".join(f'<details class="pregunta"><summary>{q}</summary><p>{a}</p></details>' for q, a in T["faqs"])
     avisos_json = json.dumps(T["avisos"], ensure_ascii=False).replace("</", "<\\/")
     F = T["form"]
@@ -274,8 +326,8 @@ def pagina(T):
 
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Conektra", "url": CONFIG["dominio"],
-         "description": T["descripcion"], "areaServed": ["Panamá", "Latinoamérica", "Worldwide"],
-         "knowsAbout": ["API integrations", "CRM", "ERP", "Web development", "SEO", "Automation"]},
+         "description": T["descripcion"], "areaServed": {"@type": "Country", "name": "Panamá"},
+         "knowsAbout": ["Web development", "Local SEO", "Quote request forms", "Customer reviews", "CRM", "Google Sheets"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
 
     marquesina = "".join(f'<span>{m}</span><i>✦</i>' for m in T["marquesina"])
@@ -296,9 +348,8 @@ def pagina(T):
   <link rel="alternate" hreflang="es" href="{CONFIG["dominio"]}">
   <link rel="alternate" hreflang="en" href="{CONFIG["dominio"]}en/">
   <link rel="alternate" hreflang="x-default" href="{CONFIG["dominio"]}">
-  <meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
-  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#061b15">
+  <meta name="color-scheme" content="light">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Conektra">
   <meta property="og:url" content="{url}">
@@ -318,8 +369,8 @@ def pagina(T):
   <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/estilos.css?v=23">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{pre}css/estilos.css?v=35">
 </head>
 <body>
   <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
@@ -329,7 +380,7 @@ def pagina(T):
       <nav class="menu" id="menu" aria-label="Principal">
         <a href="#servicios">{T["nav"][0]}</a>
         <a href="#como-funciona">{T["nav"][1]}</a>
-        <a href="#caso">{T["nav"][2]}</a>
+        <a href="{enlace_caso}">{T["nav"][2]}</a>
         <a href="#preguntas">{T["nav"][3]}</a>
         <a class="idioma" href="{pre}{T["otra_ruta"] or './'}" hreflang="{"en" if T["lang"] == "es" else "es"}" lang="{"en" if T["lang"] == "es" else "es"}" title="{T["otra_nombre"]}">{T["otra_etiqueta"]}</a>
         <a class="boton boton--marca boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
@@ -339,20 +390,35 @@ def pagina(T):
   </header>
 
   <main>
-    <section class="portada portada--centrada">
-      <div class="contenedor portada__centro">
-        <a class="chip chip--vivo" href="#proyecto"><span class="chip__punto" aria-hidden="true"></span>{T["chip"]}<span class="chip__sep" aria-hidden="true"></span><b>{T["chip_cta"]}</b>{I["flecha"]}</a>
-        <h1 class="titulo-animado">{T["h1"]}</h1>
-        <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
-        <div class="portada__botones aparece" style="--a:.7s">
-          <a class="boton boton--marca boton--destello boton--wa" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
-          <a class="boton boton--claro" href="#caso">{T["ver_casos"]} {I["flecha"]}</a>
-        </div>
-        <ul class="confianza aparece" style="--a:.85s">{"".join(f'<li>{I["check"]}{x}</li>' for x in T["confianza"])}</ul>
+    <section class="portada portada--nicho portada--premium">
+      <div class="ambiente" aria-hidden="true">
+        <span class="ambiente__forma ambiente__forma--1"></span><span class="ambiente__forma ambiente__forma--2"></span><span class="ambiente__forma ambiente__forma--3"></span>
+        <svg class="ambiente__arcos" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid slice"><circle cx="400" cy="400" r="210"/><circle cx="400" cy="400" r="300"/><circle cx="400" cy="400" r="390"/></svg>
+        <span class="ambiente__grano"></span>
       </div>
-      <div class="contenedor">
-        {portada.panel(T, I, NUCLEO)}
-        <a class="prueba prueba--centro aparece" style="--a:1.2s" href="#caso"><span class="prueba__foto"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"></span><span class="prueba__txt"><small>{T["prueba_etiqueta"]}</small><b>Acarreos Makena</b><span>{T["prueba_texto"]}</span></span><span class="prueba__flecha">{I["flecha"]}</span></a>
+      <div class="contenedor portada__grid">
+        <div class="portada__texto">
+          <p class="chip-nicho aparece" style="--a:.1s"><span class="chip__punto" aria-hidden="true"></span>{T["chip"]}</p>
+          <h1 class="titulo-animado titular">{T["h1"]}</h1>
+          <p class="portada__lead aparece" style="--a:.55s">{T["lead"]}</p>
+          <div class="portada__botones aparece" style="--a:.7s">
+            <a class="boton boton--menta" href="{wa}"{wa_attr}>{I["wa"]} {T["cta"]}</a>
+            <a class="boton boton--linea" href="#como-funciona"><span class="boton__play">{I["play"]}</span>{T["ver_como"]} {I["flecha"]}</a>
+          </div>
+          <a class="prueba prueba--nicho aparece" style="--a:.9s" href="{enlace_caso}"><span class="prueba__foto"><img src="{pre}img/caso-acarreos-escritorio.webp" alt="" width="1440" height="900"></span><span class="prueba__txt"><small>{T["prueba_etiqueta"]}</small><b>Acarreos Makena</b><span>{T["prueba_texto"]}</span></span><span class="prueba__flecha">{I["flecha"]}</span></a>
+        </div>
+        <div class="escena-portada aparece" style="--a:.4s">
+          <div class="escena-3d">
+            <img class="escena-3d__base" src="{pre}img/escena-base.webp" alt="{T["portada_alt"]}" width="1536" height="1024" fetchpriority="high">
+            <span class="escena-3d__sombra" aria-hidden="true"></span>
+            <img class="escena-3d__persona" src="{pre}img/escena-persona.webp" alt="" width="357" height="900" aria-hidden="true">
+            <span class="escena-3d__brillo" aria-hidden="true"></span>
+            <span class="escena-3d__contador" aria-hidden="true">12</span>
+            {"".join(f'<span class="escena-3d__burbuja escena-3d__burbuja--{n}" aria-hidden="true">{I["wa"]}<i></i><i></i></span>' for n in (1, 2, 3))}
+          </div>
+          <div class="escena-portada__aviso" id="aviso" aria-hidden="true"><span class="aviso__ico">{I["chat"]}</span><span><b id="aviso-titulo">{T["avisos"][0][0]}</b><small id="aviso-texto">{T["avisos"][0][1]}</small></span><i class="escena-portada__punto"></i></div>
+          <p class="escena-portada__pie"><i></i>{T["portada_pie"]}</p>
+        </div>
       </div>
     </section>
 
@@ -367,13 +433,26 @@ def pagina(T):
       </div>
     </section>
 
-    <section class="seccion" id="como-funciona">
-      <div class="oscura seccion">
+    <section class="seccion" id="te-pasa">
+      <div class="contenedor">
+        <header class="cabeza" data-revelar><p class="etiqueta">{T["dol_etiqueta"]}</p><h2>{T["dol_h2"]}</h2><p>{T["dol_p"]}</p></header>
+        <ul class="dolores">{dolores}</ul>
+        <div class="sectores" data-revelar><p>{T["sectores_t"]}</p><ul>{sectores}</ul></div>
+      </div>
+    </section>
+
+    <section class="seccion" id="como-funciona" style="padding-top:0">
+      <div class="oscura seccion flujo-premium">
+        <div class="flujo-premium__ambiente" aria-hidden="true"><span class="fp-forma fp-forma--1"></span><span class="fp-forma fp-forma--2"></span><span class="fp-puntos"></span></div>
         <div class="contenedor">
           <header class="cabeza" data-revelar><p class="etiqueta">{T["flujo_etiqueta"]}</p><h2>{T["flujo_h2"]}</h2><p>{T["flujo_p"]}</p></header>
           <div class="flujo-grid">
-            <ol class="pasos">{pasos}</ol>
+            <div class="flujo-premium__izq">
+              <ol class="pasos">{pasos}</ol>
+              <p class="flujo-insignia"><span class="flujo-insignia__ico">{I["escudo"]}</span><span>{T["flujo_insignia"][0]} <b>{T["flujo_insignia"][1]}</b></span></p>
+            </div>
             <div class="escena" aria-live="polite">
+              <div class="escena__barra" aria-hidden="true"><i></i><i></i><i></i><span>{T["flujo_ventana"]}</span></div>
               <div class="escena__rejilla" aria-hidden="true"></div>
               <span class="escena__brillo" aria-hidden="true"></span>
               {escenas}
@@ -394,31 +473,12 @@ def pagina(T):
       </div>
     </section>
 
-    <section class="seccion" id="caso" style="background:var(--superficie);border-block:1px solid var(--linea)">
-      <div class="contenedor">
-        <header class="cabeza" data-revelar><p class="etiqueta">{T["caso_etiqueta"]}</p><h2>{T["caso_h2"]}</h2><p>{T["caso_intro"]}</p></header>
-        <div class="caso">
-          <div class="caso__fotos" data-revelar>
-            <div class="caso__escritorio"><div class="ventana__barra"><i></i><i></i><i></i><span>acarreosmakena.com</span></div><img src="{pre}img/caso-acarreos-escritorio.webp" alt="Página web de Acarreos Makena en computadora" width="1440" height="900" loading="lazy"></div>
-            <div class="caso__movil"><img src="{pre}img/caso-acarreos-movil.webp" alt="Página web de Acarreos Makena en celular" width="390" height="844" loading="lazy"></div>
-          </div>
-          <div data-revelar>
-            <h3>{T["caso_nombre"]}</h3>
-            <p class="caso__sector">{T["caso_sector"]}</p>
-            <ul class="logros">{logros}</ul>
-            <div class="portada__botones" style="margin-top:0"><a class="boton boton--marca" href="{enlace_caso}">{"Ver el caso completo" if T["lang"] == "es" else "Read the full case"} {I["flecha"]}</a><a class="boton boton--claro" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{T["caso_cta"]} {I["flecha"]}</a></div>
-            <div class="medida"><i>{I["rayo"]}</i><span><b>{T["medida_t"]}</b>{T["medida_p"]}</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
+    {integraciones.seccion(T["lang"], NUCLEO, wa, wa_attr, I)}
 
-    <section class="seccion">
+    <section class="seccion" style="padding-top:0">
       <div class="contenedor">
         <header class="cabeza cabeza--centro" data-revelar><p class="etiqueta">{T["proc_etiqueta"]}</p><h2>{T["proc_h2"]}</h2></header>
         <ol class="proceso" id="proceso"><span class="proceso__linea" aria-hidden="true"><i></i></span>{proceso}</ol>
-        <p class="etiqueta" style="text-align:center;margin-top:80px">{T["tec_titulo"]}</p>
-        <div class="tecnologias" aria-label="{T["tec_titulo"]}">{tecnologias}</div>
       </div>
     </section>
 
@@ -495,7 +555,7 @@ def pagina(T):
   </footer>
 
   <div class="barra-wa" id="barra-wa" aria-hidden="true">
-    <span class="barra-wa__txt"><b>{"¿Tienes un proyecto?" if T["lang"] == "es" else "Have a project?"}</b>{"Respondemos por WhatsApp" if T["lang"] == "es" else "We reply on WhatsApp"}</span>
+    <span class="barra-wa__txt"><b>{"¿Quieres más clientes?" if T["lang"] == "es" else "Want more customers?"}</b>{"Respondemos por WhatsApp" if T["lang"] == "es" else "We reply on WhatsApp"}</span>
     <a class="boton boton--wa" href="{wa}"{wa_attr} tabindex="-1">{I["wa"]} WhatsApp</a>
   </div>
   <script>window.CONEKTRA_AVISOS = {avisos_json}; window.CONEKTRA_FORM = {form_cfg};</script>
@@ -511,7 +571,7 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(pagina(T))
         print("ok", destino)
-    cfg = dict(CONFIG, v_css="23", v_js="12")
+    cfg = dict(CONFIG, v_css="35", v_js="12")
     hechas = paginas.generar(RAIZ, cfg, I, LOGO, {"es": ES["descripcion"], "en": EN["descripcion"]})
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if not CONFIG["whatsapp"]:

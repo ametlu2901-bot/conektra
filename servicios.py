@@ -5,14 +5,14 @@ TEXTOS = {
     "es": dict(
         incluye="Incluye", ver_mas="Ver el servicio",
         tabs=[
-            ("Páginas web y SEO", "Diseñadas a la medida de tu marca, rápidas en celular y listas para aparecer en Google.", "web",
-             ["Diseño a la medida de tu marca", "SEO técnico y páginas por servicio", "Formularios conectados a tu CRM"]),
-            ("CRM a la medida", "Tus clientes, cotizaciones y seguimientos en un solo lugar.", "crm",
-             ["Etapas de venta a tu manera", "Recordatorios y seguimientos", "Reportes de ventas al día"]),
-            ("Integraciones API", "Tus sistemas hablan entre sí y con servicios externos.", "rayo",
-             ["WhatsApp, pagos y facturación", "Sincronización en tiempo real", "Alertas si algo falla"]),
-            ("ERP y automatizaciones", "Inventario, facturación y procesos que se actualizan solos.", "erp",
-             ["Inventario y facturación conectados", "Tareas que se ejecutan solas", "Tableros para decidir con datos"]),
+            ("Página web y Google", "Una página que te trae clientes desde Google y los manda directo a tu WhatsApp.", "web",
+             ["Diseño a la medida de tu negocio", "Páginas por servicio y por zona", "Formulario de cotización"]),
+            ("Cotizaciones en orden", "Cada solicitud guardada con su estado, para que ninguna se te pierda.", "crm",
+             ["Nuevo, cotizado, ganado", "Recordatorios de seguimiento", "Cuánto vendes cada mes"]),
+            ("Conexiones automáticas", "Tu página, tu hoja y tu WhatsApp trabajando juntos.", "rayo",
+             ["Formulario → hoja → WhatsApp", "Sin copiar y pegar datos", "Avisos si algo falla"]),
+            ("Cuando crezcas", "Inventario, facturación y reportes cuando tu operación lo pida.", "erp",
+             ["Inventario y facturación", "Tareas que se hacen solas", "Tableros para decidir"]),
         ],
         web=dict(url="tunegocio.com", nav=["Inicio", "Servicios", "Contacto"], h="Mudanzas en todo el país", p="Cotiza en minutos y recibe tu precio por WhatsApp.",
                  cta="Cotizar ahora", f_titulo="Nuevo formulario", f_texto="Enviado al CRM",
@@ -36,14 +36,14 @@ TEXTOS = {
     "en": dict(
         incluye="Includes", ver_mas="See the service",
         tabs=[
-            ("Websites and SEO", "Custom-designed for your brand, fast on mobile and built to show up on Google.", "web",
-             ["Designed around your brand", "Technical SEO and service pages", "Forms connected to your CRM"]),
-            ("Custom CRM", "Your customers, quotes and follow-ups in one place.", "crm",
-             ["Sales stages your way", "Reminders and follow-ups", "Up-to-date sales reports"]),
-            ("API integrations", "Your systems talk to each other and to external services.", "rayo",
-             ["WhatsApp, payments and invoicing", "Real-time sync", "Alerts if something fails"]),
-            ("ERP and automation", "Inventory, invoicing and processes that update themselves.", "erp",
-             ["Connected inventory and invoicing", "Tasks that run on their own", "Dashboards to decide with data"]),
+            ("Website and Google", "A website that brings customers from Google straight to your WhatsApp.", "web",
+             ["Designed around your business", "Pages for each service and area", "Quote request form"]),
+            ("Organized quotes", "Every request saved with its status, so none gets lost.", "crm",
+             ["New, quoted, won", "Follow-up reminders", "How much you sell each month"]),
+            ("Automatic connections", "Your website, your sheet and your WhatsApp working together.", "rayo",
+             ["Form → sheet → WhatsApp", "No copying and pasting", "Alerts if something fails"]),
+            ("When you grow", "Inventory, invoicing and reports when your operation needs them.", "erp",
+             ["Inventory and invoicing", "Tasks that run themselves", "Dashboards to decide"]),
         ],
         web=dict(url="yourbusiness.com", nav=["Home", "Services", "Contact"], h="Moving services nationwide", p="Get a quote in minutes and your price on WhatsApp.",
                  cta="Get a quote", f_titulo="New form submission", f_texto="Sent to the CRM",
@@ -137,10 +137,10 @@ def seccion(lang, I, solo_maquetas=False, enlaces=None):
         f'<div class="tabla__fila"><span>#{n}</span><span>{cli}</span><b>{monto}</b><span class="pill {"pill--ok" if j < 2 else "pill--pend"}">{est}</span></div>'
         for j, (n, cli, monto, est) in enumerate(e["facturas"][:2]))
     grafico = ('<svg class="grafico" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true">'
-               '<defs><linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b5bff" stop-opacity=".28"/><stop offset="1" stop-color="#3b5bff" stop-opacity="0"/></linearGradient></defs>'
+               '<defs><linearGradient id="g-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f6b52" stop-opacity=".28"/><stop offset="1" stop-color="#1f6b52" stop-opacity="0"/></linearGradient></defs>'
                '<path d="M0 70 C30 64 45 52 75 55 S120 40 150 42 S200 22 225 28 S270 12 300 8 V90 H0Z" fill="url(#g-area)"/>'
-               '<path d="M0 70 C30 64 45 52 75 55 S120 40 150 42 S200 22 225 28 S270 12 300 8" fill="none" stroke="#3b5bff" stroke-width="2.5" vector-effect="non-scaling-stroke"/>'
-               '<path d="M0 80 C40 76 70 70 100 72 S160 60 190 62 S250 48 300 44" fill="none" stroke="#13c2a3" stroke-width="2" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"/></svg>')
+               '<path d="M0 70 C30 64 45 52 75 55 S120 40 150 42 S200 22 225 28 S270 12 300 8" fill="none" stroke="#1f6b52" stroke-width="2.5" vector-effect="non-scaling-stroke"/>'
+               '<path d="M0 80 C40 76 70 70 100 72 S160 60 190 62 S250 48 300 44" fill="none" stroke="#2fbf71" stroke-width="2" stroke-dasharray="5 5" vector-effect="non-scaling-stroke"/></svg>')
     erp_cuerpo = (f'<div class="erp"><nav class="erp__menu"><b class="sitio__logo"></b>{menu}</nav><div class="erp__main">'
                   f'<div class="app-cab"><b>{e["titulo"]}</b><span class="buscador">2026</span></div>'
                   f'<div class="kpis">{kpis}</div>'

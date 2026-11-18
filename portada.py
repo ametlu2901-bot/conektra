@@ -6,8 +6,8 @@ para que los círculos de los paquetes no se deformen.
 """
 
 TEXTOS = {
-    "es": dict(titulo="Flujo de un cliente nuevo", vivo="En vivo", entradas="Entradas", sistemas="Tus sistemas"),
-    "en": dict(titulo="New customer flow", vivo="Live", entradas="Inputs", sistemas="Your systems"),
+    "es": dict(titulo="Un cliente nuevo", vivo="En vivo", entradas="Cómo te encuentran", sistemas="Qué pasa después"),
+    "en": dict(titulo="A new customer", vivo="Live", entradas="How they find you", sistemas="What happens next"),
 }
 
 # índices dentro de T["nodos"]: [Web, CRM, ERP, WhatsApp, Pagos, Sheets]
@@ -18,8 +18,8 @@ DESFASE = [0.0, 0.8, 1.6]
 
 
 def _lienzo(T, I, NUCLEO, ancho, alto, pos_in, pos_out, centro, curva_in, curva_out, clase):
-    halo = ('<radialGradient id="g-halo-{c}"><stop offset="0" stop-color="#8fe9ff" stop-opacity=".95"/>'
-            '<stop offset=".45" stop-color="#3b5bff" stop-opacity=".45"/><stop offset="1" stop-color="#3b5bff" stop-opacity="0"/></radialGradient>').format(c=clase)
+    halo = ('<radialGradient id="g-halo-{c}"><stop offset="0" stop-color="#b9f5cf" stop-opacity=".95"/>'
+            '<stop offset=".45" stop-color="#1f6b52" stop-opacity=".45"/><stop offset="1" stop-color="#1f6b52" stop-opacity="0"/></radialGradient>').format(c=clase)
     rutas, paquetes, nodos = [], [], []
     for k, (idx, (x, y)) in enumerate(zip(ENTRADAS, pos_in)):
         rid = f"r-{clase}-in-{k}"

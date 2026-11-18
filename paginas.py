@@ -14,20 +14,20 @@ RUTAS = {
 ORDEN_SERVICIOS = ["web", "crm", "api", "erp"]
 
 UI = {
-    "es": dict(nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Agenda una llamada", otra="EN", otra_nombre="English",
+    "es": dict(nav=["Servicios", "Cómo funciona", "Casos", "Preguntas"], cta="Escríbenos", otra="EN", otra_nombre="English",
                incluye="Qué incluye", ideal="Ideal si…", como="Cómo lo hacemos", faq="Preguntas frecuentes", otros="Otros servicios",
-               cta_h="¿Hablamos de tu proyecto?", cta_p="Cuéntanos qué sistemas usas hoy y te proponemos cómo conectarlos.", cta_form="Cuéntanos tu proyecto",
+               cta_h="¿Hablamos de tu negocio?", cta_p="Cuéntanos a qué se dedica tu negocio y te proponemos cómo conseguir más clientes y tener tus cotizaciones en orden.", cta_form="Cuéntanos de tu negocio",
                wa_msg="Hola Conektra, quiero información sobre ", inicio="Inicio", servicios="Servicios", casos="Casos",
                pie_servicios="Servicios", pie_empresa="Conektra", pie_contacto="Contacto", privacidad="Privacidad",
-               derechos="© 2026 Conektra. Integraciones API, CRM, ERP y páginas web.", hecho="Hecho en Panamá, para todo el mundo.",
-               pasos=[("Diagnóstico", "Entendemos cómo trabajas hoy."), ("Propuesta", "Alcance, tiempos y precio claros."), ("Desarrollo", "Por etapas, con avances que pruebas."), ("Soporte", "Ajustes y mejoras después de entregar.")]),
-    "en": dict(nav=["Services", "How it works", "Case study", "FAQ"], cta="Book a call", otra="ES", otra_nombre="Español",
+               derechos="© 2026 Conektra. Páginas web para negocios de servicios.", hecho="Hecho en Panamá, para negocios de Panamá.",
+               pasos=[("Diagnóstico", "Vemos cómo te llegan hoy los clientes."), ("Propuesta", "Alcance, tiempos y precio claros."), ("Desarrollo", "Por etapas, con avances que pruebas."), ("Soporte", "Ajustes y mejoras después de entregar.")]),
+    "en": dict(nav=["Services", "How it works", "Case study", "FAQ"], cta="Message us", otra="ES", otra_nombre="Español",
                incluye="What's included", ideal="A good fit if…", como="How we do it", faq="FAQ", otros="Other services",
-               cta_h="Shall we talk about your project?", cta_p="Tell us which systems you use today and we'll propose how to connect them.", cta_form="Tell us about your project",
+               cta_h="Shall we talk about your business?", cta_p="Tell us what your business does and we'll propose how to get more customers and keep your quotes organized.", cta_form="Tell us about your business",
                wa_msg="Hi Conektra, I'd like information about ", inicio="Home", servicios="Services", casos="Case studies",
                pie_servicios="Services", pie_empresa="Conektra", pie_contacto="Contact", privacidad="Privacy",
-               derechos="© 2026 Conektra. API integrations, CRM, ERP and websites.", hecho="Made in Panama, for the world.",
-               pasos=[("Discovery", "We learn how you work today."), ("Proposal", "Clear scope, timeline and price."), ("Build", "In stages, with progress you can test."), ("Support", "Tweaks and improvements after launch.")]),
+               derechos="© 2026 Conektra. Websites for service businesses.", hecho="Made in Panama, for Panama's businesses.",
+               pasos=[("Discovery", "We look at how customers reach you today."), ("Proposal", "Clear scope, timeline and price."), ("Build", "In stages, with progress you can test."), ("Support", "Tweaks and improvements after launch.")]),
 }
 
 SERVICIOS = {
@@ -198,9 +198,8 @@ def cabeza_html(T, ui, cfg, ruta, ruta_otra, titulo, meta, lang, extra_ld=None):
   <link rel="canonical" href="{url}">
   <link rel="alternate" hreflang="{lang}" href="{url}">
   <link rel="alternate" hreflang="{"en" if lang == "es" else "es"}" href="{cfg["dominio"] + ruta_otra}">
-  <meta name="theme-color" content="#f4f6fb" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a0f1c" media="(prefers-color-scheme: dark)">
-  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#061b15">
+  <meta name="color-scheme" content="light">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Conektra">
   <meta property="og:url" content="{url}">
@@ -426,7 +425,7 @@ def generar(raiz, cfg, I, LOGO, descripciones):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Página no encontrada | Conektra</title>
   <meta name="robots" content="noindex">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light">
   <link rel="icon" href="{d}img/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
