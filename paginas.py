@@ -366,7 +366,7 @@ def generar(raiz, cfg, I, LOGO):
     <section class="hero hero--interna hero--caso">
       <div class="hero__ambiente" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
       <div class="contenedor">
-        {migas(ui, inicio, [(ui["casos"], inicio + "#casos"), ("Acarreos Makena", None)])}
+        {migas(ui, inicio, [(ui["casos"], None), ("Acarreos Makena", None)])}
         <p class="sello"><span class="sello__punto" aria-hidden="true"></span>{C["sector"]}</p>
         <h1 class="titular titular--interna">{C["h1"]}</h1>
         <div class="hero__botones"><a class="boton boton--menta" href="https://acarreosmakena.com/" target="_blank" rel="noopener">{C["ver"]} {I["flecha"]}</a></div>

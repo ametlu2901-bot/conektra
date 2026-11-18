@@ -351,7 +351,6 @@ def pagina(T):
 
 {flujo(T)}
 {servicios_html(T, rel)}
-{casos(T, pre, rel("caso"))}
 
 {proceso_html(T)}
 {preguntas(T)}

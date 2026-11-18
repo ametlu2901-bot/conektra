@@ -68,8 +68,9 @@ def cabecera(lang, inicio, otra_href, wa, wa_attr, I, LOGO, en_portada=False):
     """inicio: enlace a la portada del idioma ('./' en la propia portada). Los enlaces del menú van a sus secciones."""
     U = UI[lang]
     base = "" if en_portada else inicio
-    destinos = ["#servicios", "#como-funciona", "#casos", "#preguntas"]
-    enlaces = "".join(f'<a href="{base}{d}">{t}</a>' for d, t in zip(destinos, U["nav"]))
+    caso = inicio + ("casos/" if lang == "es" else "cases/") + "acarreos-makena/"
+    destinos = [base + "#servicios", base + "#como-funciona", caso, base + "#preguntas"]
+    enlaces = "".join(f'<a href="{d}">{t}</a>' for d, t in zip(destinos, U["nav"]))
     return f'''  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
   <header class="cabecera{" cabecera--portada" if en_portada else ""}" id="cabecera">
     <div class="contenedor cabecera__barra">
@@ -90,7 +91,8 @@ def pie(lang, pre, inicio, otra_href, wa, wa_attr, I, LOGO, servicios, privacida
     U = UI[lang]
     base = "" if en_portada else inicio
     serv = "".join(f'<a href="{h}">{t}</a>' for t, h in servicios)
-    nav = "".join(f'<a href="{base}{d}">{t}</a>' for d, t in zip(["#como-funciona", "#casos", "#preguntas"], U["nav"][1:]))
+    caso = inicio + ("casos/" if lang == "es" else "cases/") + "acarreos-makena/"
+    nav = "".join(f'<a href="{d}">{t}</a>' for d, t in zip([base + "#como-funciona", caso, base + "#preguntas"], U["nav"][1:]))
     return f'''  <footer class="pie-sitio cierre">
     <div class="contenedor">
       <div class="pie-sitio__grid">
