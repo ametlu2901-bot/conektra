@@ -156,7 +156,7 @@
         if (nucleo) nucleo.style.transform = '';
       });
     }
-    $$('.hito__tarjeta, .pregunta, .proyecto__caja, .prueba, .pestana, .paso, .medida').forEach(el => {
+    $$('.hito__tarjeta, .pregunta, .paso, .problema, .beneficio').forEach(el => {
       el.classList.add('luz');
       el.addEventListener('pointermove', e => {
         const r = el.getBoundingClientRect();
@@ -164,7 +164,7 @@
         el.style.setProperty('--my', `${e.clientY - r.top}px`);
       });
     });
-    $$('.boton--marca, .boton--blanco').forEach(b => {
+    $$('.hero .boton--menta, .final .boton--menta').forEach(b => {
       b.addEventListener('pointermove', e => {
         const r = b.getBoundingClientRect();
         const x = (e.clientX - r.left - r.width / 2) * .18;
@@ -197,7 +197,9 @@
       if (faltan.length) { error.textContent = cfg.error; form.elements[faltan[0]].focus(); return; }
       error.textContent = '';
       const necesita = fd.getAll('necesita').join(', ');
-      const datos = { nombre: dato('nombre'), empresa: dato('empresa'), contacto: dato('contacto'), necesita, presupuesto: dato('presupuesto'), mensaje: dato('mensaje'), idioma: cfg.lang, web: dato('web') };
+      // la hoja tiene una sola columna «Contacto»: ahí van el WhatsApp y, si lo dio, el correo
+      const contacto = [dato('contacto'), dato('correo')].filter(Boolean).join(' · ');
+      const datos = { nombre: dato('nombre'), empresa: dato('empresa'), contacto, necesita, presupuesto: dato('presupuesto'), mensaje: dato('mensaje'), idioma: cfg.lang, web: dato('web') };
       // resumen para seguir la conversación por WhatsApp
       const resumen = (cfg.lang === 'en'
         ? [`Hi Conektra, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]

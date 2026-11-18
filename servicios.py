@@ -25,9 +25,9 @@ TEXTOS = {
                  rec_t="Recordatorio", rec_p="Llamar a Ana Gómez · mañana 10:00"),
         api=dict(titulo="Flujo: formulario → CRM → WhatsApp", pasos=["Formulario", "API", "CRM", "WhatsApp"],
                  c="// nuevo cliente desde la página web", campos=[("nombre", "María Pérez"), ("servicio", "Mudanza"), ("canal", "web")],
-                 log=[("POST /clientes", "200", "84 ms"), ("Mensaje de confirmación", "Enviado", "WhatsApp"), ("Fila agregada al reporte", "OK", "Sheets")],
-                 ok_t="Sincronizado", ok_p="3 sistemas actualizados en 1,2 s"),
-        erp=dict(menu=["Resumen", "Ventas", "Inventario", "Facturas"], titulo="Resumen del mes",
+                 log=[("Nueva solicitud recibida", "OK", "Formulario"), ("Fila agregada a la hoja", "OK", "Sheets"), ("Aviso al dueño", "Enviado", "WhatsApp")],
+                 ok_t="Todo conectado", ok_p="Formulario, hoja y WhatsApp al día"),
+        erp=dict(menu=["Resumen", "Ventas", "Inventario", "Compras", "Facturas"], titulo="Resumen del mes",
                  kpis=[("Ventas", "B/. 12.4k", "+12%"), ("Facturas", "86", "+8%"), ("Ticket promedio", "B/. 144", "+3%")],
                  grafico="Ventas por semana", tabla_t="Últimas facturas",
                  facturas=[("A-2381", "María Pérez", "B/. 450", "Pagada"), ("A-2380", "Grupo Delta", "B/. 1,280", "Pagada"), ("A-2379", "Luis Díaz", "B/. 120", "Pendiente")],
@@ -56,9 +56,9 @@ TEXTOS = {
                  rec_t="Reminder", rec_p="Call Ana Gomez · tomorrow 10:00"),
         api=dict(titulo="Flow: form → CRM → WhatsApp", pasos=["Form", "API", "CRM", "WhatsApp"],
                  c="// new customer from the website", campos=[("name", "Maria Perez"), ("service", "Moving"), ("channel", "web")],
-                 log=[("POST /customers", "200", "84 ms"), ("Confirmation message", "Sent", "WhatsApp"), ("Row added to report", "OK", "Sheets")],
-                 ok_t="Synced", ok_p="3 systems updated in 1.2 s"),
-        erp=dict(menu=["Overview", "Sales", "Inventory", "Invoices"], titulo="This month",
+                 log=[("New request received", "OK", "Form"), ("Row added to the sheet", "OK", "Sheets"), ("Owner notified", "Sent", "WhatsApp")],
+                 ok_t="All connected", ok_p="Form, sheet and WhatsApp up to date"),
+        erp=dict(menu=["Overview", "Sales", "Inventory", "Purchasing", "Invoices"], titulo="This month",
                  kpis=[("Sales", "$12.4k", "+12%"), ("Invoices", "86", "+8%"), ("Average ticket", "$144", "+3%")],
                  grafico="Sales per week", tabla_t="Latest invoices",
                  facturas=[("A-2381", "Maria Perez", "$450", "Paid"), ("A-2380", "Delta Group", "$1,280", "Paid"), ("A-2379", "Luis Diaz", "$120", "Pending")],
@@ -123,7 +123,7 @@ def seccion(lang, I, solo_maquetas=False, enlaces=None):
     cadena = '<i class="cadena__linea"></i>'.join(f'<span class="cadena__nodo">{p}</span>' for p in a["pasos"])
     campos = ",\n".join(f'  <span class="n">"{k}"</span>: <span class="s">"{v}"</span>' for k, v in a["campos"])
     log = "".join(f'<div class="registro"><i></i><span class="registro__txt">{t}</span><span class="pill">{e}</span><span class="registro__meta">{m}</span></div>' for t, e, m in a["log"])
-    api_cuerpo = (f'<div class="app-cab"><b>{a["titulo"]}</b><span class="vivo">● Live</span></div>'
+    api_cuerpo = (f'<div class="app-cab"><b>{a["titulo"]}</b><span class="vivo">● {"En vivo" if lang == "es" else "Live"}</span></div>'
                   f'<div class="cadena">{cadena}</div>'
                   f'<div class="codigo"><span class="c">{a["c"]}</span>\n<span class="k">POST</span> /webhook\n{{\n{campos}\n}}</div>'
                   f'<div class="registros">{log}</div>')
