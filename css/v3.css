@@ -659,3 +659,33 @@ button { font: inherit; color: inherit; }
 [hidden] { display: none !important; }
 .pie .marca__simbolo { width: 26px; height: 26px; }
 .app__main { grid-template-columns: minmax(0, 1fr); }
+
+/* soluciones en celular: tablero, tarjetas flotantes y espacios más compactos */
+@media (max-width: 720px) {
+  .sol__vis-movil { padding: 28px 14px 36px; }
+  .kan { gap: 6px; padding: 8px; }
+  .kan__col { padding: 6px; gap: 6px; min-height: 170px; }
+  .kan__col h6 { font-size: .68rem; }
+  .kan__tarj { flex-direction: column; align-items: flex-start; gap: 5px; padding: 8px; font-size: .74rem; line-height: 1.2; min-width: 0; }
+  .kan__tarj { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+  .kan__tarj i { margin-bottom: 5px; }
+  .activo .kan__col:nth-child(2) .kan__tarj:first-of-type, .sol__vis-movil .kan__col:nth-child(2) .kan__tarj:first-of-type { animation: none; }
+  .vis--vende .flot--rec { right: 0; bottom: -18%; }
+  .flot--toast, .flot--rec { padding: 10px 12px 10px 10px; gap: 10px; }
+  .flot b { font-size: .8rem; }
+  .vis--atrae .flot--toast { right: -2%; top: auto; bottom: -10%; }
+  .flot--google { left: 0; bottom: -16%; }
+  .flot--wa { right: 0; bottom: -20%; }
+  .nodo { padding: 7px 10px; font-size: .74rem; }
+  .nodo--centro { padding: 10px 12px; font-size: .86rem; }
+}
+@media (max-width: 720px) {
+  .vis--vende .flot--rec { position: relative; right: auto; bottom: auto; width: fit-content; margin: -14px 6px 0 auto; }
+}
+@media (max-width: 720px) {
+  /* en celular las tarjetas flotantes se apilan debajo, montadas un poco sobre la ventana */
+  .sol__vis-movil .flot { position: relative; left: auto; right: auto; top: auto; bottom: auto; }
+  .sol__vis-movil .flot--google { width: 82%; margin: -44px 0 0 -2px; }
+  .sol__vis-movil .vis--atrae .flot--toast { width: fit-content; margin: -22px -2px 0 auto; }
+  .sol__vis-movil .flot--wa { width: 88%; margin: -26px -2px 0 auto; }
+}

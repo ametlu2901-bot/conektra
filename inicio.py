@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "2"
+V_CSS = "3"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
