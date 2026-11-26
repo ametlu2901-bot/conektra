@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js';
-import * as db from './datos.js?v=11';
+import * as db from './datos.js?v=12';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -226,9 +226,31 @@ V.ajustes = () => {
 };
 
 // ---------------------------------------------------------------- entrada
+/* La escena de bienvenida (lado derecho de entrar): Enlaza en el centro y, alrededor, WhatsApp, la página
+   web, los cobros y los clientes unidos por hilos por donde «viajan» los datos. Encima, tarjetas de ejemplo.
+   Todo dibujado con HTML, CSS y SVG (sin imágenes). Es decorativa: aria-hidden. */
+const NODOS = [['wa', 'WhatsApp', 18, 24], ['web', 'Página web', 80, 16], ['pago', 'Cobros', 86, 66], ['crm', 'Clientes', 14, 72]];
+const escena = () => `<div class="escena">
+    <svg class="escena__hilos" viewBox="0 0 100 100" preserveAspectRatio="none">
+      ${NODOS.map(([, , x, y], j) => {
+        const c = `M50 46 Q${(50 + x) / 2 + (j % 2 ? 8 : -8)} ${(46 + y) / 2 + (j < 2 ? -6 : 6)} ${x} ${y}`;
+        return `<path class="hilo" d="${c}"/><path class="hilo hilo--vivo" style="--k:${j}" d="${c}"/>`;
+      }).join('')}
+    </svg>
+    <span class="escena__centro"><i></i><i></i>${LOGO}</span>
+    ${NODOS.map(([ic, t, x, y], j) => `<span class="escena__nodo" style="left:${x}%;top:${y}%;--k:${j}">${I[ic]}<small>${t}</small></span>`).join('')}
+    <div class="ficha ficha--wa" style="--k:0"><span class="ficha__ico ficha__ico--wa">${I.wa}</span><div><b>María R.</b><p>¿Cuánto por la mudanza del sábado?</p></div><time>ahora</time></div>
+    <div class="ficha ficha--cot" style="--k:1"><small class="mono">Cotización #128</small><b>$650</b><span class="ficha__pill">${I.check} Ganada</span></div>
+    <div class="ficha ficha--pago" style="--k:2"><span class="ficha__ico">${I.check}</span><div><b>Pago recibido</b><p>$320 · Yappy</p></div></div>
+    <div class="ficha ficha--graf" style="--k:3"><small>Ventas del mes</small><div class="ficha__barras">${[38, 52, 44, 66, 58, 82, 94].map((h, j) => `<i style="--h:${h}%;--j:${j}"></i>`).join('')}</div><b>+24%</b></div>
+  </div>`;
+
 const pantallaEntrada = cuerpo => `<main class="entrar">
-    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>${cuerpo}</div>
-    <div class="entrar__arte" aria-hidden="true"><div><b>Tu negocio, mejor conectado.</b><span>Clientes, cotizaciones, cobros y WhatsApp en un solo lugar.</span></div></div></main>`;
+    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>${cuerpo}
+      <p class="entrar__seguro">${I.escudo}<span>Tus datos están protegidos: cada negocio ve solo lo suyo.</span></p></div>
+    <div class="entrar__arte" aria-hidden="true">${escena()}
+      <div class="entrar__lema"><b>Tu negocio, mejor conectado.</b><span>Clientes, cotizaciones, cobros y WhatsApp en un solo lugar.</span>
+        <ul><li>${I.check} Cada cliente con su seguimiento</li><li>${I.check} Cobros que se recuerdan solos</li><li>${I.check} Hecho en Panamá</li></ul></div></div></main>`;
 
 function entrar() {
   const real = db.hayConexion();
