@@ -775,3 +775,6 @@ button { font: inherit; color: inherit; }
 .final .btn--claro:hover { background: rgba(255, 255, 255, .14); box-shadow: 0 0 0 1px rgba(255, 255, 255, .5); }
 .contacto__wa a + a { margin-top: 6px; }
 .faq .encabezado p a { color: var(--esmeralda); border-bottom: 1px solid rgba(22, 122, 80, .35); }
+
+/* integraciones sin el mapa de herramientas (pedido del usuario) */
+.principios--solo { margin-top: 0; }

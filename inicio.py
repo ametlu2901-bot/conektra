@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "8"
+V_CSS = "9"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
@@ -203,13 +203,7 @@ def _red(T):
       <div class="red__brillo" aria-hidden="true"></div>
       <div class="cont">
         <header class="encabezado encabezado--centro" data-revelar><p class="etq">{T["red_etiqueta"]}</p><h2>{T["red_h2"]}</h2><p>{T["red_p"]}</p></header>
-        <ul class="leyenda" data-revelar>{leyenda}</ul>
-        <div class="mapa" data-revelar>
-          <svg class="mapa__lineas" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true">{"".join(lineas)}{pulsos}</svg>
-          <div class="mapa__centro">{MARCA}<b>Enlaza Studio</b></div>
-          <ul class="mapa__nodos">{"".join(nodos)}</ul>
-        </div>
-        <ul class="principios">{principios}</ul>
+        <ul class="principios principios--solo">{principios}</ul>
       </div>
     </section>
 '''

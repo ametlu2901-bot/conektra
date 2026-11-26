@@ -81,8 +81,8 @@ ES = dict(
     ),
 
     # red (sección oscura)
-    red_etiqueta="Integraciones", red_h2="WhatsApp, Google y tus cobros<br>en una sola red.",
-    red_p="Conectamos WhatsApp a tu sistema con la API oficial de WhatsApp Business. Te decimos con claridad qué ya funciona, qué se conecta según tu proyecto y qué necesita desarrollo.",
+    red_etiqueta="Integraciones", red_h2="WhatsApp, Google y tus cobros en una sola red.",
+    red_p="Conectamos WhatsApp a tu sistema con la API oficial de WhatsApp Business y unimos tu página, Google Sheets, tu correo y tus cobros para que no copies nada a mano.",
     estados={"op": "Operativa y probada", "disp": "Disponible según proyecto", "dev": "Requiere desarrollo"},
     principios=[("escudo", "Tus datos son tuyos", "Todo queda en tus propias cuentas, con accesos mínimos y documentados."),
                 ("hoja", "Sin licencias caras", "Usamos herramientas que ya conoces antes de proponerte pagar otra."),
@@ -219,7 +219,7 @@ EN = dict(
     ),
 
     red_etiqueta="Integrations", red_h2="One network for<br>your whole business.",
-    red_p="We tell you clearly what already works, what connects depending on your project and what needs development before we promise it.",
+    red_p="We connect WhatsApp to your system with the official WhatsApp Business API and link your website, Google Sheets, email and payments so you never copy data by hand.",
     estados={"op": "Live and tested", "disp": "Available per project", "dev": "Needs development"},
     principios=[("escudo", "Your data is yours", "Everything stays in your own accounts, with minimal, documented access."),
                 ("hoja", "No pricey licenses", "We use tools you already know before asking you to pay for another one."),
