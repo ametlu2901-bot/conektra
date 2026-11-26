@@ -464,9 +464,10 @@ def _pagina(clave, cfg, wa_link):
           <h1 class="entra" style="--d:.08s">{P["h1"]}</h1>
           <p class="lp-hero__lead entra" style="--d:.16s">{P["lead"]}</p>
           <div class="hero__botones lp-hero__botones entra" style="--d:.24s">
-            <a class="btn btn--tinta btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} Diagnóstico gratis</a>
+            <a class="btn btn--tinta btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} Contáctanos</a>
             <a class="btn btn--claro btn--grande" href="#incluye">Qué incluye {I["flecha"]}</a>
           </div>
+          <p class="hero__correo lp-hero__correo entra" style="--d:.28s">¿Prefieres correo? Escríbenos a <a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a></p>
         </div>
         <div class="lp-hero__vis activo entra" style="--d:.3s" aria-hidden="true">{vis}</div>
       </div>
@@ -495,7 +496,7 @@ def _pagina(clave, cfg, wa_link):
 
     <section class="sec sec--clara faq">
       <div class="cont faq__grid">
-        <header class="encabezado" data-revelar><p class="etq">Preguntas frecuentes</p><h2>{P["faq_h2"]}</h2><p>Si tu duda no está aquí, escríbenos por WhatsApp.</p></header>
+        <header class="encabezado" data-revelar><p class="etq">Preguntas frecuentes</p><h2>{P["faq_h2"]}</h2><p>Si tu duda no está aquí, escríbenos por WhatsApp o a <a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a>.</p></header>
         <div class="faq__lista" data-revelar>{faq}</div>
       </div>
     </section>
@@ -511,9 +512,9 @@ def _pagina(clave, cfg, wa_link):
       <canvas class="final__campo" id="campo-final" aria-hidden="true"></canvas>
       <div class="cont final__caja" data-revelar>
         <span class="final__marca">{inicio.MARCA}</span>
-        <h2>Empecemos por un diagnóstico gratis.</h2>
+        <h2>Hablemos de tu negocio.</h2>
         <p>Cuéntanos cómo trabajas hoy y te decimos por dónde empezar, con precio claro.</p>
-        <a class="btn btn--verde btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} Escríbenos por WhatsApp</a>
+        <div class="final__botones"><a class="btn btn--verde btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} Escríbenos por WhatsApp</a><a class="btn btn--claro btn--grande" href="mailto:hola@enlazastudio.com">✉ Escríbenos un correo</a></div>
       </div>
     </section>
   </main>

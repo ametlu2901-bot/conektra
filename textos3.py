@@ -19,7 +19,7 @@ ES = dict(
     h1_seo="Páginas web, CRM y automatización de WhatsApp en Panamá",
     h1_a="Tu negocio,", h1_b="mejor conectado.",
     lead="Conectamos tu WhatsApp, tus ventas, tus cobros y tus reportes en un solo sistema. Vendes más, cobras a tiempo y sabes cómo va tu negocio sin tener que preguntar.",
-    cta1="Diagnóstico gratis", cta2="Ver soluciones",
+    cta1="Contáctanos", cta2="Ver soluciones", correo_t="¿Prefieres correo? Escríbenos a", correo_btn="Escríbenos un correo",
     nota_hero="Para negocios en Panamá que atienden por WhatsApp",
 
     # panel de ejemplo de la portada
@@ -111,7 +111,7 @@ ES = dict(
 
     # preguntas
     faq_etiqueta="Preguntas frecuentes", faq_h2="Preguntas frecuentes sobre páginas web y automatización.",
-    faq_p="Si tu duda no está aquí, escríbenos por WhatsApp.",
+    faq_p="Si tu duda no está aquí, escríbenos por WhatsApp o a hola@enlazastudio.com.",
     faqs=[
         ("¿Qué hace Enlaza Studio exactamente?", "Conectamos las partes de tu negocio que hoy funcionan por separado: tu página, tu WhatsApp, tus clientes, tus cobros y tus reportes. Puedes empezar con una sola solución y sumar el resto después."),
         ("¿Cuánto cuesta?", "Depende de lo que necesites. Después del diagnóstico te enviamos una propuesta con precio claro antes de empezar. También puedes trabajar con un plan mensual."),
@@ -159,7 +159,7 @@ EN = dict(
     h1_seo="Websites, CRM and WhatsApp automation in Panama",
     h1_a="Your business,", h1_b="better connected.",
     lead="We connect your WhatsApp, sales, payments and reports in one system. You sell more, get paid on time and know how your business is doing without having to ask.",
-    cta1="Free diagnosis", cta2="See solutions",
+    cta1="Contact us", cta2="See solutions", correo_t="Prefer email? Write to", correo_btn="Send us an email",
     nota_hero="For businesses in Panama that serve customers on WhatsApp",
 
     panel=dict(
@@ -245,7 +245,7 @@ EN = dict(
     escena_pie="Fewer lost chats. More closed jobs.",
 
     faq_etiqueta="FAQ", faq_h2="What people ask us most.",
-    faq_p="If your question isn't here, message us on WhatsApp.",
+    faq_p="If your question isn't here, message us on WhatsApp or email hola@enlazastudio.com.",
     faqs=[
         ("What exactly does Enlaza Studio do?", "We connect the parts of your business that work separately today: your website, WhatsApp, customers, payments and reports. You can start with one solution and add the rest later."),
         ("How much does it cost?", "It depends on what you need. After the diagnosis we send you a proposal with a clear price before we start. You can also work with a monthly plan."),

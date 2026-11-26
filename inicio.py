@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "7"
+V_CSS = "8"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
@@ -285,7 +285,7 @@ def _contacto(T, wa, privacidad):
           <h2>{F["h2"]}</h2>
           <p>{F["p"]}</p>
           <ul class="contacto__puntos">{puntos}</ul>
-          <p class="contacto__wa"><small>{F["o_wa"]}</small><a href="{wa}" target="_blank" rel="noopener">{I["wa"]} WhatsApp {TEL}</a></p>
+          <p class="contacto__wa"><small>{F["o_wa"]}</small><a href="{wa}" target="_blank" rel="noopener">{I["wa"]} WhatsApp {TEL}</a><a href="mailto:hola@enlazastudio.com">✉ hola@enlazastudio.com</a></p>
         </div>
         <div class="contacto__form">
           <form class="form" id="formulario" novalidate>
@@ -326,7 +326,7 @@ def _final_y_pie(T, wa, otra, rel):
         <span class="final__marca">{MARCA}</span>
         <h2>{T["cierre_h2"]}</h2>
         <p>{T["cierre_p"]}</p>
-        <a class="btn btn--verde btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {T["cierre_cta"]}</a>
+        <div class="final__botones"><a class="btn btn--verde btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {T["cierre_cta"]}</a><a class="btn btn--claro btn--grande" href="mailto:hola@enlazastudio.com">✉ {T["correo_btn"]}</a></div>
       </div>
     </section>
   </main>
@@ -383,6 +383,7 @@ def pagina(T, cfg, wa_link):
           <a class="btn btn--tinta btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {T["cta1"]}</a>
           <a class="btn btn--claro btn--grande" href="#soluciones">{T["cta2"]} {I["flecha"]}</a>
         </div>
+        <p class="hero__correo entra" style="--d:.32s">{T["correo_t"]} <a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a></p>
         <p class="hero__nota entra" style="--d:.36s"><i></i>{T["nota_hero"]}</p>
       </div>
       <div class="cont-ancho hero__producto entra" style="--d:.45s">

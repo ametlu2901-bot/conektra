@@ -764,3 +764,14 @@ button { font: inherit; color: inherit; }
 /* sectores de la portada con enlace a su página */
 .chips a { color: inherit; }
 .chips a:hover { color: var(--esmeralda); }
+
+/* invitación a escribir por correo */
+.hero__correo { margin-top: 18px; font-size: .95rem; color: var(--gris); }
+.hero__correo a { color: var(--esmeralda); font-weight: 500; border-bottom: 1px solid rgba(22, 122, 80, .35); }
+.hero__correo a:hover { border-color: var(--esmeralda); }
+.lp-hero__correo { text-align: left; }
+.final__botones { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 8px; }
+.final .btn--claro { background: rgba(255, 255, 255, .08); color: #eef3ef; box-shadow: 0 0 0 1px rgba(255, 255, 255, .22); }
+.final .btn--claro:hover { background: rgba(255, 255, 255, .14); box-shadow: 0 0 0 1px rgba(255, 255, 255, .5); }
+.contacto__wa a + a { margin-top: 6px; }
+.faq .encabezado p a { color: var(--esmeralda); border-bottom: 1px solid rgba(22, 122, 80, .35); }
