@@ -173,8 +173,11 @@ V.conversaciones = (abierta) => {
   const marca = m => m.dir !== 'out' ? '' : m.estado === 'fallido' ? ' <span class="msg__fallo">No se entregó</span>' : `<span class="msg__visto${m.estado === 'leido' ? ' msg__visto--leido' : ''}">${m.estado === 'enviado' && real ? ' ✓' : ' ✓✓'}</span>`;
   const msgs = actual.mensajes.map(m => `<div class="msg msg--${m.dir}">${esc(m.texto)}<small>${m.origen === 'celular' ? 'Desde tu celular · ' : ''}${new Date(m.fecha).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' })}${marca(m)}</small></div>`).join('');
   const abierto24 = !real || db.dentroDe24h(actual);
-  return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
-    ${db.negocio().whatsapp_conectado ? '' : `<div class="aviso-conectar aviso-conectar--fino">${I.wa}<div><b>Conecta tu WhatsApp para ver tus chats reales</b><p>Estas conversaciones son de ejemplo. Sigues usando WhatsApp en tu celular y los mensajes también llegan aquí.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}
+  // Encabezado de una línea: la bandeja se queda con todo el alto de la pantalla.
+  const estadoWa = db.negocio().whatsapp_conectado
+    ? `<span class="cab-chat__estado cab-chat__estado--ok">${I.wa}<span>WhatsApp conectado${db.negocio().whatsapp_numero ? ` · <b class="mono">${esc(db.negocio().whatsapp_numero)}</b>` : ''}</span></span>`
+    : `<span class="cab-chat__estado">${I.wa}<span><b>Chats de ejemplo.</b> Conecta tu WhatsApp para ver los reales; sigues usándolo en tu celular.</span><a class="btn btn--verde btn--mini" href="#/ajustes">Conectar</a></span>`;
+  return `<div class="cab-chat"><h1>Conversaciones</h1>${estadoWa}</div>
     <div class="bandeja"><nav class="bandeja__lista">${lista}</nav>
       <section class="chat"><header><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></span></header>
         <div class="chat__cuerpo">${msgs}</div>
@@ -531,6 +534,8 @@ function render() {
   const vista = V[ruta] ? ruta : 'inicio';
   document.body.innerHTML = marco(vista, V[vista](extra ? decodeURIComponent(extra) : undefined));
   document.title = `${RUTAS.find(r => r[0] === vista)?.[1] || 'Ajustes'} · Enlaza Studio`;
+  // En Conversaciones la pantalla no se desplaza: la bandeja llena el alto disponible.
+  document.body.classList.toggle('en-chat', vista === 'conversaciones' && !!$('.bandeja'));
   enlazar(vista);
 }
 

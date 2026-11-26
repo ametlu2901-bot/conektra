@@ -183,8 +183,20 @@ a.kpi:hover { box-shadow: 0 0 0 1px var(--linea-2), 0 10px 24px -16px rgba(11, 3
 .aviso-conectar--fino > svg { width: 30px; height: 30px; padding: 7px; border-radius: 10px; }
 .aviso-conectar--fino b { font-size: .9rem; }
 .aviso-conectar--fino p { font-size: .8rem; margin-top: 0; }
-/* bandeja: lista · chat · ficha del cliente; ocupa el alto de la pantalla */
-.bandeja { display: grid; grid-template-columns: 300px minmax(0, 1fr) 300px; height: max(480px, calc(100vh - 372px)); border-radius: 16px; overflow: hidden; background: var(--papel); box-shadow: 0 0 0 1px var(--linea); }
+/* bandeja: lista · chat · ficha del cliente; ocupa todo el alto que queda (body.en-chat) */
+.bandeja { display: grid; grid-template-columns: 290px minmax(0, 1fr) 290px; height: max(480px, calc(100vh - 300px)); border-radius: 16px; overflow: hidden; background: var(--papel); box-shadow: 0 0 0 1px var(--linea); }
+.en-chat .portal { height: 100vh; min-height: 0; }
+.en-chat .principal { min-height: 0; overflow: hidden; }
+.en-chat .vista { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding-top: 14px; padding-bottom: 16px; }
+.en-chat .bandeja { flex: 1; min-height: 0; height: auto; }
+.cab-chat { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.cab-chat h1 { font-size: 1.5rem; letter-spacing: -.04em; }
+.cab-chat__estado { display: flex; align-items: center; gap: 10px; margin-left: auto; padding: 6px 6px 6px 12px; border-radius: 999px; background: var(--bosque); color: #dcebe2; font-size: .82rem; }
+.cab-chat__estado > svg { width: 16px; height: 16px; flex: none; color: #4be38a; }
+.cab-chat__estado b { color: #fff; font-weight: 600; }
+.cab-chat__estado .btn--mini { background: var(--verde); color: var(--bosque); }
+.cab-chat__estado--ok { padding-right: 14px; background: rgba(54, 201, 138, .12); color: var(--esmeralda); }
+.cab-chat__estado--ok b { color: var(--tinta); }
 .ficha-cli { display: flex; flex-direction: column; gap: 10px; padding: 18px 16px; overflow-y: auto; border-left: 1px solid var(--linea); }
 .ficha-cli__quien { display: grid; justify-items: center; gap: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--linea); text-align: center; }
 .ficha-cli__quien .avatar { width: 52px; height: 52px; font-size: 1rem; margin-bottom: 4px; }
@@ -409,6 +421,10 @@ a.kpi:hover { box-shadow: 0 0 0 1px var(--linea-2), 0 10px 24px -16px rgba(11, 3
   .tarj { cursor: default; }
   .tarj__mover { display: block; }
   .bandeja { grid-template-columns: minmax(0, 1fr); height: auto; }
+  .en-chat .portal { height: auto; }
+  .en-chat .principal { overflow: visible; }
+  .en-chat .vista { display: grid; }
+  .cab-chat__estado { margin-left: 0; border-radius: 14px; }
   .ficha-cli { display: none; }
   .bandeja__lista { max-height: 240px; border-right: 0; border-bottom: 1px solid var(--linea); }
   .chat__cuerpo { min-height: 320px; }
