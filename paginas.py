@@ -409,8 +409,13 @@ def generar(raiz, cfg, I, LOGO, extra=()):
 
     # ---------- sitemap y robots ----------
     urls = [""] + list(extra) + ["en/"] + escritas
+    # Prioridad: la portada; después los servicios principales; las páginas por tipo de negocio, al final.
+    import landing
+    principales = {landing.PAGINAS[k]["ruta"] for k in landing.ORDEN}
+    sectores = {landing.PAGINAS[k]["ruta"] for k in landing.SECTORES}
+    prioridad = lambda u: "1.0" if u == "" else "0.9" if u in principales else "0.8" if u == "en/" else "0.4" if u in sectores else "0.6"
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(
-        f"  <url><loc>{d}{u}</loc><lastmod>{FECHA}</lastmod><priority>{'1.0' if u in ('', 'en/') else '0.8'}</priority></url>\n" for u in urls) + "</urlset>\n"
+        f"  <url><loc>{d}{u}</loc><lastmod>{FECHA}</lastmod><priority>{prioridad(u)}</priority></url>\n" for u in urls) + "</urlset>\n"
     with open(os.path.join(raiz, "sitemap.xml"), "w", encoding="utf-8", newline="\n") as f:
         f.write(sitemap)
     with open(os.path.join(raiz, "robots.txt"), "w", encoding="utf-8", newline="\n") as f:

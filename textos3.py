@@ -6,8 +6,8 @@ Las integraciones se describen según su estado real (ver integraciones.py).
 
 ES = dict(
     lang="es", ruta="", otra_ruta="en/", otra="EN", otra_nombre="English",
-    titulo="Páginas web y automatización de WhatsApp en Panamá | Enlaza Studio",
-    descripcion="Páginas web, CRM para WhatsApp, cobranza automática y automatización de WhatsApp Business para pequeños negocios en Panamá. Todo conectado en un solo sistema. Diagnóstico gratis.",
+    titulo="Páginas web e integración de WhatsApp en Panamá | Enlaza Studio",
+    descripcion="Diseño de páginas web, integración de WhatsApp Business API, pagos con Yappy, CRM y software a medida para negocios en Panamá. Todo conectado en un solo sistema. Diagnóstico gratis.",
     eslogan="Tu negocio, mejor conectado.",
     wa_msg="Hola Enlaza Studio, quiero un diagnóstico para mi negocio.",
 
@@ -16,7 +16,7 @@ ES = dict(
 
     # portada
     anuncio_tag="Nuevo", anuncio="Cobranza automática por WhatsApp",
-    h1_seo="Páginas web, CRM y automatización de WhatsApp en Panamá",
+    h1_seo="Páginas web, integración de WhatsApp y software a medida en Panamá",
     h1_a="Tu negocio,", h1_b="mejor conectado.",
     lead="Conectamos tu WhatsApp, tus ventas, tus cobros y tus reportes en un solo sistema. Vendes más, cobras a tiempo y sabes cómo va tu negocio sin tener que preguntar.",
     cta1="Contáctanos", cta2="Ver soluciones", correo_t="¿Prefieres correo? Escríbenos a", correo_btn="Escríbenos un correo",

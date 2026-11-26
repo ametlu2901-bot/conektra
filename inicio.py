@@ -313,6 +313,10 @@ def _final_y_pie(T, wa, otra, rel):
     P = T["pie"]
     cobranza = "Cobranza automática" if T["lang"] == "es" else "Automatic collections"
     sol = "".join(f'<a href="{rel(S["enlace"][1]) if S["enlace"][1] and T["lang"] == "es" else "#sol-" + S["id"]}">{S["enlace"][0] if S["enlace"][1] else cobranza}</a>' for S in T["soluciones"])
+    if T["lang"] == "es":
+        # En español, el pie enlaza todas las páginas de servicio (así Google las encuentra desde la portada).
+        import landing
+        sol = "".join(f'<a href="{landing.PAGINAS[k]["ruta"]}">{landing.PAGINAS[k]["menu"]}</a>' for k in landing.ORDEN)
     emp = "".join(f'<a href="{h}">{t}</a>' for h, t in T["nav"][1:])
     return f'''    <section class="final cierre" id="final">
       <canvas class="final__campo" id="campo-final" aria-hidden="true"></canvas>
