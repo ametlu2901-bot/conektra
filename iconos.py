@@ -24,8 +24,8 @@ I = {
     "escudo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.9 7.5-9.5V6L12 3Z"/><path d="m8.8 12.2 2.2 2.2 4.4-4.6"/></svg>',
     "rayo": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>',
 }
-LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M21.19 7.17A10 10 0 1 0 21.19 24.83" fill="none" stroke="#f1f0e7" stroke-width="4.8" stroke-linecap="round"/><path d="M21.19 7.17A10 10 0 0 1 24.69 10.26M21.19 24.83A10 10 0 0 0 24.69 21.74" fill="none" stroke="#36c98a" stroke-opacity=".5" stroke-width="4.8" stroke-linecap="round"/><circle cx="21.19" cy="7.17" r="3.6" fill="#36c98a"/><circle cx="21.19" cy="24.83" r="3.6" fill="#36c98a"/></svg>'
-NUCLEO = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M21.19 7.17A10 10 0 1 0 21.19 24.83" fill="none" stroke="#f1f0e7" stroke-width="4.8" stroke-linecap="round"/><path d="M21.19 7.17A10 10 0 0 1 24.69 10.26M21.19 24.83A10 10 0 0 0 24.69 21.74" fill="none" stroke="#36c98a" stroke-opacity=".5" stroke-width="4.8" stroke-linecap="round"/><circle cx="21.19" cy="7.17" r="3.6" fill="#36c98a"/><circle cx="21.19" cy="24.83" r="3.6" fill="#36c98a"/></svg>'
+LOGO = '<svg viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-30 16 16)" fill="none" stroke-width="3.5"><path d="M5.5 16a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" stroke="#f1f0e7"/><path d="M18.53 9.07A7 7 0 1 1 14.10 11.55" stroke="#36c98a"/></g></svg>'
+NUCLEO = '<svg viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-30 16 16)" fill="none" stroke-width="3.5"><path d="M5.5 16a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" stroke="#f1f0e7"/><path d="M18.53 9.07A7 7 0 1 1 14.10 11.55" stroke="#36c98a"/></g></svg>'
 
 # íconos agregados en la versión 2.0
 I["tienda"] = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 9h16l-1.2-4.2A1 1 0 0 0 17.8 4H6.2a1 1 0 0 0-1 .8L4 9Z"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 20v-5h4v5"/></svg>'
