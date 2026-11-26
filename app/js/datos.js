@@ -143,7 +143,9 @@ export async function iniciar() {
   // Si vuelve del enlace del correo, manda el modo real (aunque antes haya visto la demostración).
   const vieneDelCorreo = location.hash.includes('access_token=') || location.search.includes('code=');
   if (vieneDelCorreo) { try { localStorage.removeItem(DEMO); } catch (_) {} }
-  if (localStorage.getItem(DEMO)) { cargarDemo(); return 'demo'; }
+  // Solo la marca nueva ('1') cuenta: la versión anterior guardaba otra cosa con la misma clave.
+  if (localStorage.getItem(DEMO) === '1') { cargarDemo(); return 'demo'; }
+  try { localStorage.removeItem(DEMO); } catch (_) {}
   if (!hayConexion()) return 'fuera';
   const s = await cliente();
   const { data: { session } } = await s.auth.getSession();
@@ -254,7 +256,7 @@ const nid = () => D.negocio.id;
 const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : id());
 
 // ---------- sesión (para saber si se muestra el portal) ----------
-export const sesion = { actual: () => (modo === 'demo' ? !!localStorage.getItem(DEMO) && !!D : !!usuario && !!D) };
+export const sesion = { actual: () => (modo === 'demo' ? localStorage.getItem(DEMO) === '1' && !!D : !!usuario && !!D) };
 
 // ---------- lecturas ----------
 export const negocio = () => D.negocio;
