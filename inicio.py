@@ -64,6 +64,8 @@ def _cabecera(T, wa, otra):
       <nav class="cab__nav" id="menu" aria-label="Principal">
         {nav}
         <a class="cab__idioma" href="{otra}" hreflang="{T["otra"].lower()}" title="{T["otra_nombre"]}">{T["otra"]}</a>
+        <a href="/app/">{T["entrar"]}</a>
+        <a class="btn btn--claro btn--chico" href="/app/#demo">{T["sistema"]}</a>
         <a class="btn btn--tinta btn--chico" href="{wa}" target="_blank" rel="noopener">{T["cta"]} {I["flecha"]}</a>
       </nav>
       <button class="cab__menu" id="hamburguesa" type="button" aria-label="{T["menu"]}" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
@@ -378,7 +380,7 @@ def pagina(T, cfg, wa_link):
         <p class="hero__lead entra" style="--d:.18s">{T["lead"]}</p>
         <div class="hero__botones entra" style="--d:.28s">
           <a class="btn btn--tinta btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {T["cta1"]}</a>
-          <a class="btn btn--claro btn--grande" href="#soluciones">{T["cta2"]} {I["flecha"]}</a>
+          <a class="btn btn--claro btn--grande" href="/app/#demo">{T["sistema"]} {I["flecha"]}</a>
         </div>
         <p class="hero__correo entra" style="--d:.32s">{T["correo_t"]} <a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a></p>
         <p class="hero__nota entra" style="--d:.36s"><i></i>{T["nota_hero"]}</p>

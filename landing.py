@@ -491,6 +491,8 @@ def _cabecera(wa):
       <a class="marca" href="../" aria-label="Enlaza Studio, inicio">{inicio.MARCA}<span>Enlaza Studio</span></a>
       <nav class="cab__nav" id="menu" aria-label="Principal">
         {nav}
+        <a href="/app/">{T["entrar"]}</a>
+        <a class="btn btn--claro btn--chico" href="/app/#demo">{T["sistema"]}</a>
         <a class="btn btn--tinta btn--chico" href="{wa}" target="_blank" rel="noopener">{T["cta"]} {I["flecha"]}</a>
       </nav>
       <button class="cab__menu" id="hamburguesa" type="button" aria-label="{T["menu"]}" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
@@ -657,6 +659,8 @@ def _cab_doc(T, casa, wa):
       <a class="marca" href="{casa}" aria-label="Enlaza Studio">{inicio.MARCA}<span>Enlaza Studio</span></a>
       <nav class="cab__nav" id="menu" aria-label="{etiqueta}">
         {nav}
+        <a href="/app/">{T["entrar"]}</a>
+        <a class="btn btn--claro btn--chico" href="/app/#demo">{T["sistema"]}</a>
         <a class="btn btn--tinta btn--chico" href="{wa}" target="_blank" rel="noopener">{T["cta"]} {I["flecha"]}</a>
       </nav>
       <button class="cab__menu" id="hamburguesa" type="button" aria-label="{T["menu"]}" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>

@@ -133,6 +133,8 @@ async function cliente() {
 export let errorDelEnlace = '';
 
 export async function iniciar() {
+  // «Mira nuestro sistema» desde la página de Enlaza: /app/#demo abre la demostración directo.
+  if (location.hash === '#demo') { try { localStorage.setItem(DEMO, '1'); } catch (_) {} history.replaceState(null, '', location.pathname + '#/inicio'); }
   const datosUrl = new URLSearchParams(location.hash.slice(1) + '&' + location.search.slice(1));
   if (datosUrl.get('error_code') || datosUrl.get('error')) {
     errorDelEnlace = datosUrl.get('error_code') === 'otp_expired'
