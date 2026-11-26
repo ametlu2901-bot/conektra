@@ -404,6 +404,8 @@ if __name__ == "__main__":
     lp = landing.generar(RAIZ, CONFIG, wa_link)
     print("ok", len(lp), "páginas de servicio (SEO):", ", ".join(lp))
     hechas = paginas.generar(RAIZ, CONFIG, I, LOGO, extra=lp)
+    extra = landing.generar_extra(RAIZ, CONFIG, wa_link)
+    print("ok diseño 3.0:", ", ".join(extra))
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if copiar_portal():
         print("ok portal -> app/")

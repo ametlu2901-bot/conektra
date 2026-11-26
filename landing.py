@@ -324,3 +324,138 @@ def generar(raiz, cfg, wa_link):
             f.write(_pagina(clave, cfg, wa_link))
         hechas.append(PAGINAS[clave]["ruta"])
     return hechas
+
+
+# ---------------------------------------------------------------------------
+# Privacidad (es/en) y 404 con el diseño 3.0 (antes usaban conektra.css)
+# ---------------------------------------------------------------------------
+def _head_doc(lang, pre, url, titulo, meta, noindex=False, alternos=()):
+    alt = "".join(f'\n  <link rel="alternate" hreflang="{h}" href="{u}">' for h, u in alternos)
+    robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
+    canon = f'\n  <link rel="canonical" href="{url}">' if url else ""
+    return f'''<!doctype html>
+<html lang="{lang}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{titulo}</title>
+  <meta name="description" content="{meta}">{canon}{alt}{robots}
+  <meta name="theme-color" content="#fbfbf8">
+  <meta name="color-scheme" content="light">
+  <link rel="icon" href="{pre}img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="{pre}img/favicon-48.png" sizes="48x48" type="image/png">
+  <link rel="apple-touch-icon" href="{pre}img/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="{inicio.FUENTES}" rel="stylesheet">
+  <link rel="stylesheet" href="{pre}css/v3.css?v={inicio.V_CSS}">
+</head>
+'''
+
+
+def _cab_doc(T, casa, wa):
+    nav = "".join(f'<a href="{casa}#{i}">{t}</a>' for i, t in T["nav"])
+    etiqueta = "Principal" if T["lang"] == "es" else "Main"
+    return f'''  <header class="cab" id="cab">
+    <div class="cab__barra">
+      <a class="marca" href="{casa}" aria-label="Enlaza Studio">{inicio.MARCA}<span>Enlaza Studio</span></a>
+      <nav class="cab__nav" id="menu" aria-label="{etiqueta}">
+        {nav}
+        <a class="btn btn--tinta btn--chico" href="{wa}" target="_blank" rel="noopener">{T["cta"]} {I["flecha"]}</a>
+      </nav>
+      <button class="cab__menu" id="hamburguesa" type="button" aria-label="{T["menu"]}" aria-expanded="false" aria-controls="menu"><span></span><span></span></button>
+    </div>
+  </header>
+'''
+
+
+def _pie_doc(T, pre, casa, wa):
+    es = T["lang"] == "es"
+    if es:
+        serv = "".join(f'<a href="{pre}{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in ORDEN)
+    else:
+        serv = "".join(f'<a href="{casa}#sol-{S["id"]}">{S["tag"]}</a>' for S in T["soluciones"])
+    P = T["pie"]
+    emp = "".join(f'<a href="{casa}#{i}">{t}</a>' for i, t in T["nav"][1:])
+    titulo_serv = "Servicios" if es else P["soluciones"]
+    return f'''  <footer class="pie cierre">
+    <div class="cont">
+      <div class="pie__grid">
+        <div class="pie__marca"><a class="marca" href="{casa}">{inicio.MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
+        <nav aria-label="{titulo_serv}"><h2>{titulo_serv}</h2>{serv}</nav>
+        <nav aria-label="Enlaza Studio"><h2>Enlaza Studio</h2>{emp}</nav>
+        <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a></div>
+      </div>
+      <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
+      <div class="pie__base"><span>{P["derechos"]}</span><span>{P["hecho"]}</span></div>
+    </div>
+  </footer>
+'''
+
+
+def generar_extra(raiz, cfg, wa_link):
+    import paginas
+    d = cfg["dominio"]
+    hechas = []
+    for lang, T in (("es", textos3.ES), ("en", textos3.EN)):
+        P = paginas.PRIVACIDAD[lang]
+        ruta = paginas.RUTAS[lang]["privacidad"]
+        pre = "../" * ruta.count("/")
+        casa = pre + ("" if lang == "es" else "en/")
+        wa = wa_link(T["wa_msg"])
+        es = lang == "es"
+        fecha = "Última actualización: 26 de noviembre de 2026" if es else "Last updated: November 26, 2026"
+        correo = "Escríbenos por WhatsApp o a" if es else "Message us on WhatsApp or email"
+        bloques = "".join(f'<section class="doc__bloque"><h2>{t}</h2><p>{x}</p></section>' for t, x in P["bloques"])
+        alternos = (("es", d + paginas.RUTAS["es"]["privacidad"]), ("en", d + paginas.RUTAS["en"]["privacidad"]))
+        html = (_head_doc(lang, pre, d + ruta, f'{P["titulo"]} | Enlaza Studio', P["meta"], alternos=alternos)
+                + '<body>\n' + _cab_doc(T, casa, wa) + f'''
+  <main id="contenido" class="doc">
+    <div class="cont doc__cont">
+      <nav class="migas" aria-label="{"Ruta" if es else "Breadcrumb"}"><a href="{casa}">{"Inicio" if es else "Home"}</a><span aria-hidden="true">/</span><span aria-current="page">{P["titulo"]}</span></nav>
+      <p class="etq">Legal</p>
+      <h1>{P["titulo"]}</h1>
+      <p class="doc__fecha">{fecha}</p>
+      {bloques}
+      <section class="doc__bloque"><h2>{P["contacto"]}</h2><p>{correo} <a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a> · <a href="{wa}" target="_blank" rel="noopener">WhatsApp {inicio.TEL}</a></p></section>
+    </div>
+  </main>
+
+''' + _pie_doc(T, pre, casa, wa) + f'''  <script src="{pre}js/v3.js?v={inicio.V_JS}" defer></script>
+</body>
+</html>
+''')
+        carpeta = os.path.join(raiz, ruta)
+        os.makedirs(carpeta, exist_ok=True)
+        with open(os.path.join(carpeta, "index.html"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(html)
+        hechas.append(ruta)
+
+    # 404: rutas absolutas porque GitHub Pages lo muestra en cualquier dirección
+    T = textos3.ES
+    wa = wa_link(T["wa_msg"])
+    servicios = "".join(f'<a href="{d}{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in ORDEN)
+    html = (_head_doc("es", d, "", "Página no encontrada | Enlaza Studio", "Esta página no existe o cambió de dirección.", noindex=True)
+            + '<body>\n' + _cab_doc(T, d, wa) + f'''
+  <main id="contenido" class="e404v">
+    <canvas class="hero__campo" id="campo" aria-hidden="true"></canvas>
+    <div class="cont e404v__caja">
+      <span class="e404v__sim">{inicio.MARCA}</span>
+      <p class="etq">Error 404</p>
+      <h1>Este enlace <span class="degradado">se soltó.</span></h1>
+      <p>La página que buscas no existe o cambió de dirección.<br><span lang="en">This page doesn't exist or has moved.</span></p>
+      <div class="hero__botones">
+        <a class="btn btn--tinta btn--grande" href="{d}">Ir al inicio {I["flecha"]}</a>
+        <a class="btn btn--claro btn--grande" href="{d}en/" lang="en">Go to homepage {I["flecha"]}</a>
+      </div>
+      <p class="e404v__servicios">{servicios}</p>
+    </div>
+  </main>
+
+''' + _pie_doc(T, d, d, wa) + f'''  <script src="{d}js/v3.js?v={inicio.V_JS}" defer></script>
+</body>
+</html>
+''')
+    with open(os.path.join(raiz, "404.html"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(html)
+    return hechas + ["404.html"]
