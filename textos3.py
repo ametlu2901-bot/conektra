@@ -11,7 +11,7 @@ ES = dict(
     eslogan="Tu negocio, mejor conectado.",
     wa_msg="Hola Enlaza Studio, quiero un diagnóstico para mi negocio.",
 
-    nav=[("soluciones", "Soluciones"), ("integraciones", "Integraciones"), ("como-trabajamos", "Cómo trabajamos"), ("preguntas", "Preguntas")],
+    nav=[("soluciones", "Soluciones"), ("como-trabajamos", "Cómo trabajamos"), ("preguntas", "Preguntas")],
     cta="Hablemos", menu="Menú",
 
     # portada
@@ -152,7 +152,7 @@ EN = dict(
     eslogan="Your business, better connected.",
     wa_msg="Hi Enlaza Studio, I'd like a diagnosis for my business.",
 
-    nav=[("soluciones", "Solutions"), ("integraciones", "Integrations"), ("como-trabajamos", "How we work"), ("preguntas", "FAQ")],
+    nav=[("soluciones", "Solutions"), ("como-trabajamos", "How we work"), ("preguntas", "FAQ")],
     cta="Let's talk", menu="Menu",
 
     anuncio_tag="New", anuncio="Automatic payment reminders on WhatsApp",

@@ -387,7 +387,6 @@ def pagina(T, cfg, wa_link):
     </section>
 
 {_soluciones(T, rel, wa)}
-{_red(T)}
 {_real(T, pre)}
 {_proceso(T)}
 {_preguntas(T)}
