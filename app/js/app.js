@@ -72,7 +72,7 @@ function marco(ruta, contenido) {
         <label class="buscar">${I.lupa}<input id="buscar" type="search" placeholder="Buscar clientes…" autocomplete="off"></label>
         <button class="avatar avatar--btn" id="salir" title="Cerrar sesión">${iniciales(N.dueno || N.nombre)}</button>
       </header>
-      ${db.enModoReal() ? '' : `<div class="demo-banda">${I.escudo}<span><b>Modo demostración.</b> Los datos son de ejemplo y se guardan solo en este navegador.</span></div>`}
+      ${db.enModoReal() ? '' : `<div class="demo-banda">${I.escudo}<span><b>Estás viendo una demo.</b> Los clientes, cotizaciones y cobros son de ejemplo: pruébalo con confianza, lo que cambies se queda solo en este navegador.</span>${db.hayConexion() ? '<button class="btn btn--mini btn--tinta" id="demo-crear">Crear mi cuenta</button>' : ''}</div>`}
       <main class="vista" id="vista">${contenido}</main>
     </div>
   </div>`;
@@ -414,6 +414,8 @@ function enlazar(vista) {
   $('#abrir-menu').addEventListener('click', () => document.body.classList.toggle('menu-abierto'));
   $$('.lado a').forEach(a => a.addEventListener('click', () => document.body.classList.remove('menu-abierto')));
   $('#salir').addEventListener('click', async () => { await db.salir(); location.hash = ''; entrar(); });
+  const demoCrear = $('#demo-crear');
+  if (demoCrear) demoCrear.addEventListener('click', async () => { await db.salir(); location.hash = ''; registro(); });
   const buscar = $('#buscar');
   buscar.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = '#/clientes/' + encodeURIComponent(buscar.value.trim()); });
   if (vista === 'clientes') { const [, , f] = location.hash.split('/'); if (f) buscar.value = decodeURIComponent(f); }

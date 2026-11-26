@@ -69,6 +69,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .buscar input { flex: 1; min-width: 0; border: 0; background: transparent; outline: 0; font-size: .88rem; color: var(--tinta); }
 .demo-banda { display: flex; align-items: center; gap: 10px; margin: 18px 28px 0; padding: 10px 14px; border-radius: 12px; background: #eef7f1; box-shadow: 0 0 0 1px rgba(54, 201, 138, .3); font-size: .84rem; color: var(--tinta-2); }
 .demo-banda svg { width: 18px; height: 18px; color: var(--esmeralda); }
+.demo-banda > span { flex: 1; min-width: 0; }
+.demo-banda .btn { flex: none; }
 .vista { padding: 24px 28px 48px; display: grid; gap: 18px; align-content: start; animation: aparecer .4s var(--curva); }
 @keyframes aparecer { from { opacity: 0; transform: translateY(6px); } }
 .cab-vista { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }

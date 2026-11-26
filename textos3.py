@@ -19,7 +19,7 @@ ES = dict(
     h1_seo="Páginas web, integración de WhatsApp y software a medida en Panamá",
     h1_a="Tu negocio,", h1_b="mejor conectado.",
     lead="Conectamos tu WhatsApp, tus ventas, tus cobros y tus reportes en un solo sistema. Vendes más, cobras a tiempo y sabes cómo va tu negocio sin tener que preguntar.",
-    cta1="Contáctanos", cta2="Ver soluciones", sistema="Mira nuestro sistema", entrar="Entrar", correo_t="¿Prefieres correo? Escríbenos a", correo_btn="Escríbenos un correo",
+    cta1="Contáctanos", cta2="Ver soluciones", sistema="Mira la demo del sistema", sistema_corto="Ver demo", entrar="Entrar", correo_t="¿Prefieres correo? Escríbenos a", correo_btn="Escríbenos un correo",
     nota_hero="Para negocios en Panamá que atienden por WhatsApp",
 
     # panel de ejemplo de la portada
@@ -159,7 +159,7 @@ EN = dict(
     h1_seo="Websites, CRM and WhatsApp automation in Panama",
     h1_a="Your business,", h1_b="better connected.",
     lead="We connect your WhatsApp, sales, payments and reports in one system. You sell more, get paid on time and know how your business is doing without having to ask.",
-    cta1="Contact us", cta2="See solutions", sistema="See our system", entrar="Log in", correo_t="Prefer email? Write to", correo_btn="Send us an email",
+    cta1="Contact us", cta2="See solutions", sistema="Try the system demo", sistema_corto="View demo", entrar="Log in", correo_t="Prefer email? Write to", correo_btn="Send us an email",
     nota_hero="For businesses in Panama that serve customers on WhatsApp",
 
     panel=dict(
