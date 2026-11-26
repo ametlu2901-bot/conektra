@@ -68,13 +68,13 @@ function semilla() {
     [3, 'Bodegaje temporal', 200, 'perdido', 12],
   ].map(([k, servicio, monto, etapa, dias], j) => ({ id: id(), numero: 120 + j, contacto_id: c(k), servicio, monto, etapa, creada: hace(dias + 2), ultimo_contacto: hace(dias, j) }));
   const cobros = [
-    [1, 'Traslado de equipo', 650, en(1), 'pendiente', 3],
-    [3, 'Mudanza de apartamento', 320, en(-3), 'pendiente', 1],
-    [2, 'Mudanza de oficina', 1180, en(-1), 'pagado', 5],
-    [5, 'Acarreo de mercancía', 230, en(6), 'pendiente', 2],
-    [8, 'Anticipo traslado de mobiliario', 270, en(3), 'pendiente', 6],
-    [7, 'Anticipo mudanza a Chiriquí', 500, en(-8), 'pendiente', 4],
-  ].map(([k, concepto, monto, vence, estado, numero]) => ({ id: id(), numero, contacto_id: c(k), concepto, monto, vence, estado, pagado_el: estado === 'pagado' ? hace(0, 2) : null }));
+    [1, 'Traslado de equipo · factura #0410', 650, en(1), 'pendiente'],
+    [3, 'Mudanza de apartamento · factura #0408', 320, en(-3), 'pendiente'],
+    [2, 'Mudanza de oficina · factura #0412', 1180, en(-1), 'pagado'],
+    [5, 'Acarreo de mercancía · factura #0409', 230, en(6), 'pendiente'],
+    [8, 'Anticipo traslado de mobiliario', 270, en(3), 'pendiente'],
+    [7, 'Anticipo mudanza a Chiriquí', 500, en(-8), 'pendiente'],
+  ].map(([k, concepto, monto, vence, estado]) => ({ id: id(), contacto_id: c(k), concepto, monto, vence, estado, pagado_el: estado === 'pagado' ? hace(0, 2) : null }));
   const actividad = [
     ['seguimiento', 'Seguimiento enviado', 'Cotización #124 · sin respuesta hace 2 días', hace(0, .05)],
     ['cobro', 'Recordatorio de pago', 'Taller Díaz · vence mañana', hace(0, .2)],
@@ -140,8 +140,6 @@ function cargarDemo() {
   if (!D) { D = semilla(); guardar(); }
   // datos guardados antes de que existieran el bot y las formas de pago
   if (!D.bot || !D.pagos) { D.bot ??= botDemo(); D.pagos ??= pagosDemo(); guardar(); }
-  // datos guardados antes de que los cobros tuvieran número de factura
-  if (D.cobros.some(cb => !cb.numero)) { D.cobros.forEach((cb, j) => { cb.numero ??= j + 1; }); guardar(); }
   revisarSinRespuesta();
   return D;
 }
@@ -269,7 +267,7 @@ async function cargarReal() {
     sb.from('negocios').select('id, nombre, dueno, correo, telefono, clave_formulario').eq('id', n).single(),
     sb.from('contactos').select('id, nombre, telefono, origen, nota, creado').eq('negocio_id', n),
     sb.from('cotizaciones').select('id, numero, contacto_id, servicio, monto, etapa, creada, ultimo_contacto').eq('negocio_id', n),
-    sb.from('cobros').select('id, numero, contacto_id, concepto, monto, vence, estado, pagado_el').eq('negocio_id', n).neq('estado', 'anulado'),
+    sb.from('cobros').select('id, contacto_id, concepto, monto, vence, estado, pagado_el').eq('negocio_id', n).neq('estado', 'anulado'),
     sb.from('actividad').select('id, tipo, titulo, detalle, fecha').eq('negocio_id', n).order('fecha', { ascending: false }).limit(100),
     sb.from('conversaciones').select('id, contacto_id, ultimo_entrante, no_leidos').eq('negocio_id', n),
     sb.from('mensajes').select('conversacion_id, direccion, origen, texto, estado, fecha').eq('negocio_id', n).order('fecha').limit(2000),
@@ -514,19 +512,11 @@ export function marcarSeguimiento(qid) {
   enSupabase(sb?.from('cotizaciones').update({ ultimo_contacto: q.ultimo_contacto }).eq('id', qid));
   registrar('seguimiento', 'Seguimiento enviado', `Cotización #${q.numero} · ${contacto(q.contacto_id).nombre}`); guardar();
 }
-/** Número de factura para mostrar: #0001, #0002… (cada negocio cuenta desde el 1, sin fin). */
-export const numFactura = n => n ? '#' + String(n).padStart(4, '0') : '#…';
-export const siguienteFactura = () => Math.max(0, ...D.cobros.map(cb => cb.numero || 0)) + 1;
 export function crearCobro({ contacto_id, concepto, monto, vence }) {
-  const cb = { id: uuid(), numero: siguienteFactura(), contacto_id, concepto, monto: +monto || 0, vence, estado: 'pendiente', pagado_el: null };
+  const cb = { id: uuid(), contacto_id, concepto, monto: +monto || 0, vence, estado: 'pendiente', pagado_el: null };
   D.cobros.push(cb);
-  // En la base el número lo pone el servidor (así dos personas nunca sacan el mismo); se actualiza al responder.
-  if (modo === 'real') {
-    sb.from('cobros').insert({ id: cb.id, negocio_id: nid(), contacto_id, concepto, monto: cb.monto, vence }).select('numero').single()
-      .then(({ data, error }) => { if (error) throw error; cb.numero = data.numero; })
-      .catch(() => enSupabase(Promise.reject(new Error('cobro'))));
-  }
-  registrar('cobro', `Nuevo cobro · factura ${numFactura(cb.numero)}`, `${contacto(contacto_id).nombre} · $${cb.monto}`);
+  enSupabase(sb?.from('cobros').insert({ id: cb.id, negocio_id: nid(), contacto_id, concepto, monto: cb.monto, vence }));
+  registrar('cobro', 'Nuevo cobro', `${contacto(contacto_id).nombre} · $${cb.monto}`);
   avanzarCliente(contacto_id, 'agendado', 'registraste un cobro');
   guardar(); return cb;
 }
