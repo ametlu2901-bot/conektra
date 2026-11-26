@@ -760,3 +760,7 @@ button { font: inherit; color: inherit; }
 .e404v__servicios { margin-top: 34px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 18px; font-size: .92rem; }
 .e404v__servicios a { color: var(--gris); border-bottom: 1px solid var(--linea-2); }
 .e404v__servicios a:hover { color: var(--tinta); }
+
+/* sectores de la portada con enlace a su página */
+.chips a { color: inherit; }
+.chips a:hover { color: var(--esmeralda); }

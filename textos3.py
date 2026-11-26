@@ -82,7 +82,7 @@ ES = dict(
 
     # red (sección oscura)
     red_etiqueta="Integraciones", red_h2="WhatsApp, Google y tus cobros<br>en una sola red.",
-    red_p="Te decimos con claridad qué ya funciona, qué se conecta según tu proyecto y qué necesita desarrollo antes de prometerlo.",
+    red_p="Conectamos WhatsApp a tu sistema con la API oficial de WhatsApp Business. Te decimos con claridad qué ya funciona, qué se conecta según tu proyecto y qué necesita desarrollo.",
     estados={"op": "Operativa y probada", "disp": "Disponible según proyecto", "dev": "Requiere desarrollo"},
     principios=[("escudo", "Tus datos son tuyos", "Todo queda en tus propias cuentas, con accesos mínimos y documentados."),
                 ("hoja", "Sin licencias caras", "Usamos herramientas que ya conoces antes de proponerte pagar otra."),

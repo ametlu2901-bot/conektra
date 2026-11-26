@@ -23,7 +23,7 @@ PAGINAS = {
         meta="Diseño de páginas web en Panamá para pequeños negocios: rápidas en celular, listas para Google y Google Maps, con botón de WhatsApp y formulario de cotización. Diagnóstico gratis.",
         etq="Páginas web · Panamá",
         h1="Páginas web en Panamá que te traen clientes por WhatsApp",
-        lead="Diseñamos la página web de tu negocio para que aparezca en Google, cargue rápido en el celular y lleve a cada persona directo a tu WhatsApp o a un formulario de cotización.",
+        lead="Diseño web en Panamá para pequeños negocios: creamos la página web de tu negocio para que aparezca en Google, cargue rápido en el celular y lleve a cada persona directo a tu WhatsApp o a un formulario de cotización.",
         dolor_h2="¿Tu negocio no aparece en Google?",
         dolor=["No tienes página web, o la que tienes no te trae clientes.",
                "Cuando buscan lo que haces en Panamá, sale la competencia.",
@@ -49,7 +49,7 @@ PAGINAS = {
         meta="CRM para negocios que venden por WhatsApp en Panamá: cada cliente con su etapa, recordatorios de seguimiento automáticos y cotizaciones que no se quedan sin respuesta.",
         etq="CRM · Seguimiento de clientes",
         h1="CRM para WhatsApp: ninguna cotización sin seguimiento",
-        lead="Un CRM sencillo para negocios que atienden por WhatsApp. Cada cliente entra a un tablero con su etapa y el sistema te recuerda a quién responder antes de que se enfríe.",
+        lead="Un CRM sencillo para negocios que atienden por WhatsApp, para el seguimiento de clientes y cotizaciones. Cada cliente entra a un tablero con su etapa y el sistema te recuerda a quién responder antes de que se enfríe.",
         dolor_h2="¿Se te escapan clientes en el chat?",
         dolor=["Tus clientes están repartidos entre chats, libretas y hojas sueltas.",
                "Envías cotizaciones y se te olvida darles seguimiento.",
@@ -97,7 +97,7 @@ PAGINAS = {
     ),
     "erp": dict(
         ruta="automatizacion-whatsapp/", vista="controla", menu="Automatización de WhatsApp",
-        titulo="Automatización de WhatsApp Business en Panamá | Enlaza Studio",
+        titulo="Automatización de WhatsApp Business en Panamá: WhatsApp automatizado | Enlaza Studio",
         meta="Automatización de WhatsApp Business para negocios en Panamá con la API oficial de Meta: mensajes automáticos, seguimientos, recordatorios y un reporte diario de tu negocio.",
         etq="Automatización · WhatsApp Business",
         h1="Automatización de WhatsApp Business para tu negocio",
@@ -147,8 +147,217 @@ PAGINAS = {
              ("¿Qué pasa si una herramienta cambia?", "Seguimos contigo con soporte: si algo cambia, lo ajustamos.")],
         servicio="Integraciones de sistemas",
     ),
+    "conectar": dict(
+        ruta="conectar-whatsapp/", vista="conecta", menu="Conectar WhatsApp a tu sistema",
+        titulo="Conectar WhatsApp a tu sistema, CRM o Google Sheets | Enlaza Studio",
+        meta="Conectamos tu WhatsApp con tu sistema, tu CRM, tu página web o Google Sheets para que cada cliente y cada mensaje quede registrado solo. Para negocios en Panamá.",
+        etq="Integración · WhatsApp",
+        h1="Conectar WhatsApp a tu sistema, sin copiar nada a mano",
+        lead="Unimos tu WhatsApp con el sistema que ya usas (un CRM, una hoja de Google, tu página web o tu propio programa) para que cada cliente, cotización y pago quede registrado sin que nadie lo copie.",
+        dolor_h2="¿Tu WhatsApp está desconectado del resto?",
+        dolor=["Lo que hablas por WhatsApp no queda en ningún sistema.",
+               "Copias a mano nombres, pedidos y pagos del chat a una hoja.",
+               "Si alguien de tu equipo falta, nadie sabe qué se habló con el cliente."],
+        incluye_h2="Qué conectamos con tu WhatsApp",
+        incluye=[("Tu CRM o sistema", "Cada conversación nueva crea o actualiza al cliente en tu sistema."),
+                 ("Google Sheets", "Los datos del cliente y del pedido se guardan solos en tu hoja."),
+                 ("Tu página web", "El formulario y el botón de WhatsApp alimentan el mismo registro."),
+                 ("Avisos automáticos", "Tu sistema puede enviar mensajes de WhatsApp: confirmaciones, recordatorios y cobros."),
+                 ("API oficial de Meta", "La conexión se hace con la API oficial de WhatsApp Business, a nombre de tu negocio."),
+                 ("Tu propio programa", "Si ya tienes un sistema, lo conectamos por API o webhooks según lo que permita.")],
+        pasos_h2="Cómo conectamos WhatsApp a tu sistema",
+        faq_h2="Preguntas frecuentes sobre conectar WhatsApp",
+        faq=[("¿Se puede conectar WhatsApp a cualquier sistema?", "A casi cualquiera que permita recibir o enviar datos (API, webhooks o una hoja de cálculo). En el diagnóstico revisamos el tuyo y te decimos qué es posible."),
+             ("¿Necesito la API de WhatsApp Business?", "Para enviar y recibir mensajes de forma automática, sí. Te ayudamos a activarla a nombre de tu negocio; el número y la cuenta siguen siendo tuyos."),
+             ("¿Puedo seguir usando WhatsApp en mi celular?", "En muchos casos sí, con la coexistencia que ofrece Meta. Lo revisamos para tu número en el diagnóstico."),
+             ("¿Qué pasa con mis chats anteriores?", "Siguen en tu WhatsApp. La conexión registra lo que pasa desde que se activa.")],
+        servicio="Integración de WhatsApp con sistemas",
+    ),
+    "chatbot": dict(
+        ruta="chatbot-whatsapp/", vista="vende", menu="Chatbot y WhatsApp automatizado",
+        titulo="WhatsApp automatizado y chatbot para negocios en Panamá | Enlaza Studio",
+        meta="WhatsApp automatizado para tu negocio: respuestas automáticas, preguntas frecuentes, toma de datos y seguimiento, con la API oficial de Meta. Sin bots que pongan en riesgo tu número.",
+        etq="Chatbot · WhatsApp automatizado",
+        h1="WhatsApp automatizado: un chatbot que atiende mientras trabajas",
+        lead="Un bot de WhatsApp con respuestas automáticas, hecho con la API oficial: configuramos tu WhatsApp para que tus clientes reciban información al instante, dejen sus datos y tú solo atiendas lo que de verdad necesita una persona.",
+        dolor_h2="¿Pierdes clientes por no contestar a tiempo?",
+        dolor=["Te escriben de noche o en fin de semana y respondes tarde.",
+               "Contestas las mismas preguntas de precio, horario y ubicación todo el día.",
+               "El cliente se va con quien le respondió primero."],
+        incluye_h2="Qué hace tu WhatsApp automatizado",
+        incluye=[("Respuesta inmediata", "Saluda y orienta al cliente en segundos, a cualquier hora."),
+                 ("Preguntas frecuentes", "Precios de referencia, horarios, ubicación y servicios, escritos contigo."),
+                 ("Toma de datos", "Pide nombre, qué necesita y dónde, y lo guarda en tu sistema."),
+                 ("Pase a una persona", "Cuando el cliente lo necesita, la conversación pasa a ti o a tu equipo."),
+                 ("Seguimiento", "Si el cliente no responde una cotización, el sistema le recuerda."),
+                 ("Número seguro", "Solo con la API oficial de Meta: nada de bots no oficiales que bloquean números.")],
+        pasos_h2="Cómo armamos tu chatbot de WhatsApp",
+        faq_h2="Preguntas frecuentes sobre el chatbot de WhatsApp",
+        faq=[("¿El chatbot reemplaza a mi equipo?", "No. Se encarga de lo repetitivo y de no dejar a nadie esperando; las ventas y los casos especiales los atienden ustedes."),
+             ("¿Me pueden bloquear el número?", "Usamos solo la API oficial de WhatsApp Business de Meta y sus reglas, que es lo que protege tu número."),
+             ("¿Puede usar inteligencia artificial?", "Se puede evaluar según tu caso. Muchas veces unas respuestas bien pensadas resuelven la mayoría de las preguntas."),
+             ("¿Cuánto cuesta?", "Depende de lo que automatices. Después del diagnóstico gratis te damos un precio cerrado; aparte, Meta cobra algunos mensajes según su tarifa.")],
+        servicio="Chatbot de WhatsApp",
+    ),
+    "wabapi": dict(
+        ruta="whatsapp-business-api/", vista="controla", menu="WhatsApp Business API",
+        titulo="WhatsApp Business API en Panamá: activación y automatización | Enlaza Studio",
+        meta="Te ayudamos a activar la API oficial de WhatsApp Business (Meta) a nombre de tu negocio y a usarla para automatizar mensajes, cobros y seguimiento. Negocios en Panamá.",
+        etq="WhatsApp Business API · Meta",
+        h1="WhatsApp Business API para tu negocio en Panamá",
+        lead="La API oficial de WhatsApp Business es lo que permite automatizar mensajes de forma segura. Te ayudamos a activarla a nombre de tu negocio y la conectamos con tus clientes, tus cobros y tus reportes.",
+        dolor_h2="¿WhatsApp Business ya se te quedó corto?",
+        dolor=["La app de WhatsApp Business no te deja automatizar lo que necesitas.",
+               "Varias personas atienden el mismo número y se pierde el orden.",
+               "Quieres mandar recordatorios y avisos sin hacerlo uno por uno."],
+        incluye_h2="Qué incluye la activación de la API",
+        incluye=[("Cuenta a tu nombre", "El portafolio de Meta, el número y la cuenta de WhatsApp son de tu negocio."),
+                 ("Verificación del negocio", "Te guiamos en la verificación con Meta y en el nombre que verán tus clientes."),
+                 ("Plantillas de mensajes", "Preparamos y enviamos a aprobación tus mensajes de recordatorio, cobro y seguimiento."),
+                 ("Coexistencia", "Cuando aplica, puedes seguir usando la app en tu celular junto a la API."),
+                 ("Conexión con tu sistema", "Los mensajes quedan registrados en tu CRM, tu hoja o tu panel."),
+                 ("Costos claros", "Te explicamos la tarifa de Meta por mensaje antes de empezar.")],
+        pasos_h2="Cómo activamos tu WhatsApp Business API",
+        faq_h2="Preguntas frecuentes sobre WhatsApp Business API",
+        faq=[("¿Qué diferencia hay con la app de WhatsApp Business?", "La app es para atender a mano desde el celular. La API permite automatizar, conectar con sistemas y que varias personas atiendan de forma ordenada."),
+             ("¿Necesito tener mi negocio registrado?", "Meta pide verificar el negocio para algunas funciones. Te explicamos qué documentos necesitas según tu caso."),
+             ("¿La API es gratis?", "Activarla no tiene costo de Meta, pero Meta cobra ciertos mensajes según su tarifa por país. Te lo mostramos con números claros."),
+             ("¿El número sigue siendo mío?", "Sí. Todo queda a nombre de tu negocio; nosotros solo lo configuramos y lo conectamos.")],
+        servicio="Activación de WhatsApp Business API",
+    ),
+    "s_clinicas": dict(
+        ruta="sistema-para-clinicas/", vista="cobra", menu="Clínicas y consultorios",
+        titulo="Sistema para clínicas y consultorios: citas y recordatorios por WhatsApp | Enlaza Studio",
+        meta="Sistema para clínicas, consultorios y odontólogos en Panamá: agenda de citas, recordatorios por WhatsApp para que no falten, seguimiento de pacientes y cobros ordenados.",
+        etq="Sector · Salud",
+        h1="Sistema para clínicas y consultorios con recordatorios de citas por WhatsApp",
+        lead="Tus pacientes escriben por WhatsApp para pedir cita. Ordenamos esas solicitudes, enviamos recordatorios automáticos para que no falten y te mostramos qué se cobró y qué está pendiente.",
+        dolor_h2="¿Pacientes que no llegan a su cita?",
+        dolor=["Los pacientes olvidan la cita y pierdes ese espacio en la agenda.",
+               "La recepción pasa el día respondiendo precios y horarios por WhatsApp.",
+               "No hay un registro claro de quién debe un saldo o una cuota."],
+        incluye_h2="Qué incluye para tu clínica",
+        incluye=[("Recordatorios de cita", "Un mensaje por WhatsApp el día antes y unas horas antes de la cita."),
+                 ("Solicitudes ordenadas", "Cada paciente nuevo queda registrado con lo que necesita."),
+                 ("Respuestas rápidas", "Horarios, ubicación y servicios respondidos al instante."),
+                 ("Control de pagos", "Saldos, abonos y cuotas con recordatorios amables."),
+                 ("Página web de la clínica", "Lista para Google y Google Maps, con botón para agendar por WhatsApp."),
+                 ("Resumen diario", "Citas del día, pacientes nuevos y pagos pendientes en un mensaje.")],
+        pasos_h2="Cómo lo implementamos en tu clínica",
+        faq_h2="Preguntas frecuentes para clínicas y consultorios",
+        faq=[("¿Sirve para odontólogos, fisioterapeutas y otros consultorios?", "Sí. Se adapta a cualquier consulta que agende citas y atienda por WhatsApp."),
+             ("¿Los recordatorios salen de nuestro número?", "Sí, con la API oficial de WhatsApp Business a nombre de la clínica."),
+             ("¿Se guarda información médica?", "No guardamos historias clínicas: solo datos de contacto, citas y pagos, en cuentas de la clínica."),
+             ("¿Funciona con la agenda que ya usamos?", "Muchas veces sí, como Google Calendar. Lo revisamos en el diagnóstico.")],
+        servicio="Sistema de citas y recordatorios para clínicas",
+    ),
+    "s_talleres": dict(
+        ruta="sistema-para-talleres/", vista="vende", menu="Talleres mecánicos",
+        titulo="Sistema para talleres mecánicos: cotizaciones y avisos por WhatsApp | Enlaza Studio",
+        meta="Sistema para talleres mecánicos y de servicio en Panamá: cotizaciones ordenadas, avisos al cliente por WhatsApp cuando su carro está listo y cobros al día.",
+        etq="Sector · Talleres",
+        h1="Sistema para talleres: cotizaciones, avisos y cobros por WhatsApp",
+        lead="Cada carro que entra queda registrado con su cotización y su estado. El cliente recibe avisos por WhatsApp y tú sabes qué trabajos están abiertos y qué falta por cobrar.",
+        dolor_h2="¿El taller funciona a punta de chats y libretas?",
+        dolor=["Las cotizaciones se pierden entre audios y fotos de WhatsApp.",
+               "Los clientes llaman a cada rato para preguntar si su carro está listo.",
+               "Se te olvida cobrar repuestos o saldos pendientes."],
+        incluye_h2="Qué incluye para tu taller",
+        incluye=[("Registro de trabajos", "Cliente, vehículo, cotización y estado en un solo lugar."),
+                 ("Avisos por WhatsApp", "«Tu carro está listo» y avances sin que tengas que escribir uno por uno."),
+                 ("Seguimiento de cotizaciones", "Recordatorio a quien no ha aprobado su cotización."),
+                 ("Cobros y saldos", "Lo pendiente por cobrar, con recordatorios amables."),
+                 ("Mantenimientos", "Aviso al cliente cuando le toca su próximo servicio."),
+                 ("Página web del taller", "Para que te encuentren en Google y Maps cuando buscan un taller cerca.")],
+        pasos_h2="Cómo lo implementamos en tu taller",
+        faq_h2="Preguntas frecuentes para talleres",
+        faq=[("¿Sirve para talleres de chapistería, motos o refrigeración?", "Sí. Se adapta a cualquier taller que cotice y entregue trabajos."),
+             ("¿Mi equipo tiene que aprender un programa complicado?", "No. Lo diseñamos simple y les enseñamos a usarlo."),
+             ("¿Puedo mandar la cotización por WhatsApp?", "Sí, y queda registrada para darle seguimiento."),
+             ("¿Cuánto cuesta?", "Te damos un precio cerrado después del diagnóstico gratis.")],
+        servicio="Sistema para talleres",
+    ),
+    "s_mudanzas": dict(
+        ruta="sistema-para-mudanzas/", vista="atrae", menu="Mudanzas y transporte",
+        titulo="Sistema y página web para empresas de mudanzas y transporte | Enlaza Studio",
+        meta="Página web y sistema para empresas de mudanzas, acarreos y transporte en Panamá: cotizaciones por WhatsApp, seguimiento de clientes y cobros ordenados.",
+        etq="Sector · Mudanzas y transporte",
+        h1="Sistema para empresas de mudanzas, acarreos y transporte",
+        lead="Tus clientes piden precio por WhatsApp a toda hora. Te ayudamos a que te encuentren en Google, a que cada cotización quede registrada y a que ninguna se quede sin seguimiento.",
+        dolor_h2="¿Cotizas todo el día y cierras poco?",
+        dolor=["Mandas precios por WhatsApp y el cliente no vuelve a responder.",
+               "No sabes cuántas mudanzas cotizaste ni cuántas cerraste este mes.",
+               "Cuando buscan mudanzas en Google, sale la competencia."],
+        incluye_h2="Qué incluye para tu empresa de mudanzas",
+        incluye=[("Página web lista para Google", "Con tus servicios, zonas y botón de cotizar por WhatsApp."),
+                 ("Formulario de cotización", "Origen, destino, fecha y qué se muda: llega ordenado."),
+                 ("Seguimiento automático", "Recordatorio al cliente que no respondió la cotización."),
+                 ("Confirmaciones", "Aviso al cliente con la fecha y la hora del servicio."),
+                 ("Cobros", "Adelantos y saldos registrados, con recordatorios."),
+                 ("Reseñas", "Pedimos la reseña de Google después de cada trabajo.")],
+        pasos_h2="Cómo lo implementamos en tu empresa",
+        faq_h2="Preguntas frecuentes para mudanzas y transporte",
+        faq=[("¿Ya trabajaron con empresas de mudanzas?", "Sí. Hicimos la página y el sistema de cotizaciones de Acarreos Makena, en Panamá."),
+             ("¿Sirve para fletes, acarreos y transporte de carga?", "Sí. Las etapas y los datos se adaptan a tu tipo de servicio."),
+             ("¿Puedo ver las cotizaciones desde el celular?", "Sí. Todo se consulta desde el teléfono."),
+             ("¿Cuánto cuesta?", "Te damos un precio cerrado después del diagnóstico gratis.")],
+        servicio="Sistema para empresas de mudanzas",
+    ),
+    "s_tiendas": dict(
+        ruta="pedidos-por-whatsapp/", vista="cobra", menu="Tiendas y pedidos",
+        titulo="Pedidos por WhatsApp para tiendas: catálogo, pedidos y cobros | Enlaza Studio",
+        meta="Sistema de pedidos por WhatsApp para tiendas y negocios con catálogo en Panamá: pedidos ordenados, confirmaciones automáticas, cobros y clientes que vuelven a comprar.",
+        etq="Sector · Tiendas y catálogos",
+        h1="Pedidos por WhatsApp ordenados para tu tienda",
+        lead="Si vendes por WhatsApp o Instagram, cada pedido queda registrado con lo que pidió el cliente, si ya pagó y cuándo se entrega, y tus clientes reciben confirmaciones y avisos automáticos.",
+        dolor_h2="¿Los pedidos se pierden entre tantos chats?",
+        dolor=["Tienes que revisar el chat para saber qué pidió cada cliente.",
+               "Se te pasa confirmar pagos o entregas.",
+               "Los clientes compran una vez y no vuelven."],
+        incluye_h2="Qué incluye para tu tienda",
+        incluye=[("Registro de pedidos", "Cliente, productos, monto y estado de cada pedido."),
+                 ("Confirmaciones automáticas", "Pedido recibido, pago confirmado y entrega en camino."),
+                 ("Cobros", "Quién pagó, quién no y recordatorios amables."),
+                 ("Clientes que vuelven", "Mensajes a clientes que no compran hace tiempo."),
+                 ("Catálogo en tu página", "Tus productos en una página rápida con botón de WhatsApp."),
+                 ("Reporte de ventas", "Cuánto vendiste en el día y en el mes.")],
+        pasos_h2="Cómo lo implementamos en tu tienda",
+        faq_h2="Preguntas frecuentes para tiendas",
+        faq=[("¿Sirve si vendo por Instagram?", "Sí. Los pedidos de Instagram y WhatsApp se pueden registrar en el mismo lugar."),
+             ("¿Es una tienda en línea con pago con tarjeta?", "El enfoque es ordenar los pedidos que ya recibes. Los pagos en línea se evalúan según el proyecto."),
+             ("¿Puedo aceptar Yappy o transferencia?", "Sí, el pedido indica cómo pagar y tú marcas cuando se recibe."),
+             ("¿Cuánto cuesta?", "Te damos un precio cerrado después del diagnóstico gratis.")],
+        servicio="Sistema de pedidos por WhatsApp",
+    ),
+    "s_tecnicos": dict(
+        ruta="sistema-para-contratistas/", vista="controla", menu="Contratistas y servicios técnicos",
+        titulo="Sistema para contratistas y servicios técnicos: cotizaciones y cobros | Enlaza Studio",
+        meta="Sistema para contratistas, técnicos de aire acondicionado, electricistas y mantenimiento en Panamá: cotizaciones, visitas, avisos por WhatsApp y cobros ordenados.",
+        etq="Sector · Construcción y mantenimiento",
+        h1="Sistema para contratistas y servicios técnicos",
+        lead="Cotizaciones, visitas técnicas y cobros en un solo lugar. Tus clientes reciben confirmaciones por WhatsApp y tú sabes qué trabajos están pendientes y cuánto te deben.",
+        dolor_h2="¿Mucho trabajo y poco orden?",
+        dolor=["Las cotizaciones quedan en el chat y nadie les da seguimiento.",
+               "Se cruzan visitas o se olvida confirmar con el cliente.",
+               "Cobras tarde porque no tienes claro quién debe qué."],
+        incluye_h2="Qué incluye para tu negocio",
+        incluye=[("Cotizaciones ordenadas", "Cada solicitud con su cotización y su estado."),
+                 ("Visitas confirmadas", "Aviso por WhatsApp con fecha y hora de la visita."),
+                 ("Seguimiento", "Recordatorio a quien no aprobó la cotización."),
+                 ("Cobros por etapas", "Adelantos, avances y saldo final con recordatorios."),
+                 ("Mantenimientos", "Aviso cuando le toca el próximo mantenimiento al cliente."),
+                 ("Página web", "Para que te encuentren cuando buscan tu servicio en tu zona.")],
+        pasos_h2="Cómo lo implementamos",
+        faq_h2="Preguntas frecuentes para contratistas y técnicos",
+        faq=[("¿Sirve para aire acondicionado, electricidad, plomería o remodelaciones?", "Sí. Se adapta a cualquier servicio que cotice y haga visitas."),
+             ("¿Puedo usarlo desde el celular en la obra?", "Sí. Todo se consulta y se actualiza desde el teléfono."),
+             ("¿Sirve si trabajo solo?", "Sí. Empiezas con lo básico y lo amplías si creces."),
+             ("¿Cuánto cuesta?", "Te damos un precio cerrado después del diagnóstico gratis.")],
+        servicio="Sistema para contratistas y servicios técnicos",
+    ),
 }
-ORDEN = ["web", "crm", "cobros", "erp", "api"]
+SECTORES = ["s_clinicas", "s_talleres", "s_mudanzas", "s_tiendas", "s_tecnicos"]
+ORDEN = ["web", "crm", "cobros", "erp", "chatbot", "conectar", "wabapi", "api"]
 
 PASOS = [("Diagnóstico gratis", "Vemos cómo te llegan los clientes hoy y qué te frena."),
          ("Propuesta clara", "Alcance, precio y tiempos por escrito antes de empezar."),
@@ -213,7 +422,7 @@ def _pie(wa, actual):
       <div class="pie__grid">
         <div class="pie__marca"><a class="marca" href="../">{inicio.MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{T["pie"]["desc"]}</p></div>
         <nav aria-label="Servicios"><h2>Servicios</h2>{serv}</nav>
-        <nav aria-label="Enlaza Studio"><h2>Enlaza Studio</h2><a href="../#como-trabajamos">Cómo trabajamos</a><a href="../#preguntas">Preguntas</a><a href="../privacidad/">Política de privacidad</a></nav>
+        <nav aria-label="Por tipo de negocio"><h2>Por tipo de negocio</h2>{"".join(f'<a href="../{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in SECTORES)}<a href="../privacidad/">Política de privacidad</a></nav>
         <div><h2>Contacto</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="../#contacto">Escríbenos por el formulario</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
@@ -293,7 +502,7 @@ def _pagina(clave, cfg, wa_link):
 
     <section class="sec sec--clara lp-otros">
       <div class="cont">
-        <header class="encabezado" data-revelar><p class="etq">Más soluciones</p><h2>Otros servicios para tu negocio</h2></header>
+        <header class="encabezado" data-revelar><p class="etq">Más soluciones</p><h2>{"Servicios para tu negocio" if clave in SECTORES else "Otros servicios para tu negocio"}</h2></header>
         <div class="lp__otros" data-revelar>{otros}</div>
       </div>
     </section>
@@ -317,7 +526,7 @@ def _pagina(clave, cfg, wa_link):
 
 def generar(raiz, cfg, wa_link):
     hechas = []
-    for clave in ORDEN:
+    for clave in ORDEN + SECTORES:
         carpeta = os.path.join(raiz, PAGINAS[clave]["ruta"])
         os.makedirs(carpeta, exist_ok=True)
         with open(os.path.join(carpeta, "index.html"), "w", encoding="utf-8", newline="\n") as f:
@@ -377,13 +586,14 @@ def _pie_doc(T, pre, casa, wa):
         serv = "".join(f'<a href="{casa}#sol-{S["id"]}">{S["tag"]}</a>' for S in T["soluciones"])
     P = T["pie"]
     emp = "".join(f'<a href="{casa}#{i}">{t}</a>' for i, t in T["nav"][1:])
+    sect = "".join(f'<a href="{pre}{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in SECTORES)
     titulo_serv = "Servicios" if es else P["soluciones"]
     return f'''  <footer class="pie cierre">
     <div class="cont">
       <div class="pie__grid">
         <div class="pie__marca"><a class="marca" href="{casa}">{inicio.MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
         <nav aria-label="{titulo_serv}"><h2>{titulo_serv}</h2>{serv}</nav>
-        <nav aria-label="Enlaza Studio"><h2>Enlaza Studio</h2>{emp}</nav>
+        <nav aria-label="Enlaza Studio"><h2>{"Por tipo de negocio" if es else "Enlaza Studio"}</h2>{sect if es else emp}</nav>
         <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>

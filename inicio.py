@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "6"
+V_CSS = "7"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
@@ -232,7 +232,10 @@ def _proceso(T):
 
 def _real(T, pre):
     burbujas = "".join(f'<span class="escena-3d__burbuja escena-3d__burbuja--{n}" aria-hidden="true">{I["wa"]}<i></i><i></i></span>' for n in (1, 2, 3))
-    sectores = "".join(f"<li>{s}</li>" for s in T["sectores"])
+    rutas_sector = {"Mudanzas y transporte": "sistema-para-mudanzas/", "Talleres y servicios técnicos": "sistema-para-talleres/",
+                    "Clínicas y consultorios": "sistema-para-clinicas/", "Tiendas y catálogos": "pedidos-por-whatsapp/",
+                    "Construcción y mantenimiento": "sistema-para-contratistas/"} if T["lang"] == "es" else {}
+    sectores = "".join(f'<li><a href="{rutas_sector[s]}">{s}</a></li>' if s in rutas_sector else f"<li>{s}</li>" for s in T["sectores"])
     return f'''    <section class="sec sec--clara real" id="negocios">
       <div class="cont real__grid">
         <div class="escena-portada" data-revelar>
@@ -355,11 +358,11 @@ def pagina(T, cfg, wa_link):
     otra = f'{pre}{T["otra_ruta"] or "./"}'
     d = cfg["dominio"]
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "ProfessionalService", "@id": d + "#empresa", "name": "Enlaza Studio", "url": d, "slogan": T["eslogan"], "description": T["descripcion"],
+        {"@type": "ProfessionalService", "@id": d + "#empresa", "name": "Enlaza Studio", "alternateName": ["EnlazaStudio", "Enlaza"], "url": d, "slogan": T["eslogan"], "description": T["descripcion"],
          "areaServed": {"@type": "Country", "name": "Panamá"}, "telephone": "+" + cfg["whatsapp"], "email": "hola@enlazastudio.com", "image": d + "img/compartir.jpg", "logo": d + "img/icono-512.png",
          "knowsAbout": ["Diseño de páginas web", "SEO local", "CRM para WhatsApp", "Cobranza automática", "Automatización de WhatsApp Business", "WhatsApp Business API", "Integraciones", "Google Sheets"],
          "priceRange": "$$", "address": {"@type": "PostalAddress", "addressLocality": "Ciudad de Panamá", "addressCountry": "PA"}},
-        {"@type": "WebSite", "name": "Enlaza Studio", "url": d, "inLanguage": ["es", "en"]},
+        {"@type": "WebSite", "name": "Enlaza Studio", "alternateName": ["EnlazaStudio", "Enlaza", "enlazastudio.com"], "url": d, "inLanguage": ["es", "en"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
     F = T["form"]
     form_cfg = json.dumps({"crm": cfg["crm"], "wa": cfg["whatsapp"], "lang": lang, "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]},
