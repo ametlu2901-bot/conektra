@@ -400,7 +400,7 @@ def _head(P, d, ld):
 
 def _cabecera(wa):
     T = textos3.ES
-    nav = "".join(f'<a href="../#{i}">{t}</a>' for i, t in T["nav"])
+    nav = "".join(f'<a href="../{h}">{t}</a>' for h, t in T["nav"])
     return f'''  <header class="cab" id="cab">
     <div class="cab__barra">
       <a class="marca" href="../" aria-label="Enlaza Studio, inicio">{inicio.MARCA}<span>Enlaza Studio</span></a>
@@ -423,7 +423,7 @@ def _pie(wa, actual):
         <div class="pie__marca"><a class="marca" href="../">{inicio.MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{T["pie"]["desc"]}</p></div>
         <nav aria-label="Servicios"><h2>Servicios</h2>{serv}</nav>
         <nav aria-label="Por tipo de negocio"><h2>Por tipo de negocio</h2>{"".join(f'<a href="../{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in SECTORES)}<a href="../privacidad/">Política de privacidad</a></nav>
-        <div><h2>Contacto</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="../#contacto">Escríbenos por el formulario</a></div>
+        <div><h2>Contacto</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="../contacto/">Escríbenos por el formulario</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
       <div class="pie__base"><span>© 2026 Enlaza Studio</span><span>Hecho en Panamá</span></div>
@@ -539,10 +539,11 @@ def generar(raiz, cfg, wa_link):
 # ---------------------------------------------------------------------------
 # Privacidad (es/en) y 404 con el diseño 3.0 (antes usaban conektra.css)
 # ---------------------------------------------------------------------------
-def _head_doc(lang, pre, url, titulo, meta, noindex=False, alternos=()):
+def _head_doc(lang, pre, url, titulo, meta, noindex=False, alternos=(), ld=None):
     alt = "".join(f'\n  <link rel="alternate" hreflang="{h}" href="{u}">' for h, u in alternos)
     robots = '\n  <meta name="robots" content="noindex">' if noindex else ""
     canon = f'\n  <link rel="canonical" href="{url}">' if url else ""
+    ldjson = f'\n  <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>' if ld else ""
     return f'''<!doctype html>
 <html lang="{lang}">
 <head>
@@ -558,13 +559,13 @@ def _head_doc(lang, pre, url, titulo, meta, noindex=False, alternos=()):
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="{inicio.FUENTES}" rel="stylesheet">
-  <link rel="stylesheet" href="{pre}css/v3.css?v={inicio.V_CSS}">
+  <link rel="stylesheet" href="{pre}css/v3.css?v={inicio.V_CSS}">{ldjson}
 </head>
 '''
 
 
 def _cab_doc(T, casa, wa):
-    nav = "".join(f'<a href="{casa}#{i}">{t}</a>' for i, t in T["nav"])
+    nav = "".join(f'<a href="{casa}{h}">{t}</a>' for h, t in T["nav"])
     etiqueta = "Principal" if T["lang"] == "es" else "Main"
     return f'''  <header class="cab" id="cab">
     <div class="cab__barra">
@@ -586,7 +587,7 @@ def _pie_doc(T, pre, casa, wa):
     else:
         serv = "".join(f'<a href="{casa}#sol-{S["id"]}">{S["tag"]}</a>' for S in T["soluciones"])
     P = T["pie"]
-    emp = "".join(f'<a href="{casa}#{i}">{t}</a>' for i, t in T["nav"][1:])
+    emp = "".join(f'<a href="{casa}{h}">{t}</a>' for h, t in T["nav"][1:])
     sect = "".join(f'<a href="{pre}{PAGINAS[k]["ruta"]}">{PAGINAS[k]["menu"]}</a>' for k in SECTORES)
     titulo_serv = "Servicios" if es else P["soluciones"]
     return f'''  <footer class="pie cierre">
@@ -670,3 +671,56 @@ def generar_extra(raiz, cfg, wa_link):
     with open(os.path.join(raiz, "404.html"), "w", encoding="utf-8", newline="\n") as f:
         f.write(html)
     return hechas + ["404.html"]
+
+
+
+# ---------------------------------------------------------------------------
+# Cómo trabajamos, Preguntas y Contacto en páginas propias (antes estaban en la portada)
+# ---------------------------------------------------------------------------
+SECCIONES = {
+    "es": [("como-trabajamos/", "Cómo trabajamos | Enlaza Studio", "Cómo trabajamos en Enlaza Studio: diagnóstico, propuesta con precio claro, construcción por etapas y acompañamiento. Proyecto cerrado o plan mensual.", "proceso"),
+           ("preguntas/", "Preguntas frecuentes | Enlaza Studio", "Preguntas frecuentes sobre páginas web, CRM, cobranza y automatización de WhatsApp para negocios en Panamá.", "preguntas"),
+           ("contacto/", "Contacto | Enlaza Studio", "Escríbenos por el formulario, por WhatsApp o a hola@enlazastudio.com. Te respondemos y te proponemos por dónde empezar.", "contacto")],
+    "en": [("en/how-we-work/", "How we work | Enlaza Studio", "How Enlaza Studio works: diagnosis, a clear proposal, building in stages and ongoing support. Fixed project or monthly plan.", "proceso"),
+           ("en/faq/", "FAQ | Enlaza Studio", "Frequently asked questions about websites, CRM, payment reminders and WhatsApp automation for businesses in Panama.", "preguntas"),
+           ("en/contact/", "Contact | Enlaza Studio", "Write to us through the form, on WhatsApp or at hola@enlazastudio.com. We'll reply and suggest where to start.", "contacto")],
+}
+
+
+def generar_secciones(raiz, cfg, wa_link):
+    import paginas
+    d = cfg["dominio"]
+    hechas = []
+    for lang, T in (("es", textos3.ES), ("en", textos3.EN)):
+        otro = "en" if lang == "es" else "es"
+        wa = wa_link(T["wa_msg"])
+        for j, (ruta, titulo, meta, cual) in enumerate(SECCIONES[lang]):
+            pre = "../" * ruta.count("/")
+            casa = pre + ("" if lang == "es" else "en/")
+            alternos = ((lang, d + ruta), (otro, d + SECCIONES[otro][j][0]))
+            ld = None
+            extra = ""
+            if cual == "proceso":
+                cuerpo = inicio._proceso(T)
+            elif cual == "preguntas":
+                cuerpo = inicio._preguntas(T)
+                ld = {"@context": "https://schema.org", "@type": "FAQPage",
+                      "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}
+            else:
+                privacidad = pre + paginas.RUTAS[lang]["privacidad"]
+                cuerpo = inicio._contacto(T, wa, privacidad)
+                F = T["form"]
+                form_cfg = json.dumps({"crm": cfg["crm"], "wa": cfg["whatsapp"], "lang": lang, "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]},
+                                      ensure_ascii=False).replace("</", "<\\/")
+                extra = f"  <script>window.CONEKTRA_FORM = {form_cfg};</script>\n"
+            html = (_head_doc(lang, pre, d + ruta, titulo, meta, alternos=alternos, ld=ld)
+                    + '<body>\n' + _cab_doc(T, casa, wa)
+                    + f'  <main id="contenido" class="pagina-seccion">\n{cuerpo}  </main>\n\n'
+                    + _pie_doc(T, pre, casa, wa) + extra
+                    + f'  <script src="{pre}js/v3.js?v={inicio.V_JS}" defer></script>\n</body>\n</html>\n')
+            carpeta = os.path.join(raiz, ruta)
+            os.makedirs(carpeta, exist_ok=True)
+            with open(os.path.join(carpeta, "index.html"), "w", encoding="utf-8", newline="\n") as f:
+                f.write(html)
+            hechas.append(ruta)
+    return hechas

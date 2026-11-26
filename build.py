@@ -401,7 +401,7 @@ if __name__ == "__main__":
             f.write(inicio.pagina(T, CONFIG, wa_link))
         print("ok", destino)
     import landing
-    lp = landing.generar(RAIZ, CONFIG, wa_link)
+    lp = landing.generar(RAIZ, CONFIG, wa_link) + landing.generar_secciones(RAIZ, CONFIG, wa_link)
     print("ok", len(lp), "páginas de servicio (SEO):", ", ".join(lp))
     hechas = paginas.generar(RAIZ, CONFIG, I, LOGO, extra=lp)
     extra = landing.generar_extra(RAIZ, CONFIG, wa_link)

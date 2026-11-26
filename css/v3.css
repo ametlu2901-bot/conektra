@@ -778,3 +778,6 @@ button { font: inherit; color: inherit; }
 
 /* integraciones sin el mapa de herramientas (pedido del usuario) */
 .principios--solo { margin-top: 0; }
+
+/* secciones en páginas propias: espacio para la cabecera fija */
+.pagina-seccion > .sec:first-child { padding-top: clamp(130px, 14vw, 180px); }

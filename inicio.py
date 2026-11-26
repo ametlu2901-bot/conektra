@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "9"
+V_CSS = "10"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
@@ -57,7 +57,7 @@ def _head(T, cfg, pre, ld):
 
 
 def _cabecera(T, wa, otra):
-    nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in T["nav"])
+    nav = "".join(f'<a href="{h}">{t}</a>' for h, t in T["nav"])
     return f'''  <header class="cab" id="cab">
     <div class="cab__barra">
       <a class="marca" href="./" aria-label="Enlaza Studio">{MARCA}<span>Enlaza Studio</span></a>
@@ -313,7 +313,7 @@ def _final_y_pie(T, wa, otra, rel):
     P = T["pie"]
     cobranza = "Cobranza automática" if T["lang"] == "es" else "Automatic collections"
     sol = "".join(f'<a href="{rel(S["enlace"][1]) if S["enlace"][1] and T["lang"] == "es" else "#sol-" + S["id"]}">{S["enlace"][0] if S["enlace"][1] else cobranza}</a>' for S in T["soluciones"])
-    emp = "".join(f'<a href="#{i}">{t}</a>' for i, t in T["nav"][1:])
+    emp = "".join(f'<a href="{h}">{t}</a>' for h, t in T["nav"][1:])
     return f'''    <section class="final cierre" id="final">
       <canvas class="final__campo" id="campo-final" aria-hidden="true"></canvas>
       <div class="cont final__caja" data-revelar>
@@ -331,7 +331,7 @@ def _final_y_pie(T, wa, otra, rel):
         <div class="pie__marca"><a class="marca" href="./">{MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
         <nav aria-label="{P["soluciones"]}"><h2>{P["soluciones"]}</h2>{sol}</nav>
         <nav aria-label="{P["empresa"]}"><h2>{P["empresa"]}</h2>{emp}<a href="{rel("privacidad")}">{P["privacidad"]}</a></nav>
-        <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="#contacto">{P["form"]}</a><a href="{otra}">{T["otra_nombre"]} {I["flecha"]}</a></div>
+        <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="{T["nav"][3][0]}">{P["form"]}</a><a href="{otra}">{T["otra_nombre"]} {I["flecha"]}</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
       <div class="pie__base"><span>{P["derechos"]}</span><span>{P["hecho"]}</span></div>
@@ -356,8 +356,7 @@ def pagina(T, cfg, wa_link):
          "areaServed": {"@type": "Country", "name": "Panamá"}, "telephone": "+" + cfg["whatsapp"], "email": "hola@enlazastudio.com", "image": d + "img/compartir.jpg", "logo": d + "img/icono-512.png",
          "knowsAbout": ["Diseño de páginas web", "SEO local", "CRM para WhatsApp", "Cobranza automática", "Automatización de WhatsApp Business", "WhatsApp Business API", "Integraciones", "Google Sheets"],
          "priceRange": "$$", "address": {"@type": "PostalAddress", "addressLocality": "Ciudad de Panamá", "addressCountry": "PA"}},
-        {"@type": "WebSite", "name": "Enlaza Studio", "alternateName": ["EnlazaStudio", "Enlaza", "enlazastudio.com"], "url": d, "inLanguage": ["es", "en"]},
-        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
+        {"@type": "WebSite", "name": "Enlaza Studio", "alternateName": ["EnlazaStudio", "Enlaza", "enlazastudio.com"], "url": d, "inLanguage": ["es", "en"]}]}
     F = T["form"]
     form_cfg = json.dumps({"crm": cfg["crm"], "wa": cfg["whatsapp"], "lang": lang, "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]},
                           ensure_ascii=False).replace("</", "<\\/")
@@ -388,9 +387,6 @@ def pagina(T, cfg, wa_link):
 
 {_soluciones(T, rel, wa)}
 {_real(T, pre)}
-{_proceso(T)}
-{_preguntas(T)}
-{_contacto(T, wa, rel("privacidad"))}
 {_final_y_pie(T, wa, otra, rel)}  <script>window.CONEKTRA_AVISOS = {avisos}; window.CONEKTRA_FORM = {form_cfg};</script>
   <script src="{pre}js/v3.js?v={V_JS}" defer></script>
 </body>
