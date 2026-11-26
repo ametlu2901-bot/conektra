@@ -394,8 +394,8 @@ def pagina(T, cfg, wa_link):
 
 {_soluciones(T, rel, wa)}
 {_red(T)}
-{_proceso(T)}
 {_real(T, pre)}
+{_proceso(T)}
 {_preguntas(T)}
 {_contacto(T, wa, rel("privacidad"))}
 {_final_y_pie(T, wa, otra, rel)}  <script>window.CONEKTRA_AVISOS = {avisos}; window.CONEKTRA_FORM = {form_cfg};</script>
