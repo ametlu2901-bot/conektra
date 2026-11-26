@@ -155,6 +155,11 @@ a.kpi:hover { box-shadow: 0 0 0 1px var(--linea-2), 0 10px 24px -16px rgba(11, 3
 .pill--etapa-perdido { background: rgba(214, 69, 69, .1); color: var(--rojo); }
 
 /* tablero de cotizaciones */
+/* cómo avanzan solas las cotizaciones */
+.flujo { display: flex; flex-wrap: wrap; gap: 8px; margin-top: -6px; }
+.flujo li { display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px; background: var(--papel); box-shadow: 0 0 0 1px var(--linea) inset; font-size: .8rem; color: var(--gris); }
+.flujo svg { width: 12px; height: 12px; color: var(--gris-2); }
+.flujo b { color: var(--tinta); font-weight: 600; }
 .tablero { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 8px; }
 .col { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 16px; background: rgba(11, 31, 24, .035); min-height: 420px; transition: background-color .2s, box-shadow .2s; }
 .col.encima { background: rgba(54, 201, 138, .1); box-shadow: 0 0 0 1.5px var(--verde) inset; }

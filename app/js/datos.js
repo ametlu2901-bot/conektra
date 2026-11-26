@@ -140,6 +140,7 @@ function cargarDemo() {
   if (!D) { D = semilla(); guardar(); }
   // datos guardados antes de que existieran el bot y las formas de pago
   if (!D.bot || !D.pagos) { D.bot ??= botDemo(); D.pagos ??= pagosDemo(); guardar(); }
+  revisarSinRespuesta();
   return D;
 }
 export function reiniciar() { if (modo === 'demo') { D = semilla(); guardar(); } return D; }
@@ -298,6 +299,7 @@ async function cargarReal() {
     }),
   };
   modo = 'real';
+  revisarSinRespuesta();
   escucharCambios();
   return true;
 }
@@ -430,6 +432,48 @@ export function ventasPorMes() {
   return meses;
 }
 
+// ---------- etapas automáticas: las cotizaciones avanzan solas (nunca retroceden) ----------
+//   le escribes → Contactado · le envías la cotización → Cotizado · registras un cobro → Agendado
+//   te paga → Ganado · 15 días sin respuesta → Perdido. Siempre se pueden mover a mano.
+// El servidor hace lo mismo con «le escribes» cuando el mensaje sale por la API o desde el celular.
+export const DIAS_PARA_PERDIDO = 15;
+const AVANCE = ['nuevo', 'contactado', 'cotizado', 'agendado', 'ganado'];
+const nombreEtapa = id => ETAPAS.find(e => e.id === id)?.nombre ?? id;
+function moverSola(q, etapa, motivo, tocar = true) {
+  q.etapa = etapa;
+  if (tocar) q.ultimo_contacto = new Date().toISOString();
+  enSupabase(sb?.from('cotizaciones').update({ etapa, ultimo_contacto: q.ultimo_contacto }).eq('id', q.id));
+  registrar(etapa === 'ganado' ? 'pago' : 'cotizacion', `Cotización #${q.numero} pasó sola a ${nombreEtapa(etapa)}`, `${contacto(q.contacto_id).nombre} · ${motivo}`);
+}
+/** Lleva a «etapa» las cotizaciones abiertas del cliente que van antes (todas, o solo la más reciente). */
+function avanzarCliente(contacto_id, etapa, motivo, todas = false) {
+  const pos = AVANCE.indexOf(etapa);
+  const atras = D.cotizaciones.filter(q => q.contacto_id === contacto_id && q.etapa !== 'perdido' && AVANCE.indexOf(q.etapa) < pos)
+    .sort((a, b) => b.creada.localeCompare(a.creada));
+  (todas ? atras : atras.slice(0, 1)).forEach(q => moverSola(q, etapa, motivo));
+  return atras.length > 0;
+}
+/** Le escribiste por WhatsApp: sus cotizaciones en «Nuevo» pasan a «Contactado». */
+export function escribioCliente(contacto_id) {
+  const movio = avanzarCliente(contacto_id, 'contactado', 'le escribiste por WhatsApp', true);
+  if (movio) guardar();
+  return movio;
+}
+/** Le enviaste la cotización: pasa a «Cotizado» (si ya iba más adelante, solo cuenta como contacto). */
+export function enviarCotizacion(qid) {
+  const q = D.cotizaciones.find(x => x.id === qid); if (!q) return;
+  if (AVANCE.indexOf(q.etapa) < AVANCE.indexOf('cotizado') && q.etapa !== 'perdido') moverSola(q, 'cotizado', 'le enviaste la cotización');
+  else { q.ultimo_contacto = new Date().toISOString(); enSupabase(sb?.from('cotizaciones').update({ ultimo_contacto: q.ultimo_contacto }).eq('id', qid)); }
+  guardar();
+}
+/** Al cargar: las que llevan 15 días sin respuesta (Contactado o Cotizado) pasan a «Perdido». */
+function revisarSinRespuesta() {
+  const limite = Date.now() - DIAS_PARA_PERDIDO * DIA;
+  const viejas = D.cotizaciones.filter(q => ['contactado', 'cotizado'].includes(q.etapa) && new Date(q.ultimo_contacto).getTime() < limite);
+  viejas.forEach(q => moverSola(q, 'perdido', `${Math.floor((Date.now() - new Date(q.ultimo_contacto)) / DIA)} días sin respuesta`, false));
+  if (viejas.length) guardar();
+}
+
 // ---------- escrituras (en pantalla al instante; en Supabase por detrás) ----------
 function registrar(tipo, titulo, detalle) {
   const a = { id: uuid(), tipo, titulo, detalle, fecha: new Date().toISOString() };
@@ -472,12 +516,16 @@ export function crearCobro({ contacto_id, concepto, monto, vence }) {
   const cb = { id: uuid(), contacto_id, concepto, monto: +monto || 0, vence, estado: 'pendiente', pagado_el: null };
   D.cobros.push(cb);
   enSupabase(sb?.from('cobros').insert({ id: cb.id, negocio_id: nid(), contacto_id, concepto, monto: cb.monto, vence }));
-  registrar('cobro', 'Nuevo cobro', `${contacto(contacto_id).nombre} · $${cb.monto}`); guardar(); return cb;
+  registrar('cobro', 'Nuevo cobro', `${contacto(contacto_id).nombre} · $${cb.monto}`);
+  avanzarCliente(contacto_id, 'agendado', 'registraste un cobro');
+  guardar(); return cb;
 }
 export function marcarPagado(cid) {
   const cb = D.cobros.find(x => x.id === cid); cb.estado = 'pagado'; cb.pagado_el = new Date().toISOString();
   enSupabase(sb?.from('cobros').update({ estado: 'pagado', pagado_el: cb.pagado_el }).eq('id', cid));
-  registrar('pago', 'Pago registrado', `${contacto(cb.contacto_id).nombre} · $${cb.monto}`); guardar();
+  registrar('pago', 'Pago registrado', `${contacto(cb.contacto_id).nombre} · $${cb.monto}`);
+  avanzarCliente(cb.contacto_id, 'ganado', `pagó $${cb.monto}`);
+  guardar();
 }
 export function marcarRecordatorio(cid) {
   const cb = D.cobros.find(x => x.id === cid);

@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js?v=2';
-import * as db from './datos.js?v=16';
+import * as db from './datos.js?v=17';
 import { metaListo, registroIntegrado } from './meta.js?v=1';
 
 const $ = (s, c = document) => c.querySelector(s);
@@ -117,7 +117,7 @@ V.clientes = (filtro = '') => {
   const etapaDe = cid => { const qs = db.cotizaciones().filter(c => c.contacto_id === cid); return qs.length ? db.ETAPAS.find(e => e.id === qs[qs.length - 1].etapa) : null; };
   const filas = lista.map(x => { const e = etapaDe(x.id); return `<tr data-id="${x.id}"><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small>${esc(x.nota)}</small></span></td>
     <td class="mono">${esc(x.telefono)}</td><td><span class="etq-origen">${esc(x.origen)}</span></td><td>${e ? `<span class="pill pill--etapa-${e.id}">${e.nombre}</span>` : '<span class="tenue">—</span>'}</td><td class="tenue">${fechaCorta(x.creado)}</td>
-    <td class="acciones"><a class="icono-btn" href="${wa(x.telefono, `Hola ${x.nombre.split(' ')[0]}, `)}" target="_blank" rel="noopener" title="Escribir por WhatsApp">${I.wa}</a></td></tr>`; }).join('');
+    <td class="acciones"><a class="icono-btn" href="${wa(x.telefono, `Hola ${x.nombre.split(' ')[0]}, `)}" target="_blank" rel="noopener" title="Escribir por WhatsApp" data-escribir="${x.id}">${I.wa}</a></td></tr>`; }).join('');
   return `<div class="cab-vista"><div><h1>Clientes</h1><p>${lista.length} ${lista.length === 1 ? 'cliente' : 'clientes'}${q ? ` para «${esc(filtro)}»` : ''}</p></div><button class="btn btn--tinta" id="nuevo-cliente">${I.mas} Nuevo cliente</button></div>
     <div class="caja caja--tabla"><table class="tabla"><thead><tr><th>Cliente</th><th>Teléfono</th><th>Origen</th><th>Etapa</th><th>Desde</th><th></th></tr></thead><tbody>${filas || '<tr><td colspan="6" class="vacio">No hay clientes que coincidan.</td></tr>'}</tbody></table></div>`;
 };
@@ -128,15 +128,21 @@ V.cotizaciones = () => {
     const total = qs.reduce((s, q) => s + q.monto, 0);
     const tarjetas = qs.map(q => {
       const x = db.contacto(q.contacto_id); const dias = Math.floor((Date.now() - new Date(q.ultimo_contacto)) / 864e5);
-      const atrasada = dias >= 2 && !['ganado', 'perdido'].includes(q.etapa);
+      const atrasada = dias >= 2 && ['contactado', 'cotizado'].includes(q.etapa);
+      const porEnviar = ['nuevo', 'contactado'].includes(q.etapa);
+      const nombre = x.nombre.split(' ')[0];
+      const boton = porEnviar
+        ? `<a class="btn btn--mini" href="${wa(x.telefono, `Hola ${nombre}, te saluda ${db.negocio().nombre}. Te comparto la cotización #${q.numero}: ${q.servicio} por ${dinero(q.monto)}. ¿Te parece bien? Si quieres, la agendamos.`)}" target="_blank" rel="noopener" data-enviar-cot="${q.id}" title="Enviar la cotización por WhatsApp: pasa sola a Cotizado">${I.wa} Enviar</a>`
+        : atrasada ? `<a class="btn btn--mini" href="${wa(x.telefono, `Hola ${nombre}, te escribo de ${db.negocio().nombre} para saber si pudiste revisar la cotización #${q.numero} (${q.servicio}). ¿Te ayudo con algo?`)}" target="_blank" rel="noopener" data-seguir="${q.id}">${I.wa} Seguir</a>` : '';
       return `<article class="tarj" draggable="true" data-id="${q.id}"><header><small class="mono">#${q.numero}</small>${atrasada ? `<span class="pill pill--pronto">${dias} días sin respuesta</span>` : ''}</header>
-        <b>${esc(x.nombre)}</b><p>${esc(q.servicio)}</p><footer><b>${dinero(q.monto)}</b>
-        ${atrasada ? `<a class="btn btn--mini" href="${wa(x.telefono, `Hola ${x.nombre.split(' ')[0]}, te escribo de ${db.negocio().nombre} para saber si pudiste revisar la cotización #${q.numero} (${q.servicio}). ¿Te ayudo con algo?`)}" target="_blank" rel="noopener" data-seguir="${q.id}">${I.wa} Seguir</a>` : ''}</footer>
+        <b>${esc(x.nombre)}</b><p>${esc(q.servicio)}</p><footer><b>${dinero(q.monto)}</b>${boton}</footer>
         <select class="tarj__mover" data-mover="${q.id}" aria-label="Mover a">${db.ETAPAS.map(o => `<option value="${o.id}"${o.id === q.etapa ? ' selected' : ''}>${o.nombre}</option>`).join('')}</select></article>`;
     }).join('');
     return `<section class="col col--${e.id}" data-etapa="${e.id}"><h3>${e.nombre}<span>${qs.length}</span></h3><small class="col__total">${dinero(total)}</small><div class="col__tarjetas">${tarjetas}</div></section>`;
   }).join('');
-  return `<div class="cab-vista"><div><h1>Cotizaciones</h1><p>Arrastra cada tarjeta a su etapa. Las que llevan 2 días o más sin respuesta se marcan para darles seguimiento.</p></div><button class="btn btn--tinta" id="nueva-cot">${I.mas} Nueva cotización</button></div>
+  const reglas = [['Le escribes', 'Contactado'], ['Le envías la cotización', 'Cotizado'], ['Registras un cobro', 'Agendado'], ['Te paga', 'Ganado'], [`${db.DIAS_PARA_PERDIDO} días sin respuesta`, 'Perdido']];
+  return `<div class="cab-vista"><div><h1>Cotizaciones</h1><p>Avanzan solas de etapa. Si hace falta, arrastra la tarjeta para corregirla.</p></div><button class="btn btn--tinta" id="nueva-cot">${I.mas} Nueva cotización</button></div>
+    <ol class="flujo" aria-label="Cómo avanzan solas">${reglas.map(([cuando, etapa]) => `<li><span>${cuando}</span>${I.flecha}<b>${etapa}</b></li>`).join('')}</ol>
     <div class="tablero">${cols}</div>`;
 };
 
@@ -183,7 +189,7 @@ V.conversaciones = (abierta) => {
         <div class="chat__cuerpo">${msgs}</div>
         ${abierto24 ? '' : '<p class="chat__regla">Pasaron más de 24 horas desde su último mensaje. Por reglas de WhatsApp, lo que escribas se abrirá en tu celular.</p>'}
         <form class="chat__escribir" id="escribir"><input placeholder="${real && abierto24 ? 'Escribe un mensaje…' : 'Escribe un mensaje… (se abrirá WhatsApp)'}" name="texto" autocomplete="off" maxlength="4096"><button class="btn btn--verde btn--mini" aria-label="Enviar">${I.flecha}</button></form>
-        <input type="hidden" id="chat-tel" value="${esc(x.telefono)}"><input type="hidden" id="chat-id" value="${esc(actual.id)}">
+        <input type="hidden" id="chat-tel" value="${esc(x.telefono)}"><input type="hidden" id="chat-id" value="${esc(actual.id)}"><input type="hidden" id="chat-contacto" value="${esc(x.id)}">
         <input type="hidden" id="chat-modo" value="${real && abierto24 ? 'api' : 'celular'}"></section>
       ${fichaCliente(x)}</div>`;
 };
@@ -568,9 +574,11 @@ function enlazar(vista) {
   $$('[data-cot-para]').forEach(b => b.addEventListener('click', () => abrirCot(b.dataset.cotPara)));
   $$('[data-cobro-para]').forEach(b => b.addEventListener('click', () => abrirCobro(b.dataset.cobroPara)));
 
-  $$('[data-pagado]').forEach(b => b.addEventListener('click', () => { db.marcarPagado(b.dataset.pagado); aviso('Pago registrado'); render(); }));
+  $$('[data-pagado]').forEach(b => b.addEventListener('click', () => { db.marcarPagado(b.dataset.pagado); aviso('Pago registrado: su cotización pasó a Ganado'); render(); }));
   $$('[data-recordar]').forEach(a => a.addEventListener('click', () => { db.marcarRecordatorio(a.dataset.recordar); setTimeout(() => { aviso('Recordatorio registrado'); render(); }, 300); }));
   $$('[data-seguir]').forEach(a => a.addEventListener('click', () => { db.marcarSeguimiento(a.dataset.seguir); setTimeout(() => { aviso('Seguimiento registrado'); render(); }, 300); }));
+  $$('[data-enviar-cot]').forEach(a => a.addEventListener('click', () => { db.enviarCotizacion(a.dataset.enviarCot); setTimeout(() => { aviso('Cotización enviada: pasó a Cotizado'); render(); }, 300); }));
+  $$('[data-escribir]').forEach(a => a.addEventListener('click', () => { if (db.escribioCliente(a.dataset.escribir)) setTimeout(() => { aviso('Su cotización pasó a Contactado'); render(); }, 300); }));
   $$('[data-auto]').forEach(b => b.addEventListener('click', () => { const a = db.alternarAutomatizacion(b.dataset.auto); aviso(`${a.nombre}: ${a.activa ? 'activada' : 'pausada'}`); render(); }));
 
   // tablero: arrastrar y soltar (computadora) y selector «Mover a» (celular)
@@ -589,8 +597,13 @@ function enlazar(vista) {
     const campoTexto = $('input', escribir), texto = campoTexto.value.trim();
     if (!texto) return;
     // Demostración, sin conectar o fuera de las 24 h: se abre WhatsApp en el celular con el mensaje escrito.
-    if ($('#chat-modo').value !== 'api') { window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener'); return; }
+    if ($('#chat-modo').value !== 'api') {
+      window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
+      if (db.escribioCliente($('#chat-contacto').value)) { aviso('Su cotización pasó a Contactado'); render(); }
+      return;
+    }
     const boton = $('button', escribir); boton.disabled = true; campoTexto.disabled = true;
+    db.escribioCliente($('#chat-contacto').value);
     const r = await db.enviarMensaje($('#chat-id').value, texto);
     if (r.error) {
       aviso(r.error); boton.disabled = false; campoTexto.disabled = false;
