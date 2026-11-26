@@ -385,8 +385,8 @@ def pagina(T, cfg, wa_link):
       <div class="cont">{_herramientas(T)}</div>
     </section>
 
-{_soluciones(T, rel, wa)}
 {_real(T, pre)}
+{_soluciones(T, rel, wa)}
 {_final_y_pie(T, wa, otra, rel)}  <script>window.CONEKTRA_AVISOS = {avisos}; window.CONEKTRA_FORM = {form_cfg};</script>
   <script src="{pre}js/v3.js?v={V_JS}" defer></script>
 </body>
