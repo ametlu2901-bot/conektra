@@ -1,4 +1,4 @@
-"""Genera la portada de Conektra en español (index.html) y en inglés (en/index.html), y las páginas internas.
+"""Genera la portada de Enlaza Studio en español (index.html) y en inglés (en/index.html), y las páginas internas.
 
 Uso:  python build.py
 Los datos de contacto se cambian en CONFIG; los textos de la portada, en textos.py;
@@ -16,12 +16,12 @@ from iconos import I, LOGO, NUCLEO
 from textos import ES, EN
 
 CONFIG = {
-    "dominio": "https://ametlu2901-bot.github.io/conektra/",  # cambiar a https://conektra.dev/ cuando se compre el dominio
+    "dominio": "https://enlazastudio.com/",  # dominio propio (Cloudflare, comprado 2026-11-26)
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
-    "correo": "",                               # p. ej. hola@conektra.dev
+    "correo": "",                               # p. ej. hola@enlazastudio.com
     # testimonio real de Acarreos Makena: si "texto" está vacío no se muestra ninguna cita
     "testimonio": dict(texto="", nombre="", cargo=""),
-    # URL /exec de la hoja «Conektra — CRM» (programa en crm/Codigo.gs)
+    # URL /exec de la hoja «Enlaza Studio — CRM» (programa en crm/Codigo.gs)
     "crm": "https://script.google.com/macros/s/AKfycbxvoagKEQKMfhn8mdVk7cknuZfPJyKL1HPd4mb6tjxPWa29TSFh78hAsZ2qJBwcZGWl/exec",
 }
 
@@ -30,7 +30,7 @@ PORTAL = os.path.join(os.path.dirname(RAIZ), "conektra-portal")  # el portal viv
 
 
 def copiar_portal():
-    """Copia la interfaz del portal (modo demostración) a app/ para publicarla en /conektra/app/."""
+    """Copia la interfaz del portal (modo demostración) a app/ para publicarla en /app/."""
     import shutil
     if not os.path.isdir(PORTAL):
         return False
@@ -197,7 +197,7 @@ def casos(T, pre, enlace_caso):
             <div class="vitrina-caso__escritorio"><div class="vitrina-caso__barra" aria-hidden="true"><i></i><i></i><i></i><span>acarreosmakena.com</span><em><b></b>{"En línea" if es else "Live"}</em></div>
               <img src="{pre}img/caso-acarreos-escritorio.webp" alt="{"Página web de Acarreos Makena en computadora" if es else "Acarreos Makena website on desktop"}" width="1440" height="900" loading="lazy"></div>
             <div class="vitrina-caso__movil"><img src="{pre}img/caso-acarreos-movil.webp" alt="{"Página web de Acarreos Makena en celular" if es else "Acarreos Makena website on mobile"}" width="390" height="844" loading="lazy"></div>
-            <figcaption class="vitrina-caso__sello"><span class="vitrina-caso__mk">MK</span>Acarreos Makena <i>×</i> Conektra</figcaption>
+            <figcaption class="vitrina-caso__sello"><span class="vitrina-caso__mk">MK</span>Acarreos Makena <i>×</i> Enlaza Studio</figcaption>
           </figure>
           <div class="ficha" data-revelar>
             <p class="ficha__nombre"><b>{T["caso_nombre"]}</b><span>{T["caso_categoria"]}</span></p>
@@ -311,11 +311,11 @@ def pagina(T):
     servicios_pie = [(paginas.SERVICIOS[lang][k]["titulo"], rel(k)) for k in paginas.ORDEN_SERVICIOS]
 
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Conektra", "url": CONFIG["dominio"],
+        {"@type": "ProfessionalService", "@id": CONFIG["dominio"] + "#empresa", "name": "Enlaza Studio", "url": CONFIG["dominio"],
          "slogan": T["eslogan"], "description": T["descripcion"], "areaServed": {"@type": "Country", "name": "Panamá"},
          "telephone": "+" + CONFIG["whatsapp"], "image": CONFIG["dominio"] + "img/compartir.jpg",
          "knowsAbout": ["Web development", "Local SEO", "CRM", "API integrations", "Automation", "Google Sheets"]},
-        {"@type": "WebSite", "name": "Conektra", "url": CONFIG["dominio"], "inLanguage": ["es", "en"]},
+        {"@type": "WebSite", "name": "Enlaza Studio", "url": CONFIG["dominio"], "inLanguage": ["es", "en"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}}
                                             for _, lista in T["faqs"] for q, a in lista]}]}
     alternos = [("es", CONFIG["dominio"]), ("en", CONFIG["dominio"] + "en/"), ("x-default", CONFIG["dominio"])]
@@ -400,7 +400,10 @@ if __name__ == "__main__":
         with open(os.path.join(RAIZ, destino), "w", encoding="utf-8", newline="\n") as f:
             f.write(inicio.pagina(T, CONFIG, wa_link))
         print("ok", destino)
-    hechas = paginas.generar(RAIZ, CONFIG, I, LOGO)
+    import landing
+    lp = landing.generar(RAIZ, CONFIG, wa_link)
+    print("ok", len(lp), "páginas de servicio (SEO):", ", ".join(lp))
+    hechas = paginas.generar(RAIZ, CONFIG, I, LOGO, extra=lp)
     print("ok", len(hechas), "páginas internas + 404, sitemap y robots")
     if copiar_portal():
         print("ok portal -> app/")

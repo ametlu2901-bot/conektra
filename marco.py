@@ -12,13 +12,13 @@ FUENTES = ("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wg
 UI = {
     "es": dict(nav=["Servicios", "Cómo funciona", "Preguntas frecuentes"], cta="Hablemos", otra="EN", otra_nombre="English",
                menu="Menú", servicios_t="Servicios", nav_t="Navegación", contacto_t="Contacto", privacidad="Política de privacidad",
-               form="Escríbenos por el formulario", derechos="© 2026 Conektra. Todos los derechos reservados.", hecho="Hecho en Panamá.",
+               form="Escríbenos por el formulario", derechos="© 2026 Enlaza Studio. Todos los derechos reservados.", hecho="Hecho en Panamá.",
                eslogan="Tu negocio, mejor conectado.",
                desc="Estudio tecnológico que ayuda a pequeños negocios a conseguir clientes, ordenar su trabajo y conectar sus herramientas.",
                barra_t="¿Hablamos de tu negocio?", barra_p="Te respondemos por WhatsApp"),
     "en": dict(nav=["Services", "How it works", "FAQ"], cta="Let's talk", otra="ES", otra_nombre="Español",
                menu="Menu", servicios_t="Services", nav_t="Navigation", contacto_t="Contact", privacidad="Privacy policy",
-               form="Write to us through the form", derechos="© 2026 Conektra. All rights reserved.", hecho="Made in Panama.",
+               form="Write to us through the form", derechos="© 2026 Enlaza Studio. All rights reserved.", hecho="Made in Panama.",
                eslogan="Your business, better connected.",
                desc="Tech studio that helps small businesses win customers, organize their work and connect their tools.",
                barra_t="Shall we talk about your business?", barra_p="We reply on WhatsApp"),
@@ -40,7 +40,7 @@ def head(lang, pre, titulo, descripcion, url, alternos, imagen, ld, extra=""):
   <meta name="theme-color" content="#08271e">
   <meta name="color-scheme" content="light">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Conektra">
+  <meta property="og:site_name" content="Enlaza Studio">
   <meta property="og:url" content="{url}">
   <meta property="og:title" content="{titulo}">
   <meta property="og:description" content="{descripcion}">
@@ -48,7 +48,7 @@ def head(lang, pre, titulo, descripcion, url, alternos, imagen, ld, extra=""):
   <meta property="og:image" content="{imagen}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Conektra">
+  <meta property="og:image:alt" content="Enlaza Studio">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{imagen}">
   <link rel="icon" href="{pre}img/favicon.svg" type="image/svg+xml">
@@ -73,7 +73,7 @@ def cabecera(lang, inicio, otra_href, wa, wa_attr, I, LOGO, en_portada=False):
     return f'''  <div class="lectura" aria-hidden="true"><i id="lectura"></i></div>
   <header class="cabecera{" cabecera--portada" if en_portada else ""}" id="cabecera">
     <div class="contenedor cabecera__barra">
-      <a class="marca" href="{inicio}" aria-label="Conektra">{LOGO}<span>Conektra</span></a>
+      <a class="marca" href="{inicio}" aria-label="Enlaza Studio">{LOGO}<span>Enlaza Studio</span></a>
       <nav class="menu" id="menu" aria-label="Principal">
         {enlaces}
         <a class="menu__idioma" href="{otra_href}" hreflang="{"en" if lang == "es" else "es"}" lang="{"en" if lang == "es" else "es"}" title="{U["otra_nombre"]}">{U["otra"]}</a>
@@ -95,7 +95,7 @@ def pie(lang, pre, inicio, otra_href, wa, wa_attr, I, LOGO, servicios, privacida
     <div class="contenedor">
       <div class="pie-sitio__grid">
         <div class="pie-sitio__marca">
-          <a class="marca" href="{inicio}">{LOGO}<span>Conektra</span></a>
+          <a class="marca" href="{inicio}">{LOGO}<span>Enlaza Studio</span></a>
           <p class="pie-sitio__eslogan">{U["eslogan"]}</p>
           <p>{U["desc"]}</p>
         </div>

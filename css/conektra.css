@@ -1,5 +1,5 @@
 /* =====================================================================
-   Conektra 2.0 — sistema de diseño
+   Enlaza Studio 2.0 — sistema de diseño
    «Tu negocio, mejor conectado.»
 
    1. Tokens          5. Animaciones base
@@ -695,7 +695,7 @@ h2 em { background: linear-gradient(100deg, var(--esmeralda), #23a76c 60%, var(-
 .cifras span { font-size: .88rem; color: var(--texto-o); }
 .cifras__vivo { position: absolute; top: 24px; right: 22px; width: 8px; height: 8px; border-radius: 50%; background: var(--brillante); box-shadow: 0 0 12px var(--brillante); animation: latido 1.8s infinite; }
 
-/* Integraciones (crema): Conektra al centro, tres anillos según el estado real */
+/* Integraciones (crema): Enlaza Studio al centro, tres anillos según el estado real */
 .red { background: var(--blanco-puro); }
 .red__grid { display: grid; grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: clamp(30px, 5vw, 70px); align-items: center; }
 .red .cabeza { margin-bottom: 28px; }

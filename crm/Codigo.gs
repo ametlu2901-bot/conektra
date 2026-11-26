@@ -1,5 +1,5 @@
 /**
- * Conektra — CRM de prospectos en Google Sheets
+ * Enlaza Studio — CRM de prospectos en Google Sheets
  *
  * Instalación (una sola vez):
  *  1. Hoja de cálculo nueva → Extensiones → Apps Script → pega este archivo.
@@ -35,7 +35,7 @@ function doPost(e) {
 }
 
 function doGet() {
-  return respuesta({ ok: true, servicio: 'Conektra CRM' });
+  return respuesta({ ok: true, servicio: 'Enlaza Studio CRM' });
 }
 
 function respuesta(obj) {

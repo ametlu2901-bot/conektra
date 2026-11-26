@@ -1,4 +1,4 @@
-"""Textos de la portada 3.0 de Conektra (español e inglés).
+"""Textos de la portada 3.0 de Enlaza Studio (español e inglés).
 
 Reglas: no inventar resultados ni clientes. Los datos de las pantallas son de ejemplo y así se rotulan.
 Las integraciones se describen según su estado real (ver integraciones.py).
@@ -6,16 +6,17 @@ Las integraciones se describen según su estado real (ver integraciones.py).
 
 ES = dict(
     lang="es", ruta="", otra_ruta="en/", otra="EN", otra_nombre="English",
-    titulo="Conektra | Tu negocio, mejor conectado · Ventas, cobros y clientes en un solo sistema",
-    descripcion="Conektra conecta el WhatsApp, las ventas, los cobros y los reportes de tu negocio en un solo sistema. Páginas web, seguimiento de clientes, cobranza automática y reportes para pequeñas empresas en Panamá.",
+    titulo="Páginas web y automatización de WhatsApp en Panamá | Enlaza Studio",
+    descripcion="Páginas web, CRM para WhatsApp, cobranza automática y automatización de WhatsApp Business para pequeños negocios en Panamá. Todo conectado en un solo sistema. Diagnóstico gratis.",
     eslogan="Tu negocio, mejor conectado.",
-    wa_msg="Hola Conektra, quiero un diagnóstico para mi negocio.",
+    wa_msg="Hola Enlaza Studio, quiero un diagnóstico para mi negocio.",
 
     nav=[("soluciones", "Soluciones"), ("integraciones", "Integraciones"), ("como-trabajamos", "Cómo trabajamos"), ("preguntas", "Preguntas")],
     cta="Hablemos", menu="Menú",
 
     # portada
     anuncio_tag="Nuevo", anuncio="Cobranza automática por WhatsApp",
+    h1_seo="Páginas web, CRM y automatización de WhatsApp en Panamá",
     h1_a="Tu negocio,", h1_b="mejor conectado.",
     lead="Conectamos tu WhatsApp, tus ventas, tus cobros y tus reportes en un solo sistema. Vendes más, cobras a tiempo y sabes cómo va tu negocio sin tener que preguntar.",
     cta1="Diagnóstico gratis", cta2="Ver soluciones",
@@ -42,7 +43,7 @@ ES = dict(
     herramientas_t="Se conecta con las herramientas que ya usas",
 
     # soluciones
-    sol_etiqueta="Soluciones", sol_h2="No vendemos programas.<br>Resolvemos lo que te frena.",
+    sol_etiqueta="Soluciones", sol_h2="Páginas web, CRM y cobros por WhatsApp<br>para que vendas más.",
     sol_p="Cinco resultados que un dueño de negocio entiende en una frase. Empiezas por el que más te duele y sumas los demás cuando quieras.",
     soluciones=[
         dict(id="atrae", n="01", tag="Atrae", titulo="Que te encuentren primero.",
@@ -56,11 +57,11 @@ ES = dict(
         dict(id="cobra", n="03", tag="Cobra", titulo="Cobra a tiempo sin perseguir a nadie.",
              texto="Recordatorios de pago por WhatsApp antes y después del vencimiento, y una lista siempre al día de quién te debe, cuánto y desde cuándo.",
              puntos=["Recordatorios de pago automáticos", "Cuentas por cobrar en una sola vista", "Aviso cuando alguien paga"],
-             enlace=("Hablemos de cobranza", None)),
+             enlace=("Cobros por WhatsApp", "cobros")),
         dict(id="controla", n="04", tag="Controla", titulo="Tu negocio en un mensaje cada mañana.",
              texto="Un resumen diario a tu WhatsApp con lo que importa: ventas, cotizaciones, cobros y pendientes. Y un tablero para ver más cuando lo necesites.",
              puntos=["Reporte diario automático por WhatsApp", "Tablero con tus números clave", "Alertas cuando algo se sale de lo normal"],
-             enlace=("Reportes y automatización", "erp")),
+             enlace=("Automatización de WhatsApp", "erp")),
         dict(id="conecta", n="05", tag="Conecta", titulo="Todo hablando con todo.",
              texto="Unimos lo que hoy copias a mano entre WhatsApp, hojas de cálculo, correo y agenda. Factura electrónica y pagos los evaluamos según tu proyecto.",
              puntos=["Sin escribir lo mismo dos veces", "Conexiones entre tus herramientas actuales", "Factura electrónica DGI y pagos: según proyecto"],
@@ -76,11 +77,11 @@ ES = dict(
         cobro_t="Por cobrar", cobro_total="$2,380",
         rep_t="Resumen del día",
         conecta=["WhatsApp", "Página web", "Google Sheets", "Gmail", "Calendar"],
-        conecta_centro="Conektra", conecta_dev="Factura DGI · según proyecto",
+        conecta_centro="Enlaza Studio", conecta_dev="Factura DGI · según proyecto",
     ),
 
     # red (sección oscura)
-    red_etiqueta="Integraciones", red_h2="Una sola red para<br>todo tu negocio.",
+    red_etiqueta="Integraciones", red_h2="WhatsApp, Google y tus cobros<br>en una sola red.",
     red_p="Te decimos con claridad qué ya funciona, qué se conecta según tu proyecto y qué necesita desarrollo antes de prometerlo.",
     estados={"op": "Operativa y probada", "disp": "Disponible según proyecto", "dev": "Requiere desarrollo"},
     principios=[("escudo", "Tus datos son tuyos", "Todo queda en tus propias cuentas, con accesos mínimos y documentados."),
@@ -99,7 +100,7 @@ ES = dict(
            ("Plan mensual", "Tu sistema crece contigo: mantenimiento, mejoras y nuevas automatizaciones cada mes.", ["Soporte prioritario", "Mejoras continuas", "Sin contratos largos"])],
 
     # negocios reales (escena 3D)
-    real_etiqueta="Para negocios reales", real_h2="Hecho para quienes atienden por WhatsApp.",
+    real_etiqueta="Para negocios reales", real_h2="Hecho para negocios en Panamá que atienden por WhatsApp.",
     real_p="Mudanzas, talleres, clínicas, tiendas, servicios técnicos: negocios donde cada mensaje puede ser una venta y ninguno debería perderse.",
     sectores=["Mudanzas y transporte", "Talleres y servicios técnicos", "Clínicas y consultorios", "Tiendas y catálogos", "Construcción y mantenimiento", "Servicios profesionales"],
     trabajo_reciente="Trabajo reciente:",
@@ -109,10 +110,10 @@ ES = dict(
     escena_pie="Menos chats perdidos. Más trabajos cerrados.",
 
     # preguntas
-    faq_etiqueta="Preguntas frecuentes", faq_h2="Lo que más nos preguntan.",
+    faq_etiqueta="Preguntas frecuentes", faq_h2="Preguntas frecuentes sobre páginas web y automatización.",
     faq_p="Si tu duda no está aquí, escríbenos por WhatsApp.",
     faqs=[
-        ("¿Qué hace Conektra exactamente?", "Conectamos las partes de tu negocio que hoy funcionan por separado: tu página, tu WhatsApp, tus clientes, tus cobros y tus reportes. Puedes empezar con una sola solución y sumar el resto después."),
+        ("¿Qué hace Enlaza Studio exactamente?", "Conectamos las partes de tu negocio que hoy funcionan por separado: tu página, tu WhatsApp, tus clientes, tus cobros y tus reportes. Puedes empezar con una sola solución y sumar el resto después."),
         ("¿Cuánto cuesta?", "Depende de lo que necesites. Después del diagnóstico te enviamos una propuesta con precio claro antes de empezar. También puedes trabajar con un plan mensual."),
         ("¿Cómo funciona la cobranza automática?", "Registramos lo que te deben y su fecha de vencimiento. El sistema envía recordatorios por WhatsApp antes y después del vencimiento, y tú ves en una sola lista quién debe, cuánto y desde cuándo."),
         ("¿Pueden conectar la factura electrónica de la DGI o Yappy?", "Se evalúa según el proyecto. Antes de prometerlo revisamos qué permite cada servicio y lo probamos contigo. Por eso los marcamos como «requiere desarrollo»."),
@@ -124,7 +125,7 @@ ES = dict(
     ],
 
     # contacto
-    form=dict(etiqueta="Contacto", h2="Empecemos por un diagnóstico.",
+    form=dict(etiqueta="Contacto", h2="Pide tu diagnóstico gratis.",
               p="Cuéntanos cómo trabajas hoy y qué te gustaría resolver. Revisamos tu caso y te proponemos por dónde empezar.",
               puntos=["Diagnóstico sin compromiso", "Propuesta con precio claro", "Te escribimos por WhatsApp"],
               nombre="Tu nombre", empresa="Nombre del negocio", whatsapp="WhatsApp", correo="Correo", opcional="opcional",
@@ -138,23 +139,24 @@ ES = dict(
     # cierre y pie
     cierre_h2="Conectemos lo que sigue.", cierre_p="Un diagnóstico de una hora puede mostrarte dónde estás perdiendo ventas y tiempo.",
     cierre_cta="Agenda tu diagnóstico",
-    pie=dict(soluciones="Soluciones", empresa="Conektra", contacto="Contacto", privacidad="Política de privacidad", form="Escríbenos por el formulario",
-             derechos="© 2026 Conektra", hecho="Hecho en Panamá",
+    pie=dict(soluciones="Soluciones", empresa="Enlaza Studio", contacto="Contacto", privacidad="Política de privacidad", form="Escríbenos por el formulario",
+             derechos="© 2026 Enlaza Studio", hecho="Hecho en Panamá",
              desc="Estudio tecnológico que conecta las ventas, los cobros y los clientes de pequeñas empresas."),
     barra_t="¿Hablamos de tu negocio?", barra_p="Te respondemos por WhatsApp",
 )
 
 EN = dict(
     lang="en", ruta="en/", otra_ruta="", otra="ES", otra_nombre="Español",
-    titulo="Conektra | Your business, better connected · Sales, payments and customers in one system",
-    descripcion="Conektra connects your business's WhatsApp, sales, payments and reports in one system. Websites, customer follow-up, automatic payment reminders and reports for small businesses in Panama.",
+    titulo="Websites & WhatsApp automation in Panama | Enlaza Studio",
+    descripcion="Enlaza Studio connects your business's WhatsApp, sales, payments and reports in one system. Websites, customer follow-up, automatic payment reminders and reports for small businesses in Panama.",
     eslogan="Your business, better connected.",
-    wa_msg="Hi Conektra, I'd like a diagnosis for my business.",
+    wa_msg="Hi Enlaza Studio, I'd like a diagnosis for my business.",
 
     nav=[("soluciones", "Solutions"), ("integraciones", "Integrations"), ("como-trabajamos", "How we work"), ("preguntas", "FAQ")],
     cta="Let's talk", menu="Menu",
 
     anuncio_tag="New", anuncio="Automatic payment reminders on WhatsApp",
+    h1_seo="Websites, CRM and WhatsApp automation in Panama",
     h1_a="Your business,", h1_b="better connected.",
     lead="We connect your WhatsApp, sales, payments and reports in one system. You sell more, get paid on time and know how your business is doing without having to ask.",
     cta1="Free diagnosis", cta2="See solutions",
@@ -213,7 +215,7 @@ EN = dict(
         cobro_t="Receivable", cobro_total="$2,380",
         rep_t="Daily summary",
         conecta=["WhatsApp", "Website", "Google Sheets", "Gmail", "Calendar"],
-        conecta_centro="Conektra", conecta_dev="DGI e-invoice · per project",
+        conecta_centro="Enlaza Studio", conecta_dev="DGI e-invoice · per project",
     ),
 
     red_etiqueta="Integrations", red_h2="One network for<br>your whole business.",
@@ -245,7 +247,7 @@ EN = dict(
     faq_etiqueta="FAQ", faq_h2="What people ask us most.",
     faq_p="If your question isn't here, message us on WhatsApp.",
     faqs=[
-        ("What exactly does Conektra do?", "We connect the parts of your business that work separately today: your website, WhatsApp, customers, payments and reports. You can start with one solution and add the rest later."),
+        ("What exactly does Enlaza Studio do?", "We connect the parts of your business that work separately today: your website, WhatsApp, customers, payments and reports. You can start with one solution and add the rest later."),
         ("How much does it cost?", "It depends on what you need. After the diagnosis we send you a proposal with a clear price before we start. You can also work with a monthly plan."),
         ("How do automatic payment reminders work?", "We record what you're owed and when it's due. The system sends WhatsApp reminders before and after the due date, and you see in one list who owes, how much and since when."),
         ("Can you connect DGI e-invoicing or Yappy?", "It's evaluated per project. Before promising it we check what each service allows and test it with you. That's why we label them «needs development»."),
@@ -269,8 +271,8 @@ EN = dict(
 
     cierre_h2="Let's connect what's next.", cierre_p="A one-hour diagnosis can show you where you're losing sales and time.",
     cierre_cta="Book your diagnosis",
-    pie=dict(soluciones="Solutions", empresa="Conektra", contacto="Contact", privacidad="Privacy policy", form="Write to us through the form",
-             derechos="© 2026 Conektra", hecho="Made in Panama",
+    pie=dict(soluciones="Solutions", empresa="Enlaza Studio", contacto="Contact", privacidad="Privacy policy", form="Write to us through the form",
+             derechos="© 2026 Enlaza Studio", hecho="Made in Panama",
              desc="Tech studio that connects the sales, payments and customers of small businesses."),
     barra_t="Shall we talk about your business?", barra_p="We reply on WhatsApp",
 )

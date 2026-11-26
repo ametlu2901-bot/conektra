@@ -1,4 +1,4 @@
-"""Portada 3.0 de Conektra: estructura HTML (español e inglés).
+"""Portada 3.0 de Enlaza Studio: estructura HTML (español e inglés).
 
 Estética: mezcla clara (portada, soluciones, preguntas, contacto) y oscura (red, proceso, cierre, pie).
 Tipografía Geist. La escena 3D (img/escena-base.webp + escena-persona.webp) se conserva intacta en la sección «Para negocios reales».
@@ -10,7 +10,7 @@ import integraciones
 import paginas
 from iconos import I, LOGO
 
-V_CSS = "3"
+V_CSS = "4"
 V_JS = "2"
 FUENTES = "https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap"
 TEL = "+507 6552-3134"
@@ -33,7 +33,7 @@ def _head(T, cfg, pre, ld):
   <meta name="theme-color" content="#fbfbf8">
   <meta name="color-scheme" content="light">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Conektra">
+  <meta property="og:site_name" content="Enlaza Studio">
   <meta property="og:url" content="{url}">
   <meta property="og:title" content="{T["titulo"]}">
   <meta property="og:description" content="{T["descripcion"]}">
@@ -60,7 +60,7 @@ def _cabecera(T, wa, otra):
     nav = "".join(f'<a href="#{i}">{t}</a>' for i, t in T["nav"])
     return f'''  <header class="cab" id="cab">
     <div class="cab__barra">
-      <a class="marca" href="./" aria-label="Conektra">{MARCA}<span>Conektra</span></a>
+      <a class="marca" href="./" aria-label="Enlaza Studio">{MARCA}<span>Enlaza Studio</span></a>
       <nav class="cab__nav" id="menu" aria-label="Principal">
         {nav}
         <a class="cab__idioma" href="{otra}" hreflang="{T["otra"].lower()}" title="{T["otra_nombre"]}">{T["otra"]}</a>
@@ -90,7 +90,7 @@ def _panel(T):
               <ul class="app__menu">{menu}</ul>
             </aside>
             <div class="app__main">
-              <div class="app__top"><div><small>{P["saludo"]}</small><b>Conektra</b></div><span class="app__chip"><i></i>{P["fecha"]}</span><span class="app__buscar">{I["lupa"]}<i></i></span><span class="app__avatar">AM</span></div>
+              <div class="app__top"><div><small>{P["saludo"]}</small><b>Enlaza Studio</b></div><span class="app__chip"><i></i>{P["fecha"]}</span><span class="app__buscar">{I["lupa"]}<i></i></span><span class="app__avatar">AM</span></div>
               <div class="app__kpis">{kpis}</div>
               <div class="app__cuerpo">
                 <section class="app__caja app__actividad"><h4><span class="vivo"></span>{P["actividad_t"]}</h4><ul class="act__lista" id="actividad">{filas}</ul></section>
@@ -102,7 +102,7 @@ def _panel(T):
             </div>
           </div>
           <div class="telefono">
-            <div class="telefono__cab">{MARCA}<span><b>Conektra</b><small>{P["reporte_t"]}</small></span></div>
+            <div class="telefono__cab">{MARCA}<span><b>Enlaza Studio</b><small>{P["reporte_t"]}</small></span></div>
             <div class="telefono__chat"><div class="globo"><b>{P["reporte_t"]} ☀️</b><ul>{reporte}</ul><small>{P["reporte_hora"]} ✓✓</small></div></div>
           </div>
           <span class="producto__ejemplo">{P["ejemplo"]}</span>
@@ -136,7 +136,7 @@ def _vis(clave, T):
         rep = "".join(f"<li>{r}</li>" for r in T["panel"]["reporte"])
         barras = "".join(f'<i style="--h:{h}"></i>' for h in (40, 55, 35, 70, 62, 85, 78))
         return f'''<div class="vis vis--controla"><div class="ventana-v graf"><small>{T["panel"]["embudo_t"]}</small><b>$12,480</b><div class="graf__barras">{barras}</div></div>
-            <div class="telefono telefono--chico"><div class="telefono__cab">{MARCA}<span><b>Conektra</b><small>{V["rep_t"]}</small></span></div>
+            <div class="telefono telefono--chico"><div class="telefono__cab">{MARCA}<span><b>Enlaza Studio</b><small>{V["rep_t"]}</small></span></div>
               <div class="telefono__chat"><div class="globo"><b>{V["rep_t"]} ☀️</b><ul>{rep}</ul><small>{T["panel"]["reporte_hora"]} ✓✓</small></div></div></div></div>'''
     nodos = "".join(f'<span class="nodo nodo--{j}">{x}</span>' for j, x in enumerate(V["conecta"]))
     return f'''<div class="vis vis--conecta">
@@ -206,7 +206,7 @@ def _red(T):
         <ul class="leyenda" data-revelar>{leyenda}</ul>
         <div class="mapa" data-revelar>
           <svg class="mapa__lineas" viewBox="0 0 160 100" preserveAspectRatio="none" aria-hidden="true">{"".join(lineas)}{pulsos}</svg>
-          <div class="mapa__centro">{MARCA}<b>Conektra</b></div>
+          <div class="mapa__centro">{MARCA}<b>Enlaza Studio</b></div>
           <ul class="mapa__nodos">{"".join(nodos)}</ul>
         </div>
         <ul class="principios">{principios}</ul>
@@ -315,7 +315,7 @@ def _contacto(T, wa, privacidad):
 def _final_y_pie(T, wa, otra, rel):
     P = T["pie"]
     cobranza = "Cobranza automática" if T["lang"] == "es" else "Automatic collections"
-    sol = "".join(f'<a href="#sol-{S["id"]}">{S["enlace"][0] if S["enlace"][1] else cobranza}</a>' for S in T["soluciones"])
+    sol = "".join(f'<a href="{rel(S["enlace"][1]) if S["enlace"][1] and T["lang"] == "es" else "#sol-" + S["id"]}">{S["enlace"][0] if S["enlace"][1] else cobranza}</a>' for S in T["soluciones"])
     emp = "".join(f'<a href="#{i}">{t}</a>' for i, t in T["nav"][1:])
     return f'''    <section class="final cierre" id="final">
       <canvas class="final__campo" id="campo-final" aria-hidden="true"></canvas>
@@ -331,12 +331,12 @@ def _final_y_pie(T, wa, otra, rel):
   <footer class="pie cierre">
     <div class="cont">
       <div class="pie__grid">
-        <div class="pie__marca"><a class="marca" href="./">{MARCA}<span>Conektra</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
+        <div class="pie__marca"><a class="marca" href="./">{MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
         <nav aria-label="{P["soluciones"]}"><h2>{P["soluciones"]}</h2>{sol}</nav>
         <nav aria-label="{P["empresa"]}"><h2>{P["empresa"]}</h2>{emp}<a href="{rel("privacidad")}">{P["privacidad"]}</a></nav>
         <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {TEL}</a><a href="#contacto">{P["form"]}</a><a href="{otra}">{T["otra_nombre"]} {I["flecha"]}</a></div>
       </div>
-      <p class="pie__gigante" aria-hidden="true">Conektra</p>
+      <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
       <div class="pie__base"><span>{P["derechos"]}</span><span>{P["hecho"]}</span></div>
     </div>
   </footer>
@@ -355,10 +355,11 @@ def pagina(T, cfg, wa_link):
     otra = f'{pre}{T["otra_ruta"] or "./"}'
     d = cfg["dominio"]
     ld = {"@context": "https://schema.org", "@graph": [
-        {"@type": "ProfessionalService", "@id": d + "#empresa", "name": "Conektra", "url": d, "slogan": T["eslogan"], "description": T["descripcion"],
+        {"@type": "ProfessionalService", "@id": d + "#empresa", "name": "Enlaza Studio", "url": d, "slogan": T["eslogan"], "description": T["descripcion"],
          "areaServed": {"@type": "Country", "name": "Panamá"}, "telephone": "+" + cfg["whatsapp"], "image": d + "img/compartir.jpg", "logo": d + "img/icono-512.png",
-         "knowsAbout": ["Web development", "Local SEO", "CRM", "Payment reminders", "Business automation", "API integrations", "Google Sheets", "WhatsApp"]},
-        {"@type": "WebSite", "name": "Conektra", "url": d, "inLanguage": ["es", "en"]},
+         "knowsAbout": ["Diseño de páginas web", "SEO local", "CRM para WhatsApp", "Cobranza automática", "Automatización de WhatsApp Business", "WhatsApp Business API", "Integraciones", "Google Sheets"],
+         "priceRange": "$$", "address": {"@type": "PostalAddress", "addressLocality": "Ciudad de Panamá", "addressCountry": "PA"}},
+        {"@type": "WebSite", "name": "Enlaza Studio", "url": d, "inLanguage": ["es", "en"]},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in T["faqs"]]}]}
     F = T["form"]
     form_cfg = json.dumps({"crm": cfg["crm"], "wa": cfg["whatsapp"], "lang": lang, "enviando": F["enviando"], "enviar": F["enviar"], "error": F["error"]},
@@ -372,7 +373,8 @@ def pagina(T, cfg, wa_link):
       <canvas class="hero__campo" id="campo" aria-hidden="true"></canvas>
       <div class="cont hero__texto">
         <a class="anuncio entra" style="--d:0s" href="#sol-cobra"><span class="anuncio__tag">{T["anuncio_tag"]}</span>{T["anuncio"]} {I["flecha"]}</a>
-        <h1 class="entra" style="--d:.08s">{T["h1_a"]}<br><span class="degradado">{T["h1_b"]}</span></h1>
+        <h1 class="hero__h1 entra" style="--d:.04s">{T["h1_seo"]}</h1>
+        <p class="hero__titular entra" style="--d:.08s">{T["h1_a"]}<br><span class="degradado">{T["h1_b"]}</span></p>
         <p class="hero__lead entra" style="--d:.18s">{T["lead"]}</p>
         <div class="hero__botones entra" style="--d:.28s">
           <a class="btn btn--tinta btn--grande" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {T["cta1"]}</a>

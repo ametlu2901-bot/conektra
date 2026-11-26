@@ -1,4 +1,4 @@
-"""Sección de servicios de Conektra: pestañas con ícono, puntos y barra de progreso,
+"""Sección de servicios de Enlaza Studio: pestañas con ícono, puntos y barra de progreso,
 y una maqueta tipo aplicación por servicio, con tarjetas flotantes encima."""
 
 TEXTOS = {
@@ -127,7 +127,7 @@ def seccion(lang, I, solo_maquetas=False, enlaces=None):
                   f'<div class="cadena">{cadena}</div>'
                   f'<div class="codigo"><span class="c">{a["c"]}</span>\n<span class="k">POST</span> /webhook\n{{\n{campos}\n}}</div>'
                   f'<div class="registros">{log}</div>')
-    panel_api = ventana("api.conektra", api_cuerpo) + flotante(I["rayo"], a["ok_t"], a["ok_p"], "flotante--arriba")
+    panel_api = ventana("api.enlazastudio", api_cuerpo) + flotante(I["rayo"], a["ok_t"], a["ok_p"], "flotante--arriba")
 
     # ---------- maqueta 4: ERP ----------
     e = X["erp"]

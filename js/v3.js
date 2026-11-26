@@ -1,4 +1,4 @@
-/* Conektra 3.0 — interacciones de la portada */
+/* Enlaza Studio 3.0 — interacciones de la portada */
 (() => {
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -168,7 +168,7 @@
     revisar();
   }
 
-  // Formulario de contacto → hoja «Conektra — CRM» (y WhatsApp como respaldo)
+  // Formulario de contacto → hoja «Enlaza Studio — CRM» (y WhatsApp como respaldo)
   const form = $('#formulario');
   const cfg = window.CONEKTRA_FORM || {};
   if (form) {
@@ -188,8 +188,8 @@
       const contacto = [dato('contacto'), dato('correo')].filter(Boolean).join(' · ');
       const datos = { nombre: dato('nombre'), empresa: dato('empresa'), contacto, necesita, presupuesto: dato('presupuesto'), mensaje: dato('mensaje'), idioma: cfg.lang, web: dato('web') };
       const resumen = (cfg.lang === 'en'
-        ? [`Hi Conektra, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]
-        : [`Hola Conektra, soy ${datos.nombre}${datos.empresa ? ` de ${datos.empresa}` : ''}.`, necesita && `Necesito: ${necesita}.`, datos.mensaje]
+        ? [`Hi Enlaza Studio, I'm ${datos.nombre}${datos.empresa ? ` from ${datos.empresa}` : ''}.`, necesita && `I need: ${necesita}.`, datos.mensaje]
+        : [`Hola Enlaza Studio, soy ${datos.nombre}${datos.empresa ? ` de ${datos.empresa}` : ''}.`, necesita && `Necesito: ${necesita}.`, datos.mensaje]
       ).filter(Boolean).join('\n');
       const enlaceWa = cfg.wa ? `https://wa.me/${cfg.wa}?text=${encodeURIComponent(resumen)}` : '';
       const listo = () => { form.hidden = true; $('#gracias').hidden = false; if (enlaceWa) $('#gracias-wa').href = enlaceWa; };

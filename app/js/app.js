@@ -1,4 +1,4 @@
-/* Portal Conektra — interfaz (rutas, vistas y acciones) */
+/* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js';
 import * as db from './datos.js';
 
@@ -57,7 +57,7 @@ function marco(ruta, contenido) {
   const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
   return `<div class="portal">
     <aside class="lado" id="lado">
-      <a class="lado__marca" href="#/inicio">${LOGO}<span>Conektra</span></a>
+      <a class="lado__marca" href="#/inicio">${LOGO}<span>Enlaza Studio</span></a>
       <nav class="lado__menu">${menu}</nav>
       <div class="lado__pie">
         <a href="#/ajustes" class="${ruta === 'ajustes' ? 'activo' : ''}">${I.soporte}<span>Ajustes</span></a>
@@ -207,7 +207,7 @@ V.ajustes = () => {
       <section class="caja caja--conectar"><h4>${I.wa} WhatsApp</h4>
         <p>Conecta el número de WhatsApp Business de tu negocio. Seguirás usándolo en tu celular como siempre, y desde aquí saldrán los recordatorios, seguimientos y el resumen diario.</p>
         <ol class="pasos-conectar"><li>Tocas «Conectar mi WhatsApp».</li><li>Entras con tu Facebook en la ventana oficial de Meta.</li><li>Escaneas un código QR con tu celular.</li><li>Listo: tus chats aparecen en Conversaciones.</li></ol>
-        <button class="btn btn--verde" disabled title="Disponible cuando Conektra complete su verificación con Meta">${I.wa} Conectar mi WhatsApp</button>
+        <button class="btn btn--verde" disabled title="Disponible cuando Enlaza Studio complete su verificación con Meta">${I.wa} Conectar mi WhatsApp</button>
         <p class="nota">Disponible muy pronto. Estamos completando la verificación oficial con Meta.</p></section>
       <section class="caja"><h4>${I.enlace} API e integraciones <span class="pill pill--pronto">Próximamente</span></h4>
         <p class="tenue">Usa los datos de tu negocio en otras herramientas: tu sistema contable, tu tienda en línea, hojas de cálculo o reportes propios. Tendrás una clave de acceso y avisos automáticos (webhooks) cuando entre un cliente, cambie una cotización o se registre un pago.</p></section>
@@ -218,7 +218,7 @@ V.ajustes = () => {
 // ---------------------------------------------------------------- entrada
 function entrar() {
   document.body.innerHTML = `<main class="entrar">
-    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Conektra</span></a>
+    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>
       <h1>Entra a tu negocio</h1><p>Te enviaremos un enlace a tu correo para entrar, sin contraseñas.</p>
       <form id="form-entrar">${campo('Correo', '<input name="correo" type="email" placeholder="tu@negocio.com" required autocomplete="email">')}
         <button class="btn btn--tinta btn--ancho">Enviar enlace</button></form>
@@ -236,7 +236,7 @@ function render() {
   const [, ruta = 'inicio', extra] = location.hash.split('/');
   const vista = V[ruta] ? ruta : 'inicio';
   document.body.innerHTML = marco(vista, V[vista](extra ? decodeURIComponent(extra) : undefined));
-  document.title = `${RUTAS.find(r => r[0] === vista)?.[1] || 'Ajustes'} · Conektra`;
+  document.title = `${RUTAS.find(r => r[0] === vista)?.[1] || 'Ajustes'} · Enlaza Studio`;
   enlazar(vista);
 }
 

@@ -1,4 +1,4 @@
-"""Páginas internas de Conektra: servicios, caso Acarreos Makena, privacidad, 404, sitemap y robots.
+"""Páginas internas de Enlaza Studio: servicios, caso Acarreos Makena, privacidad, 404, sitemap y robots.
 
 Se generan desde build.py y comparten el menú y el pie de marco.py.
 """
@@ -7,25 +7,26 @@ import servicios
 import marco
 
 RUTAS = {
-    "es": {"inicio": "", "web": "servicios/paginas-web/", "crm": "servicios/crm/", "api": "servicios/integraciones-api/",
-           "erp": "servicios/erp-automatizacion/", "caso": "casos/acarreos-makena/", "privacidad": "privacidad/"},
+    # en español, los servicios son las páginas de landing.py (pensadas para Google)
+    "es": {"inicio": "", "web": "paginas-web-panama/", "crm": "crm-whatsapp/", "api": "integraciones/",
+           "erp": "automatizacion-whatsapp/", "cobros": "cobros-por-whatsapp/", "caso": "casos/acarreos-makena/", "privacidad": "privacidad/"},
     "en": {"inicio": "en/", "web": "en/services/websites/", "crm": "en/services/crm/", "api": "en/services/api-integrations/",
            "erp": "en/services/erp-automation/", "caso": "en/cases/acarreos-makena/", "privacidad": "en/privacy/"},
 }
 ORDEN_SERVICIOS = ["web", "crm", "api", "erp"]
-FECHA = "2026-11-17"
+FECHA = "2026-11-26"
 
 UI = {
     "es": dict(inicio="Inicio", servicios="Servicios", casos="Casos de éxito", resuelve="Lo que resuelve", incluye="Qué incluye",
                ideal="Es para ti si…", como="Cómo trabajamos", faq="Preguntas frecuentes", otros="Otros servicios",
                demo="Así se ve", cta_h="¿Hablamos de tu negocio?", cta_p="Cuéntanos cómo trabajas hoy y te proponemos por dónde empezar.",
-               cta_form="Escríbenos por el formulario", wa_msg="Hola Conektra, quiero información sobre ", ver_incluye="Qué incluye",
+               cta_form="Escríbenos por el formulario", wa_msg="Hola Enlaza Studio, quiero información sobre ", ver_incluye="Qué incluye",
                pasos=[("Diagnóstico", "Vemos cómo trabajas hoy."), ("Propuesta", "Alcance, precio y tiempos claros."),
                       ("Desarrollo", "Por etapas, con avances que pruebas."), ("Soporte", "Cambios y mejoras después de entregar.")]),
     "en": dict(inicio="Home", servicios="Services", casos="Success stories", resuelve="What it solves", incluye="What's included",
                ideal="It's for you if…", como="How we work", faq="FAQ", otros="Other services",
                demo="What it looks like", cta_h="Shall we talk about your business?", cta_p="Tell us how you work today and we'll propose where to start.",
-               cta_form="Write to us through the form", wa_msg="Hi Conektra, I'd like information about ", ver_incluye="What's included",
+               cta_form="Write to us through the form", wa_msg="Hi Enlaza Studio, I'd like information about ", ver_incluye="What's included",
                pasos=[("Discovery", "We look at how you work today."), ("Proposal", "Clear scope, price and timeline."),
                       ("Build", "In stages, with progress you can test."), ("Support", "Changes and improvements after launch.")]),
 }
@@ -193,17 +194,17 @@ CASO = {
 }
 
 PRIVACIDAD = {
-    "es": dict(titulo="Política de privacidad", meta="Cómo Conektra usa los datos que nos envías por el formulario de contacto o por WhatsApp.", fecha="Última actualización: 17 de noviembre de 2026",
+    "es": dict(titulo="Política de privacidad", meta="Cómo Enlaza Studio usa los datos que nos envías por el formulario de contacto o por WhatsApp.", fecha="Última actualización: 17 de noviembre de 2026",
                bloques=[("Qué datos recogemos", "Solo los que tú nos envías por el formulario de contacto: tu nombre, el nombre de tu negocio, tu WhatsApp, tu correo si decides darlo, qué necesitas, tu presupuesto aproximado si lo indicas y tu mensaje. Si nos escribes por WhatsApp, también tu número y lo que nos cuentes."),
                         ("Para qué los usamos", "Únicamente para responderte, preparar una propuesta y dar seguimiento a tu solicitud. No los vendemos ni los compartimos con terceros para publicidad."),
-                        ("Dónde se guardan", "Los mensajes del formulario se guardan en una hoja de cálculo privada de Google a la que solo tiene acceso Conektra."),
+                        ("Dónde se guardan", "Los mensajes del formulario se guardan en una hoja de cálculo privada de Google a la que solo tiene acceso Enlaza Studio."),
                         ("Servicios de terceros", "La página se aloja en GitHub Pages y usa fuentes de Google Fonts; estos servicios pueden registrar datos técnicos de la visita, como la dirección IP, según sus propias políticas. No usamos cookies de publicidad ni herramientas de seguimiento."),
                         ("Tus derechos", "Puedes pedirnos en cualquier momento que te digamos qué datos tenemos tuyos, que los corrijamos o que los borremos. Escríbenos por WhatsApp y lo hacemos.")],
                contacto="Contacto"),
-    "en": dict(titulo="Privacy policy", meta="How Conektra uses the information you send us through the contact form or WhatsApp.", fecha="Last updated: November 17, 2026",
+    "en": dict(titulo="Privacy policy", meta="How Enlaza Studio uses the information you send us through the contact form or WhatsApp.", fecha="Last updated: November 17, 2026",
                bloques=[("What we collect", "Only what you send us through the contact form: your name, your business name, your WhatsApp, your email if you choose to share it, what you need, your approximate budget if you give one and your message. If you message us on WhatsApp, also your number and what you tell us."),
                         ("How we use it", "Only to reply to you, prepare a proposal and follow up on your request. We don't sell it or share it with third parties for advertising."),
-                        ("Where it's stored", "Form messages are stored in a private Google spreadsheet that only Conektra can access."),
+                        ("Where it's stored", "Form messages are stored in a private Google spreadsheet that only Enlaza Studio can access."),
                         ("Third-party services", "The site is hosted on GitHub Pages and uses Google Fonts; these services may log technical visit data, such as your IP address, under their own policies. We don't use advertising cookies or tracking tools."),
                         ("Your rights", "You can ask us at any time what information we have about you, to correct it or to delete it. Message us on WhatsApp and we'll take care of it.")],
                contacto="Contact"),
@@ -232,7 +233,7 @@ def demo_extra(clave, lang, I):
         der = ["Google Sheets", "CRM", "Gmail"]
         nodo = lambda t: f'<span class="demo-red__nodo">{t}</span>'
         return (f'<div class="demo demo-red"><div class="demo-red__col">{"".join(nodo(t) for t in izq)}</div>'
-                f'<div class="demo-red__centro"><i></i><b>Conektra</b><i></i></div><div class="demo-red__col">{"".join(nodo(t) for t in der)}</div></div>')
+                f'<div class="demo-red__centro"><i></i><b>Enlaza Studio</b><i></i></div><div class="demo-red__col">{"".join(nodo(t) for t in der)}</div></div>')
     filas = [("Cajas medianas" if es else "Medium boxes", "38", "OK"), ("Cinta de embalar" if es else "Packing tape", "6", "Comprar" if es else "Reorder"), ("Plástico burbuja" if es else "Bubble wrap", "12", "OK")]
     tabla = "".join(f'<div><span>{a}</span><b>{b}</b><em class="{"bajo" if c not in ("OK",) else ""}">{c}</em></div>' for a, b, c in filas)
     return f'<div class="demo demo-inventario"><p>{"Inventario y compras · ejemplo" if es else "Inventory and purchasing · example"}</p>{tabla}</div>'
@@ -253,7 +254,7 @@ def banda_cta(ui, I, inicio, wa, wa_attr, h=None, p=None):
 '''
 
 
-def generar(raiz, cfg, I, LOGO):
+def generar(raiz, cfg, I, LOGO, extra=()):
     escritas = []
     d = cfg["dominio"]
 
@@ -274,7 +275,7 @@ def generar(raiz, cfg, I, LOGO):
         ld_todo = {"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": titulo, "url": d + ruta, "description": meta, "inLanguage": lang,
                                                                "isPartOf": {"@id": d + "#empresa"}}] + ld}
         serv = [(SERVICIOS[lang][k]["titulo"], pre + RUTAS[lang][k]) for k in ORDEN_SERVICIOS]
-        return (marco.head(lang, pre, f"{titulo} | Conektra", meta, d + ruta, alternos, imagen, ld_todo)
+        return (marco.head(lang, pre, f"{titulo} | Enlaza Studio", meta, d + ruta, alternos, imagen, ld_todo)
                 + '<body class="interna">\n'
                 + marco.cabecera(lang, inicio, otra, wa, wa_attr, I, LOGO)
                 + cuerpo(pre, inicio, wa, wa_attr)
@@ -288,6 +289,8 @@ def generar(raiz, cfg, I, LOGO):
 
         # ---------- servicios ----------
         for n, clave in enumerate(ORDEN_SERVICIOS):
+            if lang == "es":
+                continue  # las arma landing.py con el diseño 3.0
             S = SERVICIOS[lang][clave]
             ruta, ruta_otra = RUTAS[lang][clave], RUTAS[otro][clave]
             wa = f'https://wa.me/{cfg["whatsapp"]}?text={urllib.parse.quote(ui["wa_msg"] + S["titulo"])}'
@@ -379,7 +382,7 @@ def generar(raiz, cfg, I, LOGO):
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Página no encontrada | Conektra</title>
+  <title>Página no encontrada | Enlaza Studio</title>
   <meta name="robots" content="noindex">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#08271e">
@@ -391,7 +394,7 @@ def generar(raiz, cfg, I, LOGO):
 </head>
 <body class="pagina-404">
   <main class="e404">
-    <a class="marca" href="{d}">{LOGO}<span>Conektra</span></a>
+    <a class="marca" href="{d}">{LOGO}<span>Enlaza Studio</span></a>
     <div class="e404__cable" aria-hidden="true"><span></span><i></i><span></span></div>
     <p class="etiqueta">Error 404</p>
     <h1>Esta conexión <em>se perdió.</em></h1>
@@ -405,7 +408,7 @@ def generar(raiz, cfg, I, LOGO):
         f.write(html404)
 
     # ---------- sitemap y robots ----------
-    urls = ["", "en/"] + escritas
+    urls = [""] + list(extra) + ["en/"] + escritas
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "".join(
         f"  <url><loc>{d}{u}</loc><lastmod>{FECHA}</lastmod><priority>{'1.0' if u in ('', 'en/') else '0.8'}</priority></url>\n" for u in urls) + "</urlset>\n"
     with open(os.path.join(raiz, "sitemap.xml"), "w", encoding="utf-8", newline="\n") as f:

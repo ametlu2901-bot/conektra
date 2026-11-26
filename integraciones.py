@@ -1,4 +1,4 @@
-"""Integraciones: Conektra en el centro y las herramientas en tres anillos según su estado real.
+"""Integraciones: Enlaza Studio en el centro y las herramientas en tres anillos según su estado real.
 
 Anillo interior: integraciones operativas y probadas en proyectos reales.
 Anillo medio: disponibles según el proyecto. Anillo exterior: requieren desarrollo o validación.
@@ -28,13 +28,13 @@ ANILLOS = {"op": (20, -90), "disp": (36, -54), "dev": (47, -18)}  # radio (% del
 
 TEXTOS = {
     "es": dict(etiqueta="Integraciones", h2='Tus herramientas favoritas. <em>Trabajando juntas.</em>',
-               p="Conektra es el centro que conecta lo que ya usas. Te decimos con claridad qué ya funciona, qué se puede conectar según tu proyecto y qué necesita desarrollo antes de prometerlo.",
+               p="Enlaza Studio es el centro que conecta lo que ya usas. Te decimos con claridad qué ya funciona, qué se puede conectar según tu proyecto y qué necesita desarrollo antes de prometerlo.",
                estados={"op": ("Operativa y probada", "Ya funciona en proyectos reales."),
                         "disp": ("Disponible según el proyecto", "Se puede conectar; lo definimos contigo."),
                         "dev": ("Requiere desarrollo o validación", "La revisamos y probamos antes de comprometernos.")},
                cta="Pregúntanos por tu herramienta"),
     "en": dict(etiqueta="Integrations", h2='Your favorite tools. <em>Working together.</em>',
-               p="Conektra is the hub that connects what you already use. We tell you clearly what already works, what can be connected depending on your project and what needs development before we promise it.",
+               p="Enlaza Studio is the hub that connects what you already use. We tell you clearly what already works, what can be connected depending on your project and what needs development before we promise it.",
                estados={"op": ("Live and tested", "Already working in real projects."),
                         "disp": ("Available per project", "Can be connected; we define it with you."),
                         "dev": ("Needs development or validation", "We review and test it before committing.")},
@@ -77,7 +77,7 @@ def seccion(lang, NUCLEO, wa, wa_attr, I):
           <span class="red__anillo red__anillo--op" aria-hidden="true"></span><span class="red__anillo red__anillo--disp" aria-hidden="true"></span><span class="red__anillo red__anillo--dev" aria-hidden="true"></span>
           <svg class="red__lineas" viewBox="0 0 100 100" aria-hidden="true">{"".join(lineas)}<g class="red__pulsos">{"".join(pulsos)}</g></svg>
           <span class="red__onda" aria-hidden="true"></span>
-          <span class="red__centro">{NUCLEO}<b>Conektra</b></span>
+          <span class="red__centro">{NUCLEO}<b>Enlaza Studio</b></span>
           <ul aria-label="{X["etiqueta"]}">{"".join(fichas)}</ul>
         </div>
       </div>

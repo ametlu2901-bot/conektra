@@ -1,15 +1,15 @@
-"""Textos de la portada de Conektra en español (ES) y en inglés (EN).
+"""Textos de la portada de Enlaza Studio en español (ES) y en inglés (EN).
 
 Regla: no afirmar resultados, métricas ni integraciones que no estén comprobados.
 """
 
 ES = dict(
     lang="es", ruta="", otra_ruta="en/", otra_etiqueta="EN", otra_nombre="English",
-    titulo="Conektra | Tu negocio, mejor conectado · Páginas web, CRM y automatización en Panamá",
+    titulo="Enlaza Studio | Tu negocio, mejor conectado · Páginas web, CRM y automatización en Panamá",
     descripcion="Estudio tecnológico para pequeños negocios de Panamá: páginas web con SEO local, un CRM para ordenar clientes y cotizaciones, e integraciones con WhatsApp y Google Sheets.",
     eslogan="Tu negocio, mejor conectado.",
     nav=["Servicios", "Cómo funciona", "Preguntas frecuentes"], cta="Hablemos",
-    wa_msg="Hola Conektra, quiero mejorar cómo funciona mi negocio.",
+    wa_msg="Hola Enlaza Studio, quiero mejorar cómo funciona mi negocio.",
 
     # portada
     etiqueta="Tecnología para negocios que quieren crecer",
@@ -26,7 +26,7 @@ ES = dict(
     dol_etiqueta="El día a día",
     dol_h2='Tu negocio no necesita más complicaciones. <em>Necesita trabajar mejor.</em>',
     dol_p="Estos problemas se repiten en casi todos los negocios de servicios. Y todos tienen solución.",
-    dol_con="Cómo ayuda Conektra",
+    dol_con="Cómo ayuda Enlaza Studio",
     dolores=[
         ("Cotizaciones que se quedan sin responder", "Se acumulan los chats y una solicitud queda en «te escribo luego». Ese cliente ya contrató a otro.",
          "Cada solicitud queda guardada con su estado y sabes a quién te falta responder."),
@@ -54,7 +54,7 @@ ES = dict(
            ("Cotizas y das seguimiento", "Cada cotización avanza por etapas y sabes a quién te falta responder."),
            ("Cierras y te califica", "Haces el trabajo y el cliente deja su reseña en tu página.")],
     flujo_nodos=["Google", "Solicitud", "CRM", "Cotización", "Ganado"],
-    flujo_ventana="Conektra · Flujo de clientes", flujo_insignia=("Más clientes,", "menos trabajo manual."),
+    flujo_ventana="Enlaza Studio · Flujo de clientes", flujo_insignia=("Más clientes,", "menos trabajo manual."),
     escena_chip="Automático",
     esc1=dict(cab="WhatsApp", est="Desde Google", b1="Hola, vi su página en Google. ¿Me cotizan una mudanza para el sábado?", b2="¡Claro! Ya registramos tu solicitud. Te enviamos la cotización en unos minutos."),
     esc2=dict(cab="Nueva solicitud", est="CRM", filas=[("Nombre", "María Pérez"), ("Canal", "Formulario web"), ("Servicio", "Mudanza"), ("Etapa", "Nuevo")]),
@@ -117,7 +117,7 @@ ES = dict(
     faq_p="Si tu duda no está aquí, escríbenos por WhatsApp y te respondemos.",
     faqs=[
         ("Servicios", [
-            ("¿Qué hace Conektra exactamente?", "Hacemos páginas web, sistemas para ordenar clientes y cotizaciones (CRM) y conexiones entre tus herramientas. Puedes empezar con una sola cosa y sumar el resto después."),
+            ("¿Qué hace Enlaza Studio exactamente?", "Hacemos páginas web, sistemas para ordenar clientes y cotizaciones (CRM) y conexiones entre tus herramientas. Puedes empezar con una sola cosa y sumar el resto después."),
             ("Ya tengo WhatsApp e Instagram, ¿para qué una página?", "Porque cuando alguien busca «mudanzas en Panamá» o «técnico de aire acondicionado» en Google, no ve tu Instagram: ve páginas web. Tu página te pone en esas búsquedas y manda a esa persona directo a tu WhatsApp.")]),
         ("Precios y contratación", [
             ("¿Cuánto cuesta?", "Depende de qué necesites: cuántos servicios y zonas mostrar, y qué funciones lleva. Te enviamos una propuesta con precio claro antes de empezar."),
@@ -156,18 +156,18 @@ ES = dict(
     cierre_h2='Tu negocio tiene mucho por crecer. <em>Conectemos lo que sigue.</em>',
     cierre_p="Cuéntanos qué necesitas y descubramos cómo podemos ayudarte.", cierre_wa="Hablemos por WhatsApp",
     pie_servicios="Servicios", pie_nav="Navegación", pie_contacto="Contacto", pie_privacidad="Política de privacidad",
-    pie_form="Escríbenos por el formulario", pie_derechos="© 2026 Conektra. Todos los derechos reservados.", pie_hecho="Hecho en Panamá.",
+    pie_form="Escríbenos por el formulario", pie_derechos="© 2026 Enlaza Studio. Todos los derechos reservados.", pie_hecho="Hecho en Panamá.",
     pie_desc="Estudio tecnológico que ayuda a pequeños negocios a conseguir clientes, ordenar su trabajo y conectar sus herramientas.",
     barra_t="¿Hablamos de tu negocio?", barra_p="Te respondemos por WhatsApp",
 )
 
 EN = dict(
     lang="en", ruta="en/", otra_ruta="", otra_etiqueta="ES", otra_nombre="Español",
-    titulo="Conektra | Your business, better connected · Websites, CRM and automation in Panama",
+    titulo="Enlaza Studio | Your business, better connected · Websites, CRM and automation in Panama",
     descripcion="Tech studio for small businesses in Panama: websites with local SEO, a CRM to organize customers and quotes, and integrations with WhatsApp and Google Sheets.",
     eslogan="Your business, better connected.",
     nav=["Services", "How it works", "FAQ"], cta="Let's talk",
-    wa_msg="Hi Conektra, I want to improve how my business runs.",
+    wa_msg="Hi Enlaza Studio, I want to improve how my business runs.",
 
     etiqueta="Technology for businesses that want to grow",
     h1='<span class="titular__l1">Your business can</span> <span class="titular__l2">run</span> <em>better connected.</em>',
@@ -182,7 +182,7 @@ EN = dict(
     dol_etiqueta="Day to day",
     dol_h2='Your business doesn\'t need more complications. <em>It needs to work better.</em>',
     dol_p="These problems show up in almost every service business. And every one of them has a fix.",
-    dol_con="How Conektra helps",
+    dol_con="How Enlaza Studio helps",
     dolores=[
         ("Quote requests that go unanswered", "Chats pile up and a request stays at \"I'll get back to you\". That customer already hired someone else.",
          "Every request is saved with its status, so you know who's still waiting."),
@@ -209,7 +209,7 @@ EN = dict(
            ("You quote and follow up", "Every quote moves through stages and you know who's still waiting."),
            ("You close and they rate you", "You do the job and the customer leaves a review on your website.")],
     flujo_nodos=["Google", "Request", "CRM", "Quote", "Won"],
-    flujo_ventana="Conektra · Customer flow", flujo_insignia=("More customers,", "less manual work."),
+    flujo_ventana="Enlaza Studio · Customer flow", flujo_insignia=("More customers,", "less manual work."),
     escena_chip="Automatic",
     esc1=dict(cab="WhatsApp", est="From Google", b1="Hi, I saw your website on Google. Can I get a quote for a move on Saturday?", b2="Of course! We've logged your request. Your quote is on its way in a few minutes."),
     esc2=dict(cab="New request", est="CRM", filas=[("Name", "Maria Perez"), ("Channel", "Website form"), ("Service", "Moving"), ("Stage", "New")]),
@@ -268,7 +268,7 @@ EN = dict(
     faq_p="If your question isn't here, message us on WhatsApp and we'll answer.",
     faqs=[
         ("Services", [
-            ("What exactly does Conektra do?", "We build websites, systems to organize customers and quotes (CRM) and connections between your tools. You can start with just one and add the rest later."),
+            ("What exactly does Enlaza Studio do?", "We build websites, systems to organize customers and quotes (CRM) and connections between your tools. You can start with just one and add the rest later."),
             ("I already have WhatsApp and Instagram. Why a website?", "Because when someone searches \"movers in Panama\" or \"AC technician\" on Google, they don't see your Instagram: they see websites. Your website puts you in those searches and sends that person straight to your WhatsApp.")]),
         ("Pricing and hiring", [
             ("How much does it cost?", "It depends on what you need: how many services and areas to show and which features it includes. We send you a proposal with a clear price before we start."),
@@ -305,7 +305,7 @@ EN = dict(
     cierre_h2='Your business has a lot of room to grow. <em>Let\'s connect what\'s next.</em>',
     cierre_p="Tell us what you need and let's find out how we can help.", cierre_wa="Let's talk on WhatsApp",
     pie_servicios="Services", pie_nav="Navigation", pie_contacto="Contact", pie_privacidad="Privacy policy",
-    pie_form="Write to us through the form", pie_derechos="© 2026 Conektra. All rights reserved.", pie_hecho="Made in Panama.",
+    pie_form="Write to us through the form", pie_derechos="© 2026 Enlaza Studio. All rights reserved.", pie_hecho="Made in Panama.",
     pie_desc="Tech studio that helps small businesses win customers, organize their work and connect their tools.",
     barra_t="Shall we talk about your business?", barra_p="We reply on WhatsApp",
 )

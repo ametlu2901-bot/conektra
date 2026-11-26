@@ -1,4 +1,4 @@
-"""Íconos (trazos simples que heredan el color del texto) y logotipo de Conektra."""
+"""Íconos (trazos simples que heredan el color del texto) y logotipo de Enlaza Studio."""
 
 # ---------- íconos (trazos simples, heredan el color) ----------
 I = {
