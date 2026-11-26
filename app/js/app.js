@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js';
-import * as db from './datos.js';
+import * as db from './datos.js?v=9';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -61,18 +61,18 @@ function marco(ruta, contenido) {
       <nav class="lado__menu">${menu}</nav>
       <div class="lado__pie">
         <a href="#/ajustes" class="${ruta === 'ajustes' ? 'activo' : ''}">${I.soporte}<span>Ajustes</span></a>
-        <div class="lado__negocio"><span class="avatar">${iniciales(N.nombre)}</span><span><b>${esc(N.nombre)}</b><small>${N.whatsapp_conectado ? 'WhatsApp conectado' : 'Modo demostración'}</small></span></div>
+        <div class="lado__negocio"><span class="avatar">${iniciales(N.nombre)}</span><span><b>${esc(N.nombre)}</b><small>${!db.enModoReal() ? 'Modo demostración' : N.whatsapp_conectado ? 'WhatsApp conectado' : esc(db.correoUsuario())}</small></span></div>
       </div>
     </aside>
     <div class="principal">
       <header class="barra">
         <button class="icono-btn barra__menu" id="abrir-menu" aria-label="Menú">☰</button>
-        <div><small>${saludo}, ${esc(N.dueno)}</small><b>${esc(N.nombre)}</b></div>
+        <div><small>${saludo}${N.dueno ? `, ${esc(N.dueno.split(' ')[0])}` : ''}</small><b>${esc(N.nombre)}</b></div>
         <span class="chip"><i></i>${(f => f[0].toUpperCase() + f.slice(1))(new Date().toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' }))}</span>
         <label class="buscar">${I.lupa}<input id="buscar" type="search" placeholder="Buscar clientes…" autocomplete="off"></label>
-        <button class="avatar avatar--btn" id="salir" title="Cerrar sesión">${iniciales(N.dueno)}</button>
+        <button class="avatar avatar--btn" id="salir" title="Cerrar sesión">${iniciales(N.dueno || N.nombre)}</button>
       </header>
-      ${N.whatsapp_conectado ? '' : `<div class="demo-banda">${I.escudo}<span><b>Modo demostración.</b> Los datos son de ejemplo y se guardan solo en este navegador. Cuando conectemos tu cuenta, aquí verás tu negocio real.</span></div>`}
+      ${db.enModoReal() ? '' : `<div class="demo-banda">${I.escudo}<span><b>Modo demostración.</b> Los datos son de ejemplo y se guardan solo en este navegador.</span></div>`}
       <main class="vista" id="vista">${contenido}</main>
     </div>
   </div>`;
@@ -156,13 +156,17 @@ V.cobros = () => {
 
 V.conversaciones = (abierta) => {
   const convs = db.conversaciones();
+  if (!convs.length) {
+    return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
+      <div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Cuando conectes el WhatsApp de tu negocio, tus chats aparecerán aquí. Mientras tanto, desde Clientes, Cotizaciones y Cobros puedes escribir por WhatsApp con un toque.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`;
+  }
   const actual = convs.find(c => c.id === abierta) || convs[0];
   const lista = convs.map(c => { const x = db.contacto(c.contacto_id); const u = c.mensajes[c.mensajes.length - 1];
     return `<a href="#/conversaciones/${c.id}" class="conv${c === actual ? ' activo' : ''}"><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small>${u.dir === 'out' ? 'Tú: ' : ''}${esc(u.texto)}</small></span><time>${hace(u.fecha)}</time></a>`; }).join('');
   const x = db.contacto(actual.contacto_id);
   const msgs = actual.mensajes.map(m => `<div class="msg msg--${m.dir}">${esc(m.texto)}<small>${new Date(m.fecha).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' })}${m.dir === 'out' ? ' ✓✓' : ''}</small></div>`).join('');
   return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
-    <div class="aviso-conectar">${I.wa}<div><b>Conecta tu WhatsApp para ver tus chats reales</b><p>Estas conversaciones son de ejemplo. Al conectar tu número seguirás usando WhatsApp en tu celular y los mensajes también llegarán aquí.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>
+    ${db.negocio().whatsapp_conectado ? '' : `<div class="aviso-conectar">${I.wa}<div><b>Conecta tu WhatsApp para ver tus chats reales</b><p>Estas conversaciones son de ejemplo. Al conectar tu número seguirás usando WhatsApp en tu celular y los mensajes también llegarán aquí.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}
     <div class="bandeja"><nav class="bandeja__lista">${lista}</nav>
       <section class="chat"><header><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></span></header>
         <div class="chat__cuerpo">${msgs}</div>
@@ -175,15 +179,16 @@ V.reportes = () => {
   const porOrigen = db.ORIGENES.map(o => [o, db.contactos().filter(x => x.origen === o).length]);
   const topeO = Math.max(...porOrigen.map(x => x[1]), 1);
   const ganadas = qs.filter(q => q.etapa === 'ganado').length, cerradas = qs.filter(q => ['ganado', 'perdido'].includes(q.etapa)).length;
-  const meses = ['Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov'], valores = [2100, 2650, 2400, 3300, 3900, db.resumen().ganadoMes];
-  const topeM = Math.max(...valores);
+  const vm = db.ventasPorMes();
+  const meses = vm.map(([m]) => m[0].toUpperCase() + m.slice(1)), valores = vm.map(([, v]) => v);
+  const topeM = Math.max(...valores, 1);
   return `<div class="cab-vista"><div><h1>Reportes</h1><p>Cómo va tu negocio, sin abrir una hoja de cálculo.</p></div></div>
     <div class="kpis"><div class="kpi"><small>Tasa de cierre</small><b>${cerradas ? Math.round(ganadas / cerradas * 100) : 0}%</b><span>${ganadas} de ${cerradas} cerradas</span></div>
       <div class="kpi"><small>Ticket promedio</small><b>${dinero(qs.reduce((s, q) => s + q.monto, 0) / Math.max(qs.length, 1))}</b><span>Por cotización</span></div>
       <div class="kpi"><small>Ganado este mes</small><b>${dinero(db.resumen().ganadoMes)}</b><span>Cotizaciones ganadas</span></div>
       <div class="kpi"><small>Por cobrar</small><b>${dinero(db.resumen().porCobrar)}</b><span>Pendiente</span></div></div>
     <div class="rejilla-2">
-      <section class="caja"><h4>Ventas por mes <small>meses anteriores de ejemplo</small></h4><div class="columnas">${meses.map((m, j) => `<div><i style="--h:${(valores[j] / topeM * 100).toFixed(0)}%"><b>${dinero(valores[j])}</b></i><span>${m}</span></div>`).join('')}</div></section>
+      <section class="caja"><h4>Cobrado por mes ${db.enModoReal() ? '' : '<small>meses anteriores de ejemplo</small>'}</h4><div class="columnas">${meses.map((m, j) => `<div><i style="--h:${(valores[j] / topeM * 100).toFixed(0)}%"><b>${dinero(valores[j])}</b></i><span>${m}</span></div>`).join('')}</div></section>
       <section class="caja"><h4>¿De dónde vienen tus clientes?</h4><ul class="barras barras--anchas">${porOrigen.map(([o, v]) => `<li><span>${o}</span><i style="--v:${(v / topeO).toFixed(2)}"><b>${v}</b></i></li>`).join('')}</ul></section>
     </div>`;
 };
@@ -211,24 +216,124 @@ V.ajustes = () => {
         <p class="nota">Disponible muy pronto. Estamos completando la verificación oficial con Meta.</p></section>
       <section class="caja"><h4>${I.enlace} API e integraciones <span class="pill pill--pronto">Próximamente</span></h4>
         <p class="tenue">Usa los datos de tu negocio en otras herramientas: tu sistema contable, tu tienda en línea, hojas de cálculo o reportes propios. Tendrás una clave de acceso y avisos automáticos (webhooks) cuando entre un cliente, cambie una cotización o se registre un pago.</p></section>
-      <section class="caja"><h4>Datos de demostración</h4><p class="tenue">Vuelve a cargar los datos de ejemplo. Se borra lo que hayas agregado en este navegador.</p><button class="btn btn--suave" id="reiniciar">Restablecer datos de ejemplo</button></section>
+      ${db.enModoReal()
+        ? `<section class="caja"><h4>${I.web} Formulario de tu página web</h4>
+            <p class="tenue">Las solicitudes del formulario de tu página llegan solas a Clientes y Cotizaciones. Esta es la clave de tu formulario (te la pedimos al conectarlo):</p>
+            <p><code class="mono">${esc(N.clave_formulario || '')}</code></p></section>
+          <section class="caja"><h4>Tu cuenta</h4><p class="tenue">Entraste como <b>${esc(db.correoUsuario())}</b>. Se entra con un enlace al correo, sin contraseña.</p></section>`
+        : `<section class="caja"><h4>Datos de demostración</h4><p class="tenue">Vuelve a cargar los datos de ejemplo. Se borra lo que hayas agregado en este navegador.</p><button class="btn btn--suave" id="reiniciar">Restablecer datos de ejemplo</button></section>`}
     </div>`;
 };
 
 // ---------------------------------------------------------------- entrada
-function entrar() {
-  document.body.innerHTML = `<main class="entrar">
-    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>
-      <h1>Entra a tu negocio</h1><p>Te enviaremos un enlace a tu correo para entrar, sin contraseñas.</p>
-      <form id="form-entrar">${campo('Correo', '<input name="correo" type="email" placeholder="tu@negocio.com" required autocomplete="email">')}
-        <button class="btn btn--tinta btn--ancho">Enviar enlace</button></form>
-      <div class="separador"><span>o</span></div>
-      <button class="btn btn--suave btn--ancho" id="demo">Ver la demostración</button>
-      <p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p></div>
+const pantallaEntrada = cuerpo => `<main class="entrar">
+    <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>${cuerpo}</div>
     <div class="entrar__arte" aria-hidden="true"><div><b>Tu negocio, mejor conectado.</b><span>Clientes, cotizaciones, cobros y WhatsApp en un solo lugar.</span></div></div></main>`;
-  const ir = correo => { db.sesion.entrar(correo); location.hash = '#/inicio'; arrancar(); };
-  $('#form-entrar').addEventListener('submit', e => { e.preventDefault(); ir(new FormData(e.target).get('correo')); });
-  $('#demo').addEventListener('click', () => ir('demo@conektra'));
+
+function entrar() {
+  const real = db.hayConexion();
+  document.body.innerHTML = pantallaEntrada(`
+      <h1>Entra a tu negocio</h1><p>Con tu correo y tu contraseña.</p>
+      ${real
+        ? `<form id="form-entrar">${campo('Correo', '<input name="correo" type="email" placeholder="tu@negocio.com" required autocomplete="email">')}
+            <div id="caja-clave">${campo('Contraseña', '<input name="clave" type="password" autocomplete="current-password" required>')}</div>
+            <p class="dialogo__error" role="alert" id="error-entrar">${esc(db.errorDelEnlace)}</p>
+            <button class="btn btn--tinta btn--ancho" id="boton-entrar">Entrar</button>
+            <button type="button" class="btn btn--suave btn--ancho" id="usar-clave">Mejor envíame un enlace al correo</button></form>
+           <div class="separador"><span>o</span></div>`
+        : ''}
+      <button class="btn btn--suave btn--ancho" id="demo">Ver la demostración</button>
+      ${real ? '<p class="nota">¿No tienes cuenta? <a href="#" id="ir-registro"><b>Crear cuenta</b></a></p>' : '<p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p>'}`);
+  const irRegistro = $('#ir-registro');
+  if (irRegistro) irRegistro.addEventListener('click', e => { e.preventDefault(); registro(); });
+  document.title = 'Entrar · Enlaza Studio';
+  const form = $('#form-entrar');
+  let conClave = true;
+  const usarClave = $('#usar-clave');
+  if (usarClave) usarClave.addEventListener('click', () => {
+    conClave = !conClave;
+    $('#caja-clave').hidden = !conClave;
+    $('[name=clave]', form).required = conClave;
+    $('#boton-entrar').textContent = conClave ? 'Entrar' : 'Enviar enlace';
+    usarClave.textContent = conClave ? 'Mejor envíame un enlace al correo' : 'Entrar con contraseña';
+    $('.entrar__caja h1 + p').textContent = conClave ? 'Con tu correo y tu contraseña.' : 'Te enviamos un enlace a tu correo para entrar, sin contraseña.';
+    if (conClave) $('[name=clave]', form).focus();
+  });
+  if (form) form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const correo = String(new FormData(form).get('correo')).trim();
+    const boton = $('#boton-entrar');
+    if (conClave) {
+      boton.disabled = true; boton.textContent = 'Entrando…';
+      const r = await db.entrarConClave(correo, String(new FormData(form).get('clave')));
+      if (r.error) { $('#error-entrar').textContent = r.error; boton.disabled = false; boton.textContent = 'Entrar'; return; }
+      if (r.estado === 'sin-negocio') return bienvenida();
+      location.hash = '#/inicio'; render(); return;
+    }
+    boton.disabled = true; boton.textContent = 'Enviando…';
+    const error = await db.enviarEnlace(correo);
+    if (error) { $('#error-entrar').textContent = error; boton.disabled = false; boton.textContent = 'Enviar enlace'; return; }
+    document.body.innerHTML = pantallaEntrada(`<h1>Revisa tu correo</h1>
+      <p>Te enviamos un correo a <b>${esc(correo)}</b>. Toca el botón del correo y entrarás al portal en el navegador donde se abra.</p>
+      <p class="nota">¿No llegó? Revisa la carpeta de spam o espera un minuto. Puedes cerrar esta pestaña.</p>
+      <button class="btn btn--suave btn--ancho" id="otra-vez">Usar otro correo</button>`);
+    $('#otra-vez').addEventListener('click', entrar);
+  });
+  $('#demo').addEventListener('click', async () => { await db.entrarDemo(); location.hash = '#/inicio'; render(); });
+}
+
+/** Crear cuenta: correo, contraseña y el negocio, en un solo paso. */
+function registro() {
+  document.body.innerHTML = pantallaEntrada(`
+      <h1>Crea tu cuenta</h1><p>Para ver tus clientes, cotizaciones y cobros en un solo lugar.</p>
+      <form id="form-registro">
+        ${campo('Nombre del negocio', '<input name="negocio" required maxlength="80" placeholder="Ej.: Acarreos Makena" autocomplete="organization">')}
+        ${campo('Tu nombre', '<input name="dueno" maxlength="80" placeholder="Ej.: Amet" autocomplete="name">')}
+        ${campo('Correo', '<input name="correo" type="email" required placeholder="tu@negocio.com" autocomplete="email">')}
+        ${campo('Contraseña', '<input name="clave" type="password" required minlength="8" placeholder="Al menos 8 caracteres" autocomplete="new-password">')}
+        <p class="dialogo__error" role="alert" id="error-registro"></p>
+        <button class="btn btn--tinta btn--ancho">Crear cuenta</button></form>
+      <p class="nota">¿Ya tienes cuenta? <a href="#" id="ir-entrar"><b>Entrar</b></a></p>`);
+  document.title = 'Crear cuenta · Enlaza Studio';
+  $('#ir-entrar').addEventListener('click', e => { e.preventDefault(); entrar(); });
+  const form = $('#form-registro');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    const boton = $('button', form); boton.disabled = true; boton.textContent = 'Creando…';
+    const r = await db.crearCuenta({ correo: String(d.correo).trim(), clave: String(d.clave), negocio: String(d.negocio).trim(), dueno: String(d.dueno).trim() });
+    if (r.error) { $('#error-registro').textContent = r.error; boton.disabled = false; boton.textContent = 'Crear cuenta'; return; }
+    if (r.confirmar) {
+      document.body.innerHTML = pantallaEntrada(`<h1>Confirma tu correo</h1>
+        <p>Te enviamos un correo a <b>${esc(d.correo)}</b>. Toca el botón del correo y después entra con tu contraseña.</p>
+        <button class="btn btn--suave btn--ancho" id="volver">Ir a entrar</button>`);
+      $('#volver').addEventListener('click', entrar);
+      return;
+    }
+    location.hash = '#/inicio'; render();
+  });
+}
+
+/** La primera vez que entra alguien con correo: crea su negocio. */
+function bienvenida() {
+  document.body.innerHTML = pantallaEntrada(`
+      <h1>Bienvenido</h1><p>Entraste como <b>${esc(db.correoUsuario())}</b>. Ahora crea tu negocio: es lo que verás en tu portal.</p>
+      <form id="form-negocio-nuevo">${campo('Nombre del negocio', '<input name="nombre" required maxlength="80" placeholder="Ej.: Acarreos Makena" autocomplete="organization">')}
+        ${campo('Tu nombre', '<input name="dueno" maxlength="80" placeholder="Ej.: Amet" autocomplete="name">')}
+        <p class="dialogo__error" role="alert" id="error-negocio"></p>
+        <button class="btn btn--tinta btn--ancho">Crear mi negocio</button></form>
+      <button class="btn btn--suave btn--ancho" id="salir-bienvenida">Usar otro correo</button>`);
+  document.title = 'Bienvenido · Enlaza Studio';
+  const form = $('#form-negocio-nuevo');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const d = Object.fromEntries(new FormData(form));
+    const boton = $('button', form); boton.disabled = true; boton.textContent = 'Creando…';
+    const error = await db.crearNegocio(String(d.nombre).trim(), String(d.dueno).trim());
+    if (error) { $('#error-negocio').textContent = error; boton.disabled = false; boton.textContent = 'Crear mi negocio'; return; }
+    location.hash = '#/inicio'; render();
+  });
+  $('#salir-bienvenida').addEventListener('click', async () => { await db.salir(); entrar(); });
 }
 
 // ---------------------------------------------------------------- render y eventos
@@ -243,7 +348,7 @@ function render() {
 function enlazar(vista) {
   $('#abrir-menu').addEventListener('click', () => document.body.classList.toggle('menu-abierto'));
   $$('.lado a').forEach(a => a.addEventListener('click', () => document.body.classList.remove('menu-abierto')));
-  $('#salir').addEventListener('click', () => { db.sesion.salir(); location.hash = ''; entrar(); });
+  $('#salir').addEventListener('click', async () => { await db.salir(); location.hash = ''; entrar(); });
   const buscar = $('#buscar');
   buscar.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = '#/clientes/' + encodeURIComponent(buscar.value.trim()); });
   if (vista === 'clientes') { const [, , f] = location.hash.split('/'); if (f) buscar.value = decodeURIComponent(f); }
@@ -254,13 +359,14 @@ function enlazar(vista) {
     campo('Origen', `<select name="origen">${db.ORIGENES.map(o => `<option>${o}</option>`).join('')}</select>`) + campo('Qué necesita', '<input name="nota" placeholder="Ej.: mudanza local">'),
     d => { if (!d.nombre.trim() || digitos(d.telefono).length < 7) return 'Escribe el nombre y un teléfono válido.'; db.crearContacto(d); aviso('Cliente agregado'); render(); }));
 
+  const sinClientes = () => { if (db.contactos().length) return false; aviso('Primero agrega un cliente'); location.hash = '#/clientes'; return true; };
   const nuevaCot = $('#nueva-cot');
-  if (nuevaCot) nuevaCot.addEventListener('click', () => dialogo('Nueva cotización',
+  if (nuevaCot) nuevaCot.addEventListener('click', () => !sinClientes() && dialogo('Nueva cotización',
     campo('Cliente', `<select name="contacto_id">${opcionesContactos()}</select>`) + campo('Servicio', '<input name="servicio" required placeholder="Ej.: mudanza de 2 recámaras">') + campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>'),
     d => { if (!d.servicio.trim() || !(+d.monto > 0)) return 'Escribe el servicio y un monto mayor a cero.'; db.crearCotizacion(d); aviso('Cotización creada'); render(); }));
 
   const nuevoCobro = $('#nuevo-cobro');
-  if (nuevoCobro) nuevoCobro.addEventListener('click', () => dialogo('Nuevo cobro',
+  if (nuevoCobro) nuevoCobro.addEventListener('click', () => !sinClientes() && dialogo('Nuevo cobro',
     campo('Cliente', `<select name="contacto_id">${opcionesContactos()}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: factura #0413">') +
     campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>') + campo('Vence', `<input name="vence" type="date" required value="${new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10)}">`),
     d => { if (!d.concepto.trim() || !(+d.monto > 0) || !d.vence) return 'Completa el concepto, el monto y la fecha.'; db.crearCobro(d); aviso('Cobro agregado'); render(); }));
@@ -290,9 +396,14 @@ function enlazar(vista) {
   if (rein) rein.addEventListener('click', () => { db.reiniciar(); aviso('Datos de ejemplo restablecidos'); location.hash = '#/inicio'; render(); });
 }
 
-function arrancar() {
-  db.cargar();
-  if (!db.sesion.actual()) { entrar(); return; }
+async function arrancar() {
+  // Si algo no se pudo guardar en Supabase, se avisa y se muestra lo que de verdad quedó.
+  db.cuandoFalle(texto => { aviso(texto); if (db.sesion.actual()) render(); });
+  let estado = 'fuera';
+  try { estado = await db.iniciar(); } catch (e) { console.error('[portal] no se pudo iniciar', e); }
+  if (estado === 'fuera') return entrar();
+  if (estado === 'sin-negocio') return bienvenida();
+  if (!location.hash || location.hash === '#/') location.hash = '#/inicio';
   render();
 }
 addEventListener('hashchange', () => { if (db.sesion.actual()) render(); });
