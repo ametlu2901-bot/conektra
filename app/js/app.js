@@ -1,6 +1,7 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
-import { I, LOGO } from './iconos.js';
-import * as db from './datos.js?v=14';
+import { I, LOGO } from './iconos.js?v=2';
+import * as db from './datos.js?v=16';
+import { metaListo, registroIntegrado } from './meta.js?v=1';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -20,7 +21,7 @@ const wa = (tel, texto) => `https://wa.me/${digitos(tel)}?text=${encodeURICompon
 
 const RUTAS = [
   ['inicio', 'Inicio', 'base'], ['clientes', 'Clientes', 'crm'], ['cotizaciones', 'Cotizaciones', 'factura'], ['cobros', 'Cobros', 'pago'],
-  ['conversaciones', 'Conversaciones', 'chat'], ['reportes', 'Reportes', 'grafica'], ['automatizaciones', 'Automatizaciones', 'rayo'],
+  ['conversaciones', 'Conversaciones', 'chat'], ['bot', 'Bot', 'bot'], ['reportes', 'Reportes', 'grafica'], ['automatizaciones', 'Automatizaciones', 'rayo'],
 ];
 const ICO_ACT = { whatsapp: 'wa', web: 'web', seguimiento: 'crm', cobro: 'pago', pago: 'check', cotizacion: 'factura' };
 
@@ -143,7 +144,8 @@ V.cobros = () => {
   const R = db.resumen();
   const filas = db.cobros().map(cb => {
     const e = db.estadoCobro(cb); const x = db.contacto(cb.contacto_id);
-    const msg = `Hola ${x.nombre.split(' ')[0]}, te saluda ${db.negocio().nombre}. Te recordamos el pago de ${dinero(cb.monto)} por ${cb.concepto}, ${e.id === 'vencido' ? `que venció el ${fechaCorta(cb.vence)}` : `que vence el ${fechaCorta(cb.vence)}`}. ¡Gracias!`;
+    const pagos = db.textoPagos();
+    const msg = `Hola ${x.nombre.split(' ')[0]}, te saluda ${db.negocio().nombre}. Te recordamos el pago de ${dinero(cb.monto)} por ${cb.concepto}, ${e.id === 'vencido' ? `que venció el ${fechaCorta(cb.vence)}` : `que vence el ${fechaCorta(cb.vence)}`}. ¡Gracias!${pagos ? `\n\n${pagos}` : ''}`;
     return `<tr><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small>${esc(cb.concepto)}</small></span></td><td class="num"><b>${dinero(cb.monto)}</b></td><td class="tenue">${fechaCorta(cb.vence)}</td><td><span class="pill pill--${e.id}">${e.texto}</span></td>
       <td class="acciones">${cb.estado === 'pagado' ? '' : `<a class="btn btn--mini" href="${wa(x.telefono, msg)}" target="_blank" rel="noopener" data-recordar="${cb.id}">${I.wa} Recordar</a><button class="btn btn--mini btn--suave" data-pagado="${cb.id}">${I.check} Pagado</button>`}</td></tr>`;
   }).join('');
@@ -156,23 +158,54 @@ V.cobros = () => {
 
 V.conversaciones = (abierta) => {
   const convs = db.conversaciones();
+  const real = db.enModoReal() && db.negocio().whatsapp_conectado;   // chats reales: se responde desde aquí
   if (!convs.length) {
     return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
-      <div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Cuando conectes el WhatsApp de tu negocio, tus chats aparecerán aquí. Mientras tanto, desde Clientes, Cotizaciones y Cobros puedes escribir por WhatsApp con un toque.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`;
+      ${real
+        ? `<div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Tu WhatsApp ya está conectado. Cuando un cliente te escriba, el chat aparecerá aquí solo.</p></div></div>`
+        : `<div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Cuando conectes el WhatsApp de tu negocio, tus chats aparecerán aquí. Mientras tanto, desde Clientes, Cotizaciones y Cobros puedes escribir por WhatsApp con un toque.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}`;
   }
   const actual = convs.find(c => c.id === abierta) || convs[0];
   const lista = convs.map(c => { const x = db.contacto(c.contacto_id); const u = c.mensajes[c.mensajes.length - 1];
-    return `<a href="#/conversaciones/${c.id}" class="conv${c === actual ? ' activo' : ''}"><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small>${u.dir === 'out' ? 'Tú: ' : ''}${esc(u.texto)}</small></span><time>${hace(u.fecha)}</time></a>`; }).join('');
+    const nuevos = c !== actual && c.no_leidos ? `<i class="conv__nuevos">${c.no_leidos}</i>` : '';
+    return `<a href="#/conversaciones/${c.id}" class="conv${c === actual ? ' activo' : ''}"><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small>${u.dir === 'out' ? 'Tú: ' : ''}${esc(u.texto)}</small></span><span class="conv__lado"><time>${hace(u.fecha)}</time>${nuevos}</span></a>`; }).join('');
   const x = db.contacto(actual.contacto_id);
-  const msgs = actual.mensajes.map(m => `<div class="msg msg--${m.dir}">${esc(m.texto)}<small>${new Date(m.fecha).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' })}${m.dir === 'out' ? ' ✓✓' : ''}</small></div>`).join('');
+  const marca = m => m.dir !== 'out' ? '' : m.estado === 'fallido' ? ' <span class="msg__fallo">No se entregó</span>' : `<span class="msg__visto${m.estado === 'leido' ? ' msg__visto--leido' : ''}">${m.estado === 'enviado' && real ? ' ✓' : ' ✓✓'}</span>`;
+  const msgs = actual.mensajes.map(m => `<div class="msg msg--${m.dir}">${esc(m.texto)}<small>${m.origen === 'celular' ? 'Desde tu celular · ' : ''}${new Date(m.fecha).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' })}${marca(m)}</small></div>`).join('');
+  const abierto24 = !real || db.dentroDe24h(actual);
   return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
-    ${db.negocio().whatsapp_conectado ? '' : `<div class="aviso-conectar">${I.wa}<div><b>Conecta tu WhatsApp para ver tus chats reales</b><p>Estas conversaciones son de ejemplo. Al conectar tu número seguirás usando WhatsApp en tu celular y los mensajes también llegarán aquí.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}
+    ${db.negocio().whatsapp_conectado ? '' : `<div class="aviso-conectar aviso-conectar--fino">${I.wa}<div><b>Conecta tu WhatsApp para ver tus chats reales</b><p>Estas conversaciones son de ejemplo. Sigues usando WhatsApp en tu celular y los mensajes también llegan aquí.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}
     <div class="bandeja"><nav class="bandeja__lista">${lista}</nav>
       <section class="chat"><header><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></span></header>
         <div class="chat__cuerpo">${msgs}</div>
-        <form class="chat__escribir" id="escribir"><input placeholder="Escribe un mensaje… (se abrirá WhatsApp)" name="texto" autocomplete="off"><button class="btn btn--verde btn--mini">${I.flecha}</button></form>
-        <input type="hidden" id="chat-tel" value="${esc(x.telefono)}"></section></div>`;
+        ${abierto24 ? '' : '<p class="chat__regla">Pasaron más de 24 horas desde su último mensaje. Por reglas de WhatsApp, lo que escribas se abrirá en tu celular.</p>'}
+        <form class="chat__escribir" id="escribir"><input placeholder="${real && abierto24 ? 'Escribe un mensaje…' : 'Escribe un mensaje… (se abrirá WhatsApp)'}" name="texto" autocomplete="off" maxlength="4096"><button class="btn btn--verde btn--mini" aria-label="Enviar">${I.flecha}</button></form>
+        <input type="hidden" id="chat-tel" value="${esc(x.telefono)}"><input type="hidden" id="chat-id" value="${esc(actual.id)}">
+        <input type="hidden" id="chat-modo" value="${real && abierto24 ? 'api' : 'celular'}"></section>
+      ${fichaCliente(x)}</div>`;
 };
+
+/** Panel derecho de la bandeja: quién es, qué cotizaciones y cobros tiene, y acciones con un toque. */
+function fichaCliente(x) {
+  const qs = db.cotizaciones().filter(q => q.contacto_id === x.id && q.etapa !== 'perdido').sort((a, b) => b.creada.localeCompare(a.creada));
+  const cbs = db.cobros().filter(cb => cb.contacto_id === x.id && cb.estado !== 'pagado');
+  const etapa = id => db.ETAPAS.find(e => e.id === id)?.nombre ?? id;
+  return `<aside class="ficha-cli">
+      <div class="ficha-cli__quien"><span class="avatar">${iniciales(x.nombre)}</span><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small>
+        ${x.origen ? `<span class="pill">${esc(x.origen)}</span>` : ''}</div>
+      ${x.nota ? `<p class="ficha-cli__nota">${esc(x.nota)}</p>` : ''}
+      <h5>Cotizaciones</h5>
+      ${qs.length ? `<ul class="ficha-cli__lista">${qs.slice(0, 4).map(q => `<li><span><b>#${q.numero}</b> ${esc(q.servicio)}</span><span class="ficha-cli__dato"><b>${dinero(q.monto)}</b><span class="pill pill--etapa-${q.etapa}">${etapa(q.etapa)}</span></span></li>`).join('')}</ul>`
+        : '<p class="tenue ficha-cli__vacio">Sin cotizaciones abiertas.</p>'}
+      <h5>Cobros pendientes</h5>
+      ${cbs.length ? `<ul class="ficha-cli__lista">${cbs.slice(0, 4).map(cb => { const e = db.estadoCobro(cb); return `<li><span>${esc(cb.concepto)}</span><span class="ficha-cli__dato"><b>${dinero(cb.monto)}</b><span class="pill${e.id === 'vencido' ? ' pill--vencido' : e.id === 'pronto' ? ' pill--pronto' : ''}">${e.texto}</span></span></li>`; }).join('')}</ul>`
+        : '<p class="tenue ficha-cli__vacio">Al día: no debe nada.</p>'}
+      <div class="ficha-cli__acciones">
+        <button class="btn btn--tinta btn--ancho" data-cot-para="${esc(x.id)}">${I.mas} Nueva cotización</button>
+        <button class="btn btn--suave btn--ancho" data-cobro-para="${esc(x.id)}">${I.mas} Nuevo cobro</button>
+      </div>
+    </aside>`;
+}
 
 V.reportes = () => {
   const qs = db.cotizaciones();
@@ -201,6 +234,78 @@ V.automatizaciones = () => {
   return `<div class="cab-vista"><div><h1>Automatizaciones</h1><p>Lo que tu negocio hace solo, mientras tú trabajas.</p></div></div><div class="autos">${items}</div>`;
 };
 
+// ---------------------------------------------------------------- bot de WhatsApp
+const opcionBot = (o, i) => `<div class="bot-op">
+    <span class="bot-op__num">${i + 1}</span>
+    <div class="bot-op__campos">
+      <input name="titulo" value="${esc(o.titulo)}" maxlength="24" placeholder="Ej.: Horario de atención" aria-label="Nombre de la opción ${i + 1}">
+      <textarea name="respuesta" rows="2" maxlength="1000" placeholder="Lo que responde el bot cuando el cliente la elige" aria-label="Respuesta de la opción ${i + 1}">${esc(o.respuesta)}</textarea>
+    </div>
+    <button type="button" class="icono-btn" data-quitar-op="${i}" aria-label="Quitar la opción ${i + 1}">✕</button></div>`;
+
+V.bot = () => {
+  const B = db.bot(), N = db.negocio();
+  const estado = !db.enModoReal() ? 'En la demostración el bot se prueba aquí, en la vista previa.'
+    : !N.whatsapp_conectado ? 'Empieza a responder cuando conectes tu WhatsApp (en Ajustes).'
+    : B.activo ? 'Encendido: responde a los clientes que te escriben.' : 'Apagado: no responde a nadie.';
+  return `<div class="cab-vista"><div><h1>Bot de WhatsApp</h1><p>Cuando un cliente te escribe, le responde al momento con un saludo y un menú de opciones.</p></div>
+      <label class="bot__encendido"><span>${B.activo ? 'Encendido' : 'Apagado'}</span><button class="interruptor" role="switch" aria-checked="${B.activo}" id="bot-activo" aria-label="Bot encendido"><i></i></button></label></div>
+    <div class="bot">
+      <form class="caja bot__editor" id="form-bot">
+        ${campo('Saludo', `<textarea name="saludo" rows="3" maxlength="900" required>${esc(B.saludo)}</textarea>`)}
+        <p class="nota">Escribe <code>{negocio}</code> y se cambia por el nombre de tu negocio.</p>
+        <h4>Opciones del menú</h4>
+        <div class="bot__ops" id="bot-ops">${B.opciones.map(opcionBot).join('')}</div>
+        <button type="button" class="btn btn--suave" id="bot-mas"${B.opciones.length >= db.BOT_MAX_OPCIONES ? ' disabled' : ''}>${I.mas} Agregar opción</button>
+        <label class="check"><input type="checkbox" name="pagos_en_menu"${B.pagos_en_menu ? ' checked' : ''}><span>Agregar <b>«Formas de pago»</b>: responde con tus <a href="#/ajustes">formas de pago</a>${db.pagos().length ? '' : ' (todavía no agregaste ninguna)'}.</span></label>
+        <label class="check"><input type="checkbox" name="humano_en_menu"${B.humano_en_menu ? ' checked' : ''}><span>Agregar <b>«Hablar con alguien»</b>: el bot se calla en ese chat y te avisa.</span></label>
+        <div class="bot__pie"><button class="btn btn--tinta">Guardar cambios</button><span class="nota" role="status">${estado}</span></div>
+      </form>
+      <aside class="bot__vista"><div class="cel" id="cel" aria-label="Vista previa del bot"></div>
+        <p class="nota">Vista previa: toca «Ver opciones» y elige una, como lo haría tu cliente.</p></aside>
+    </div>
+    <section class="caja bot__reglas"><h4>Cómo se comporta</h4><ul>
+      <li>Solo responde cuando un cliente te escribe. Nunca escribe primero.</li>
+      <li>Si tú o tu equipo respondieron ese chat en las últimas 12 horas, no se mete.</li>
+      <li>Muestra el menú una vez cada 12 horas por cliente. Si el cliente escribe «menú», lo vuelve a ver.</li>
+      <li>Los clientes también pueden responder con el número de la opción: 1, 2, 3…</li></ul></section>`;
+};
+
+/** Lee lo que está escrito en el editor del bot (sin guardar). */
+function leerBot() {
+  const f = $('#form-bot');
+  return {
+    activo: db.bot().activo,
+    saludo: $('[name=saludo]', f).value.trim(),
+    opciones: $$('.bot-op', f).map(op => ({ titulo: $('[name=titulo]', op).value.trim(), respuesta: $('[name=respuesta]', op).value.trim() })),
+    pagos_en_menu: $('[name=pagos_en_menu]', f).checked,
+    humano_en_menu: $('[name=humano_en_menu]', f).checked,
+  };
+}
+
+/** El celular de la vista previa, desde el punto de vista del cliente (sus mensajes a la derecha). */
+function pintarCelular(b, paso = {}) {
+  const cel = $('#cel'); if (!cel) return;
+  const filas = db.filasBot(b);
+  const elegida = filas.find(f => f.id === paso.elegida);
+  const hora = new Date().toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' });
+  const burbuja = (lado, html) => `<div class="msg msg--${lado}">${html}<small>${hora}</small></div>`;
+  cel.innerHTML = `<header class="cel__barra"><span class="mini-av">${iniciales(db.negocio().nombre)}</span><span><b>${esc(db.negocio().nombre)}</b><small>en línea</small></span></header>
+    <div class="cel__chat">
+      ${burbuja('out', 'Hola, buenas')}
+      ${b.activo ? `<div class="msg msg--in msg--menu">${esc(db.saludoBot(b)).replace(/\n/g, '<br>')}<small>${hora}</small>
+          ${filas.length ? `<button type="button" class="cel__ver" id="cel-ver">${I.hoja} Ver opciones</button>` : ''}</div>`
+        : '<p class="cel__apagado">El bot está apagado: este mensaje lo contestas tú.</p>'}
+      ${elegida ? burbuja('out', esc(elegida.titulo)) + burbuja('in', esc(elegida.respuesta).replace(/\n/g, '<br>')) : ''}
+    </div>
+    ${paso.lista ? `<div class="cel__hoja"><header><button type="button" class="icono-btn" id="cel-cerrar" aria-label="Cerrar">✕</button><b>Opciones</b></header>
+        <ul>${filas.map(f => `<li><button type="button" data-fila="${f.id}">${esc(f.titulo)}<i></i></button></li>`).join('')}</ul></div>` : ''}`;
+  const ver = $('#cel-ver'); if (ver) ver.addEventListener('click', () => pintarCelular(b, { lista: true }));
+  const cerrar = $('#cel-cerrar'); if (cerrar) cerrar.addEventListener('click', () => pintarCelular(b));
+  $$('[data-fila]', cel).forEach(x => x.addEventListener('click', () => pintarCelular(b, { elegida: x.dataset.fila })));
+  const chat = $('.cel__chat', cel); chat.scrollTop = chat.scrollHeight;
+}
+
 V.ajustes = () => {
   const N = db.negocio();
   return `<div class="cab-vista"><div><h1>Ajustes</h1><p>Datos de tu negocio y conexiones.</p></div></div>
@@ -209,21 +314,40 @@ V.ajustes = () => {
         ${campo('Nombre del negocio', `<input name="nombre" value="${esc(N.nombre)}" required>`)}${campo('Tu nombre', `<input name="dueno" value="${esc(N.dueno)}">`)}
         ${campo('Correo para el resumen diario', `<input name="correo" type="email" value="${esc(N.correo)}">`)}${campo('Teléfono', `<input name="telefono" value="${esc(N.telefono)}">`)}
         <button class="btn btn--tinta">Guardar</button></form></section>
-      <section class="caja caja--conectar"><h4>${I.wa} WhatsApp</h4>
-        <p>Conecta el número de WhatsApp Business de tu negocio. Seguirás usándolo en tu celular como siempre, y desde aquí saldrán los recordatorios, seguimientos y el resumen diario.</p>
-        <ol class="pasos-conectar"><li>Tocas «Conectar mi WhatsApp».</li><li>Entras con tu Facebook en la ventana oficial de Meta.</li><li>Escaneas un código QR con tu celular.</li><li>Listo: tus chats aparecen en Conversaciones.</li></ol>
-        <button class="btn btn--verde" disabled title="Disponible cuando Enlaza Studio complete su verificación con Meta">${I.wa} Conectar mi WhatsApp</button>
-        <p class="nota">Disponible muy pronto. Estamos completando la verificación oficial con Meta.</p></section>
+      ${cajaWhatsApp(N)}
+      <section class="caja"><h4>${I.pago} Formas de pago</h4>
+        <p class="tenue">Cómo te pagan tus clientes. Salen en el bot («Formas de pago») y al final de los recordatorios de cobro.</p>
+        ${db.pagos().length ? `<ul class="pagos">${db.pagos().map(p => `<li><span class="pagos__ico">${I.pago}</span><span class="crece"><b>${esc(p.titulo)}</b><small>${esc(p.detalle)}</small></span><button class="icono-btn" data-quitar-pago="${esc(p.id)}" aria-label="Quitar ${esc(p.titulo)}">✕</button></li>`).join('')}</ul>`
+          : '<p class="nota">Todavía no agregaste ninguna.</p>'}
+        <button class="btn btn--suave" id="nuevo-pago">${I.mas} Agregar forma de pago</button></section>
       <section class="caja"><h4>${I.enlace} API e integraciones <span class="pill pill--pronto">Próximamente</span></h4>
         <p class="tenue">Usa los datos de tu negocio en otras herramientas: tu sistema contable, tu tienda en línea, hojas de cálculo o reportes propios. Tendrás una clave de acceso y avisos automáticos (webhooks) cuando entre un cliente, cambie una cotización o se registre un pago.</p></section>
       ${db.enModoReal()
         ? `<section class="caja"><h4>${I.web} Formulario de tu página web</h4>
             <p class="tenue">Las solicitudes del formulario de tu página llegan solas a Clientes y Cotizaciones. Esta es la clave de tu formulario (te la pedimos al conectarlo):</p>
             <p><code class="mono">${esc(N.clave_formulario || '')}</code></p></section>
-          <section class="caja"><h4>Tu cuenta</h4><p class="tenue">Entraste como <b>${esc(db.correoUsuario())}</b>. Se entra con un enlace al correo, sin contraseña.</p></section>`
+          <section class="caja"><h4>Tu cuenta</h4><p class="tenue">Entraste como <b>${esc(db.correoUsuario())}</b>.</p></section>`
         : `<section class="caja"><h4>Datos de demostración</h4><p class="tenue">Vuelve a cargar los datos de ejemplo. Se borra lo que hayas agregado en este navegador.</p><button class="btn btn--suave" id="reiniciar">Restablecer datos de ejemplo</button></section>`}
     </div>`;
 };
+
+/** Ajustes → WhatsApp: conectado, listo para conectar, o «muy pronto» (mientras la app de Meta no esté lista). */
+function cajaWhatsApp(N) {
+  if (db.enModoReal() && N.whatsapp_conectado) {
+    return `<section class="caja caja--conectar"><h4>${I.wa} WhatsApp <span class="pill pill--pagado">Conectado</span></h4>
+      <p>Tu número <b class="mono">${esc(N.whatsapp_numero)}</b> está conectado. Los mensajes de tus clientes llegan a <a href="#/conversaciones">Conversaciones</a> y sigues usando WhatsApp en tu celular como siempre.</p>
+      <p class="nota">Los recordatorios y seguimientos usan mensajes aprobados por Meta. La aprobación de cada uno tarda de minutos a unas horas.</p></section>`;
+  }
+  const listo = db.enModoReal() && metaListo();
+  const nota = listo ? 'Se abre una ventana de Meta. Ten tu celular a mano para escanear el código.'
+    : db.enModoReal() ? 'Disponible muy pronto. Estamos completando la verificación oficial con Meta.'
+    : 'En la demostración no se conecta un número real. Crea tu cuenta para conectar el tuyo.';
+  return `<section class="caja caja--conectar"><h4>${I.wa} WhatsApp</h4>
+    <p>Conecta el número de WhatsApp Business de tu negocio. Seguirás usándolo en tu celular como siempre, y desde aquí saldrán los recordatorios, seguimientos y el resumen diario.</p>
+    <ol class="pasos-conectar"><li>Tocas «Conectar mi WhatsApp».</li><li>Entras con tu Facebook en la ventana oficial de Meta.</li><li>Escaneas un código QR con tu celular.</li><li>Listo: tus chats aparecen en Conversaciones.</li></ol>
+    <button class="btn btn--verde" id="conectar-wa"${listo ? '' : ' disabled'}>${I.wa} Conectar mi WhatsApp</button>
+    <p class="nota" id="nota-wa" role="status">${nota}</p></section>`;
+}
 
 // ---------------------------------------------------------------- entrada
 /* La bienvenida (lado derecho de entrar): una persona de negocio mirando su celular y, a su lado, los
@@ -427,16 +551,17 @@ function enlazar(vista) {
     d => { if (!d.nombre.trim() || digitos(d.telefono).length < 7) return 'Escribe el nombre y un teléfono válido.'; db.crearContacto(d); aviso('Cliente agregado'); render(); }));
 
   const sinClientes = () => { if (db.contactos().length) return false; aviso('Primero agrega un cliente'); location.hash = '#/clientes'; return true; };
-  const nuevaCot = $('#nueva-cot');
-  if (nuevaCot) nuevaCot.addEventListener('click', () => !sinClientes() && dialogo('Nueva cotización',
-    campo('Cliente', `<select name="contacto_id">${opcionesContactos()}</select>`) + campo('Servicio', '<input name="servicio" required placeholder="Ej.: mudanza de 2 recámaras">') + campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>'),
-    d => { if (!d.servicio.trim() || !(+d.monto > 0)) return 'Escribe el servicio y un monto mayor a cero.'; db.crearCotizacion(d); aviso('Cotización creada'); render(); }));
-
-  const nuevoCobro = $('#nuevo-cobro');
-  if (nuevoCobro) nuevoCobro.addEventListener('click', () => !sinClientes() && dialogo('Nuevo cobro',
-    campo('Cliente', `<select name="contacto_id">${opcionesContactos()}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: factura #0413">') +
+  const abrirCot = sel => !sinClientes() && dialogo('Nueva cotización',
+    campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Servicio', '<input name="servicio" required placeholder="Ej.: mudanza de 2 recámaras">') + campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>'),
+    d => { if (!d.servicio.trim() || !(+d.monto > 0)) return 'Escribe el servicio y un monto mayor a cero.'; db.crearCotizacion(d); aviso('Cotización creada'); render(); });
+  const abrirCobro = sel => !sinClientes() && dialogo('Nuevo cobro',
+    campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: factura #0413">') +
     campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>') + campo('Vence', `<input name="vence" type="date" required value="${new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10)}">`),
-    d => { if (!d.concepto.trim() || !(+d.monto > 0) || !d.vence) return 'Completa el concepto, el monto y la fecha.'; db.crearCobro(d); aviso('Cobro agregado'); render(); }));
+    d => { if (!d.concepto.trim() || !(+d.monto > 0) || !d.vence) return 'Completa el concepto, el monto y la fecha.'; db.crearCobro(d); aviso('Cobro agregado'); render(); });
+  const nuevaCot = $('#nueva-cot'); if (nuevaCot) nuevaCot.addEventListener('click', () => abrirCot());
+  const nuevoCobro = $('#nuevo-cobro'); if (nuevoCobro) nuevoCobro.addEventListener('click', () => abrirCobro());
+  $$('[data-cot-para]').forEach(b => b.addEventListener('click', () => abrirCot(b.dataset.cotPara)));
+  $$('[data-cobro-para]').forEach(b => b.addEventListener('click', () => abrirCobro(b.dataset.cobroPara)));
 
   $$('[data-pagado]').forEach(b => b.addEventListener('click', () => { db.marcarPagado(b.dataset.pagado); aviso('Pago registrado'); render(); }));
   $$('[data-recordar]').forEach(a => a.addEventListener('click', () => { db.marcarRecordatorio(a.dataset.recordar); setTimeout(() => { aviso('Recordatorio registrado'); render(); }, 300); }));
@@ -454,8 +579,86 @@ function enlazar(vista) {
   $$('[data-mover]').forEach(s => s.addEventListener('change', () => { db.moverCotizacion(s.dataset.mover, s.value); aviso('Cotización movida'); render(); }));
 
   const escribir = $('#escribir');
-  if (escribir) escribir.addEventListener('submit', e => { e.preventDefault(); const texto = new FormData(escribir).get('texto'); if (texto) window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener'); });
+  if (escribir) escribir.addEventListener('submit', async e => {
+    e.preventDefault();
+    const campoTexto = $('input', escribir), texto = campoTexto.value.trim();
+    if (!texto) return;
+    // Demostración, sin conectar o fuera de las 24 h: se abre WhatsApp en el celular con el mensaje escrito.
+    if ($('#chat-modo').value !== 'api') { window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener'); return; }
+    const boton = $('button', escribir); boton.disabled = true; campoTexto.disabled = true;
+    const r = await db.enviarMensaje($('#chat-id').value, texto);
+    if (r.error) {
+      aviso(r.error); boton.disabled = false; campoTexto.disabled = false;
+      if (r.fuera24h) window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
+      return;
+    }
+    render();
+  });
   const chat = $('.chat__cuerpo'); if (chat) chat.scrollTop = chat.scrollHeight;
+  const chatId = $('#chat-id'); if (chatId && db.enModoReal()) db.leerConversacion(chatId.value);
+
+  const conectarWa = $('#conectar-wa');
+  if (conectarWa && !conectarWa.disabled) conectarWa.addEventListener('click', async () => {
+    const nota = $('#nota-wa');
+    conectarWa.disabled = true; nota.textContent = 'Sigue los pasos en la ventana de Meta…';
+    try {
+      const datos = await registroIntegrado();
+      nota.textContent = 'Conectando tu número… (puede tardar unos segundos)';
+      const r = await db.conectarWhatsApp(datos);
+      if (r.error) throw new Error(r.error);
+      aviso(`WhatsApp conectado: ${r.numero}`); render();
+    } catch (e) {
+      nota.textContent = e.message; conectarWa.disabled = false;
+    }
+  });
+
+  // ---- bot de WhatsApp
+  const formBot = $('#form-bot');
+  if (formBot) {
+    let paso = {};
+    const vista = () => pintarCelular(leerBot(), paso);
+    const ops = () => { const b = leerBot(); $('#bot-ops').innerHTML = b.opciones.map(opcionBot).join(''); $('#bot-mas').disabled = b.opciones.length >= db.BOT_MAX_OPCIONES; vista(); };
+    formBot.addEventListener('input', () => { paso = {}; vista(); });
+    $('#bot-mas').addEventListener('click', () => {
+      const b = leerBot(); if (b.opciones.length >= db.BOT_MAX_OPCIONES) return;
+      $('#bot-ops').insertAdjacentHTML('beforeend', opcionBot({ titulo: '', respuesta: '' }, b.opciones.length));
+      $('#bot-mas').disabled = b.opciones.length + 1 >= db.BOT_MAX_OPCIONES;
+      $$('.bot-op [name=titulo]').at(-1).focus(); vista();
+    });
+    $('#bot-ops').addEventListener('click', e => {
+      const q = e.target.closest('[data-quitar-op]'); if (!q) return;
+      q.closest('.bot-op').remove(); ops();
+    });
+    const limpio = b => ({ ...b, opciones: b.opciones.filter(o => o.titulo || o.respuesta) });
+    formBot.addEventListener('submit', e => {
+      e.preventDefault();
+      const b = limpio(leerBot());
+      if (!b.saludo) return aviso('Escribe el saludo del bot');
+      if (b.opciones.some(o => !o.titulo || !o.respuesta)) return aviso('Cada opción necesita un nombre y una respuesta');
+      db.guardarBot(b); aviso('Bot guardado'); render();
+    });
+    $('#bot-activo').addEventListener('click', () => {
+      const b = limpio(leerBot());
+      const completo = b.saludo && !b.opciones.some(o => !o.titulo || !o.respuesta);
+      const guardado = db.guardarBot({ ...(completo ? b : db.bot()), activo: !db.bot().activo });
+      aviso(guardado.activo ? 'Bot encendido' : 'Bot apagado'); render();
+    });
+    vista();
+  }
+
+  // ---- formas de pago
+  const nuevoPago = $('#nuevo-pago');
+  if (nuevoPago) nuevoPago.addEventListener('click', () => dialogo('Nueva forma de pago',
+    campo('Tipo', `<select name="tipo">${db.TIPOS_PAGO.map(([v, t]) => `<option value="${v}">${t}</option>`).join('')}</select>`) +
+    campo('Nombre', '<input name="titulo" maxlength="40" placeholder="Ej.: Yappy (si lo dejas vacío, se usa el tipo)">') +
+    campo('Lo que ve el cliente', '<textarea name="detalle" rows="3" maxlength="300" required placeholder="Ej.: Busca «Mi Negocio» en el directorio de Yappy o envía al 6000-0000"></textarea>') +
+    '<p class="nota">Solo datos para compartir: número de Yappy, cuenta para transferencias o un enlace de pago. Nunca tarjetas ni claves.</p>',
+    d => {
+      if (!d.detalle.trim()) return 'Escribe lo que verá el cliente.';
+      db.agregarPago({ tipo: d.tipo, titulo: d.titulo.trim() || db.TIPOS_PAGO.find(t => t[0] === d.tipo)[1], detalle: d.detalle.trim() });
+      aviso('Forma de pago agregada'); render();
+    }, 'Agregar'));
+  $$('[data-quitar-pago]').forEach(b => b.addEventListener('click', () => { db.quitarPago(b.dataset.quitarPago); aviso('Forma de pago quitada'); render(); }));
 
   const formN = $('#form-negocio');
   if (formN) formN.addEventListener('submit', e => { e.preventDefault(); db.actualizarNegocio(Object.fromEntries(new FormData(formN))); aviso('Datos guardados'); render(); });
@@ -466,6 +669,15 @@ function enlazar(vista) {
 async function arrancar() {
   // Si algo no se pudo guardar en Supabase, se avisa y se muestra lo que de verdad quedó.
   db.cuandoFalle(texto => { aviso(texto); if (db.sesion.actual()) render(); });
+  // Llegó un mensaje (tiempo real): se vuelve a dibujar sin perder lo que estaba escribiendo.
+  db.cuandoCambie(() => {
+    if (!db.sesion.actual() || document.querySelector('dialog[open]')) return;
+    const campo = $('#escribir input'), borrador = campo?.value ?? '', enfocado = document.activeElement === campo;
+    render();
+    const nuevo = $('#escribir input');
+    if (nuevo && borrador) nuevo.value = borrador;
+    if (nuevo && enfocado) nuevo.focus();
+  });
   let estado = 'fuera';
   try { estado = await db.iniciar(); } catch (e) { console.error('[portal] no se pudo iniciar', e); }
   if (estado === 'fuera') return entrar();

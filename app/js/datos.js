@@ -3,7 +3,7 @@
    Modo demostración: datos de ejemplo en el navegador (localStorage), con fechas relativas a hoy.
    Modo real: el negocio de quien entró, en Supabase (ver supabase/schema.sql y js/config.js).
 */
-import { SUPABASE } from './config.js?v=4';
+import { SUPABASE } from './config.js?v=5';
 
 const CLAVE = 'conektra-portal-demo-v1';
 const DIA = 864e5;
@@ -17,6 +17,33 @@ export const ETAPAS = [
   { id: 'agendado', nombre: 'Agendado' }, { id: 'ganado', nombre: 'Ganado' }, { id: 'perdido', nombre: 'Perdido' },
 ];
 export const ORIGENES = ['WhatsApp', 'Página web', 'Google', 'Instagram', 'Referido'];
+export const TIPOS_PAGO = [['yappy', 'Yappy'], ['banco', 'Transferencia bancaria'], ['enlace', 'Enlace de pago'], ['efectivo', 'Efectivo'], ['otro', 'Otro']];
+
+/* Bot de WhatsApp. Los textos fijos son los mismos del servidor (supabase/functions/_compartido/bot.ts). */
+export const BOT_HUMANO = 'Listo, ya le avisamos al equipo. En un momento te escribe una persona.';
+export const BOT_MAX_OPCIONES = 8;
+const botInicial = () => ({
+  activo: false,
+  saludo: '¡Hola! Gracias por escribir a {negocio}. Elige una opción y te respondemos al momento.',
+  opciones: [
+    { titulo: 'Precios y cotizaciones', respuesta: 'Con gusto te cotizamos. Cuéntanos qué necesitas y para qué fecha, y te respondemos con el precio.' },
+    { titulo: 'Horario de atención', respuesta: 'Atendemos de lunes a viernes de 8:00 a. m. a 6:00 p. m. y los sábados de 8:00 a. m. a 1:00 p. m.' },
+    { titulo: 'Ubicación', respuesta: 'Escribe aquí tu dirección o pega el enlace de Google Maps de tu negocio.' },
+  ],
+  pagos_en_menu: true, humano_en_menu: true,
+});
+const botDemo = () => ({
+  ...botInicial(), activo: true,
+  opciones: [
+    { titulo: 'Cotizar una mudanza', respuesta: 'Con gusto. Cuéntanos qué vas a mudar, desde dónde, hacia dónde y para qué fecha. Te respondemos con el precio en minutos.' },
+    { titulo: 'Zonas que cubrimos', respuesta: 'Trabajamos en toda la ciudad de Panamá, San Miguelito, Panamá Oeste y viajes al interior.' },
+    { titulo: 'Horario', respuesta: 'Atendemos de lunes a sábado, de 7:00 a. m. a 6:00 p. m.' },
+  ],
+});
+const pagosDemo = () => [
+  { id: id(), tipo: 'yappy', titulo: 'Yappy', detalle: 'Busca «Acarreos Demo» en el directorio de Yappy o envía al 6000-0000.', orden: 0 },
+  { id: id(), tipo: 'banco', titulo: 'Transferencia (ACH)', detalle: 'Banco General · Cuenta de ahorros 04-00-00-000000-0 · A nombre de Acarreos Demo', orden: 1 },
+];
 
 function semilla() {
   const contactos = [
@@ -72,6 +99,7 @@ function semilla() {
   return {
     negocio: { nombre: 'Acarreos Demo', dueno: 'Amet', correo: 'hola@ejemplo.com', telefono: '+507 6000-0000', whatsapp_conectado: false },
     contactos, cotizaciones, cobros, actividad, conversaciones, automatizaciones,
+    bot: botDemo(), pagos: pagosDemo(),
   };
 }
 
@@ -110,6 +138,8 @@ function cargarDemo() {
   modo = 'demo';
   try { D = JSON.parse(localStorage.getItem(CLAVE)); } catch (_) { D = null; }
   if (!D) { D = semilla(); guardar(); }
+  // datos guardados antes de que existieran el bot y las formas de pago
+  if (!D.bot || !D.pagos) { D.bot ??= botDemo(); D.pagos ??= pagosDemo(); guardar(); }
   return D;
 }
 export function reiniciar() { if (modo === 'demo') { D = semilla(); guardar(); } return D; }
@@ -215,6 +245,7 @@ export async function crearCuenta({ correo, clave, negocio: nombre, dueno }) {
 }
 export async function salir() {
   try { localStorage.removeItem(DEMO); } catch (_) {}
+  if (canal) { await sb.removeChannel(canal); canal = null; }
   if (sb) await sb.auth.signOut();
   usuario = null; D = null; modo = 'demo';
 }
@@ -231,36 +262,93 @@ async function cargarReal() {
   const { data: m } = await sb.from('miembros').select('negocio_id').eq('user_id', usuario.id).limit(1).maybeSingle();
   if (!m) return false;
   const n = m.negocio_id;
-  const [neg, con, cot, cob, act, conv, msj, aut, wa] = await Promise.all([
+  const [neg, con, cot, cob, act, conv, msj, aut, wa, bot, pagos] = await Promise.all([
     sb.from('negocios').select('id, nombre, dueno, correo, telefono, clave_formulario').eq('id', n).single(),
     sb.from('contactos').select('id, nombre, telefono, origen, nota, creado').eq('negocio_id', n),
     sb.from('cotizaciones').select('id, numero, contacto_id, servicio, monto, etapa, creada, ultimo_contacto').eq('negocio_id', n),
     sb.from('cobros').select('id, contacto_id, concepto, monto, vence, estado, pagado_el').eq('negocio_id', n).neq('estado', 'anulado'),
     sb.from('actividad').select('id, tipo, titulo, detalle, fecha').eq('negocio_id', n).order('fecha', { ascending: false }).limit(100),
-    sb.from('conversaciones').select('id, contacto_id').eq('negocio_id', n),
-    sb.from('mensajes').select('conversacion_id, direccion, texto, fecha').eq('negocio_id', n).order('fecha').limit(2000),
+    sb.from('conversaciones').select('id, contacto_id, ultimo_entrante, no_leidos').eq('negocio_id', n),
+    sb.from('mensajes').select('conversacion_id, direccion, origen, texto, estado, fecha').eq('negocio_id', n).order('fecha').limit(2000),
     sb.from('automatizaciones').select('clave, activa, canal').eq('negocio_id', n),
     sb.rpc('whatsapp_estado'),
+    // bot y formas de pago: si la base todavía no tiene esas tablas, el portal sigue funcionando sin ellos
+    sb.from('bots').select('activo, saludo, opciones, pagos_en_menu, humano_en_menu').eq('negocio_id', n).maybeSingle(),
+    sb.from('metodos_pago').select('id, tipo, titulo, detalle, orden').eq('negocio_id', n).order('orden'),
   ]);
   const error = [neg, con, cot, cob, act, conv, msj, aut].find(r => r.error);
   if (error) { console.error('[portal] no se pudo cargar', error.error); return false; }
-  const conectado = (wa.data ?? []).some(x => x.estado === 'activa');
+  const conexion = (wa.data ?? []).find(x => x.estado === 'activa');
   D = {
-    negocio: { ...neg.data, correo: neg.data.correo ?? '', telefono: neg.data.telefono ?? '', dueno: neg.data.dueno ?? '', whatsapp_conectado: conectado },
+    negocio: { ...neg.data, correo: neg.data.correo ?? '', telefono: neg.data.telefono ?? '', dueno: neg.data.dueno ?? '',
+      whatsapp_conectado: !!conexion, whatsapp_numero: conexion?.numero_visible ?? '' },
     contactos: con.data.map(x => ({ ...x, telefono: x.telefono ?? '', nota: x.nota ?? '', origen: x.origen ?? 'WhatsApp' })),
     cotizaciones: cot.data.map(q => ({ ...q, monto: num(q.monto) })),
     cobros: cob.data.map(cb => ({ ...cb, monto: num(cb.monto) })),
     actividad: act.data.map(a => ({ ...a, detalle: a.detalle ?? '' })),
     conversaciones: conv.data
-      .map(c => ({ ...c, mensajes: msj.data.filter(m => m.conversacion_id === c.id).map(m => ({ dir: m.direccion, texto: m.texto ?? '', fecha: m.fecha })) }))
+      .map(c => ({ ...c, no_leidos: c.no_leidos ?? 0,
+        mensajes: msj.data.filter(m => m.conversacion_id === c.id).map(m => ({ dir: m.direccion, origen: m.origen, estado: m.estado, texto: m.texto ?? '', fecha: m.fecha })) }))
       .filter(c => c.mensajes.length),
+    bot: bot.data ? { ...botInicial(), ...bot.data, opciones: Array.isArray(bot.data.opciones) ? bot.data.opciones : [] } : botInicial(),
+    pagos: pagos.error ? [] : pagos.data,
     automatizaciones: ORDEN_AUTOS.map(clave => {
       const a = aut.data.find(x => x.clave === clave);
       return { id: clave, ...AUTOS[clave], activa: a ? a.activa : false, canal: a?.canal ?? (clave === 'resumen' ? 'correo' : 'whatsapp') };
     }),
   };
   modo = 'real';
+  escucharCambios();
   return true;
+}
+
+// ---------- tiempo real: cuando entra un mensaje (o algo nuevo en la actividad) se recarga solo ----------
+let canal = null, alCambiar = () => {}, recarga = 0;
+export function cuandoCambie(fn) { alCambiar = fn; }
+function escucharCambios() {
+  if (canal || modo !== 'real') return;
+  const filtro = { schema: 'public', filter: `negocio_id=eq.${nid()}` };
+  const recargar = () => { clearTimeout(recarga); recarga = setTimeout(async () => { if (modo === 'real' && await cargarReal()) alCambiar(); }, 400); };
+  canal = sb.channel('negocio-' + nid())
+    .on('postgres_changes', { event: '*', table: 'mensajes', ...filtro }, recargar)
+    .on('postgres_changes', { event: 'INSERT', table: 'actividad', ...filtro }, recargar)
+    .subscribe();
+}
+
+// ---------- WhatsApp (funciones del servidor: el token de Meta nunca llega al navegador) ----------
+async function llamar(funcion, cuerpo) {
+  const { data, error } = await sb.functions.invoke(funcion, { body: cuerpo });
+  if (!error) return data ?? {};
+  try { return await error.context.json(); } catch (_) { return { error: 'No se pudo hablar con el servidor. Revisa tu conexión.' }; }
+}
+
+/** Después de la ventana de Meta: el servidor guarda la conexión, suscribe el webhook y crea las plantillas. */
+export async function conectarWhatsApp({ code, waba_id, phone_number_id, coexistencia }) {
+  const r = await llamar('whatsapp-conectar', { negocio_id: nid(), code, waba_id, phone_number_id, coexistencia });
+  if (!r.ok) return { error: 'No se pudo conectar tu número. Inténtalo otra vez en un momento.' };
+  await cargarReal();
+  return { numero: r.numero };
+}
+
+/** Ventana de 24 h de Meta: dentro de ella se responde con texto libre; fuera, solo con plantilla aprobada. */
+export const dentroDe24h = conv => !!conv.ultimo_entrante && Date.now() - new Date(conv.ultimo_entrante) < 24 * 36e5;
+
+/** Responder desde la bandeja (sale por el WhatsApp del negocio). */
+export async function enviarMensaje(conversacion_id, texto) {
+  const r = await llamar('whatsapp-enviar', { conversacion_id, texto });
+  if (r.requiere_plantilla) return { error: 'Pasaron más de 24 horas desde su último mensaje. Por reglas de WhatsApp, escríbele desde tu celular.', fuera24h: true };
+  if (!r.ok) return { error: 'No se pudo enviar el mensaje. Inténtalo otra vez.' };
+  const conv = D.conversaciones.find(c => c.id === conversacion_id);
+  if (conv) conv.mensajes.push({ dir: 'out', origen: 'portal', estado: 'enviado', texto, fecha: new Date().toISOString() });
+  return {};
+}
+
+/** Al abrir un chat: ya no está «sin leer». */
+export function leerConversacion(cid) {
+  const conv = D.conversaciones.find(c => c.id === cid);
+  if (!conv || !conv.no_leidos) return;
+  conv.no_leidos = 0;
+  enSupabase(sb.from('conversaciones').update({ no_leidos: 0 }).eq('id', cid));
 }
 
 /** Guarda en Supabase por detrás; si falla, avisa y vuelve a cargar lo que de verdad quedó guardado. */
@@ -287,6 +375,18 @@ export const cobros = () => [...D.cobros].sort((a, b) => a.vence.localeCompare(b
 export const actividad = () => [...D.actividad].sort((a, b) => b.fecha.localeCompare(a.fecha));
 export const conversaciones = () => [...D.conversaciones].sort((a, b) => ultima(b).localeCompare(ultima(a)));
 export const automatizaciones = () => D.automatizaciones;
+export const bot = () => D.bot;
+export const pagos = () => D.pagos;
+/** Las formas de pago en un texto para WhatsApp (bot y recordatorios de cobro). Vacío si no hay. */
+export const textoPagos = () => D.pagos.length ? 'Formas de pago:\n' + D.pagos.map(p => `• ${p.titulo}: ${p.detalle}`).join('\n') : '';
+/** Las filas del menú del bot, en el mismo orden que las ve el cliente (igual que en el servidor). */
+export function filasBot(b = D.bot) {
+  const filas = b.opciones.filter(o => o.titulo && o.respuesta).slice(0, BOT_MAX_OPCIONES).map((o, i) => ({ id: `op-${i}`, titulo: o.titulo.slice(0, 24), respuesta: o.respuesta }));
+  if (b.pagos_en_menu && D.pagos.length) filas.push({ id: 'pagos', titulo: 'Formas de pago', respuesta: textoPagos() });
+  if (b.humano_en_menu) filas.push({ id: 'humano', titulo: 'Hablar con alguien', respuesta: BOT_HUMANO });
+  return filas;
+}
+export const saludoBot = (b = D.bot) => (b.saludo || '¡Hola! ¿En qué te ayudamos?').replaceAll('{negocio}', D.negocio.nombre);
 const ultima = conv => conv.mensajes[conv.mensajes.length - 1].fecha;
 
 export function estadoCobro(cb) {
@@ -387,6 +487,22 @@ export function alternarAutomatizacion(aid) {
   const a = D.automatizaciones.find(x => x.id === aid); a.activa = !a.activa;
   enSupabase(sb?.from('automatizaciones').upsert({ negocio_id: nid(), clave: aid, activa: a.activa, canal: a.canal }));
   guardar(); return a;
+}
+export function guardarBot(b) {
+  D.bot = { activo: !!b.activo, saludo: b.saludo, opciones: b.opciones.slice(0, BOT_MAX_OPCIONES), pagos_en_menu: !!b.pagos_en_menu, humano_en_menu: !!b.humano_en_menu };
+  enSupabase(sb?.from('bots').upsert({ negocio_id: nid(), ...D.bot, actualizado: new Date().toISOString() }));
+  guardar(); return D.bot;
+}
+export function agregarPago({ tipo, titulo, detalle }) {
+  const p = { id: uuid(), tipo, titulo, detalle, orden: D.pagos.length };
+  D.pagos.push(p);
+  enSupabase(sb?.from('metodos_pago').insert({ ...p, negocio_id: nid() }));
+  guardar(); return p;
+}
+export function quitarPago(pid) {
+  D.pagos = D.pagos.filter(p => p.id !== pid);
+  enSupabase(sb?.from('metodos_pago').delete().eq('id', pid));
+  guardar();
 }
 export function actualizarNegocio(campos) {
   Object.assign(D.negocio, campos);
