@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js';
-import * as db from './datos.js?v=12';
+import * as db from './datos.js?v=13';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -226,30 +226,26 @@ V.ajustes = () => {
 };
 
 // ---------------------------------------------------------------- entrada
-/* La escena de bienvenida (lado derecho de entrar): Enlaza en el centro y, alrededor, WhatsApp, la página
-   web, los cobros y los clientes unidos por hilos por donde «viajan» los datos. Encima, tarjetas de ejemplo.
-   Todo dibujado con HTML, CSS y SVG (sin imágenes). Es decorativa: aria-hidden. */
-const NODOS = [['wa', 'WhatsApp', 18, 24], ['web', 'Página web', 80, 16], ['pago', 'Cobros', 86, 66], ['crm', 'Clientes', 14, 72]];
+/* La bienvenida (lado derecho de entrar): una persona de negocio mirando su celular y, a su lado, los
+   avisos que le llegan con Enlaza (cliente nuevo, pago recibido, recordatorio enviado). Cercano, no técnico.
+   Es decorativa: aria-hidden. */
+const AVISOS = [
+  ['wa', 'wa', 'Nuevo cliente por WhatsApp', 'María R. quiere cotizar para el sábado', 'ahora'],
+  ['check', 'verde', 'Pago recibido', '$320 · Taller Díaz pagó con Yappy', '2 min'],
+  ['reloj', 'ambar', 'Recordatorio enviado', 'A Clínica Sonrisa, por su factura de mañana', '7:00 a. m.'],
+];
 const escena = () => `<div class="escena">
-    <svg class="escena__hilos" viewBox="0 0 100 100" preserveAspectRatio="none">
-      ${NODOS.map(([, , x, y], j) => {
-        const c = `M50 46 Q${(50 + x) / 2 + (j % 2 ? 8 : -8)} ${(46 + y) / 2 + (j < 2 ? -6 : 6)} ${x} ${y}`;
-        return `<path class="hilo" d="${c}"/><path class="hilo hilo--vivo" style="--k:${j}" d="${c}"/>`;
-      }).join('')}
-    </svg>
-    <span class="escena__centro"><i></i><i></i>${LOGO}</span>
-    ${NODOS.map(([ic, t, x, y], j) => `<span class="escena__nodo" style="left:${x}%;top:${y}%;--k:${j}">${I[ic]}<small>${t}</small></span>`).join('')}
-    <div class="ficha ficha--wa" style="--k:0"><span class="ficha__ico ficha__ico--wa">${I.wa}</span><div><b>María R.</b><p>¿Cuánto por la mudanza del sábado?</p></div><time>ahora</time></div>
-    <div class="ficha ficha--cot" style="--k:1"><small class="mono">Cotización #128</small><b>$650</b><span class="ficha__pill">${I.check} Ganada</span></div>
-    <div class="ficha ficha--pago" style="--k:2"><span class="ficha__ico">${I.check}</span><div><b>Pago recibido</b><p>$320 · Yappy</p></div></div>
-    <div class="ficha ficha--graf" style="--k:3"><small>Ventas del mes</small><div class="ficha__barras">${[38, 52, 44, 66, 58, 82, 94].map((h, j) => `<i style="--h:${h}%;--j:${j}"></i>`).join('')}</div><b>+24%</b></div>
+    <span class="escena__sol"></span>
+    <span class="escena__sombra"></span>
+    <span class="escena__persona"><img src="img/bienvenida-persona.webp" alt="" width="357" height="900"><i class="escena__brillo"></i></span>
+    ${AVISOS.map(([ic, tono, t, d, h], k) => `<div class="aviso-cel" style="--k:${k}"><span class="aviso-cel__ico aviso-cel__ico--${tono}">${I[ic]}</span><div><b>${t}</b><p>${d}</p></div><time>${h}</time></div>`).join('')}
   </div>`;
 
 const pantallaEntrada = cuerpo => `<main class="entrar">
     <div class="entrar__caja"><a class="lado__marca" href="#/">${LOGO}<span>Enlaza Studio</span></a>${cuerpo}
       <p class="entrar__seguro">${I.escudo}<span>Tus datos están protegidos: cada negocio ve solo lo suyo.</span></p></div>
     <div class="entrar__arte" aria-hidden="true">${escena()}
-      <div class="entrar__lema"><b>Tu negocio, mejor conectado.</b><span>Clientes, cotizaciones, cobros y WhatsApp en un solo lugar.</span>
+      <div class="entrar__lema"><b>Tu negocio, mejor <em>conectado.</em></b><span>Clientes, cotizaciones, cobros y WhatsApp en un solo lugar.</span>
         <ul><li>${I.check} Cada cliente con su seguimiento</li><li>${I.check} Cobros que se recuerdan solos</li><li>${I.check} Hecho en Panamá</li></ul></div></div></main>`;
 
 function entrar() {
@@ -258,14 +254,14 @@ function entrar() {
       <h1>Entra a tu negocio</h1><p>Con tu correo y tu contraseña.</p>
       ${real
         ? `<form id="form-entrar">${campo('Correo', '<input name="correo" type="email" placeholder="tu@negocio.com" required autocomplete="email">')}
-            <div id="caja-clave">${campo('Contraseña', '<input name="clave" type="password" autocomplete="current-password" required>')}</div>
+            <div id="caja-clave">${campo('Contraseña', '<input name="clave" type="password" autocomplete="current-password" required>')}<a href="#" id="ir-olvide" class="entrar__olvide">¿Olvidaste tu contraseña?</a></div>
             <p class="dialogo__error" role="alert" id="error-entrar">${esc(db.errorDelEnlace)}</p>
             <button class="btn btn--tinta btn--ancho" id="boton-entrar">Entrar</button>
             <button type="button" class="btn btn--suave btn--ancho" id="usar-clave">Mejor envíame un enlace al correo</button></form>
            <div class="separador"><span>o</span></div>`
         : ''}
       <button class="btn btn--suave btn--ancho" id="demo">Ver la demostración</button>
-      ${real ? '<p class="nota"><a href="#" id="ir-olvide">¿Olvidaste tu contraseña?</a> · ¿No tienes cuenta? <a href="#" id="ir-registro"><b>Crear cuenta</b></a></p>' : '<p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p>'}`);
+      ${real ? '<p class="entrar__registro">¿No tienes cuenta? <a href="#" id="ir-registro">Crea tu cuenta ' + I.flecha + '</a></p>' : '<p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p>'}`);
   const irOlvide = $('#ir-olvide');
   if (irOlvide) irOlvide.addEventListener('click', e => { e.preventDefault(); olvide($('[name=correo]')?.value || ''); });
   const irRegistro = $('#ir-registro');
