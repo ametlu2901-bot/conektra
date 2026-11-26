@@ -18,7 +18,7 @@ from textos import ES, EN
 CONFIG = {
     "dominio": "https://enlazastudio.com/",  # dominio propio (Cloudflare, comprado 2026-11-26)
     "whatsapp": "50765523134",                  # solo números con código de país, p. ej. 50760000000
-    "correo": "",                               # p. ej. hola@enlazastudio.com
+    "correo": "hola@enlazastudio.com",                               # p. ej. hola@enlazastudio.com
     # testimonio real de Acarreos Makena: si "texto" está vacío no se muestra ninguna cita
     "testimonio": dict(texto="", nombre="", cargo=""),
     # URL /exec de la hoja «Enlaza Studio — CRM» (programa en crm/Codigo.gs)

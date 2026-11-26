@@ -214,7 +214,7 @@ def _pie(wa, actual):
         <div class="pie__marca"><a class="marca" href="../">{inicio.MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{T["pie"]["desc"]}</p></div>
         <nav aria-label="Servicios"><h2>Servicios</h2>{serv}</nav>
         <nav aria-label="Enlaza Studio"><h2>Enlaza Studio</h2><a href="../#como-trabajamos">Cómo trabajamos</a><a href="../#preguntas">Preguntas</a><a href="../privacidad/">Política de privacidad</a></nav>
-        <div><h2>Contacto</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="../#contacto">Escríbenos por el formulario</a></div>
+        <div><h2>Contacto</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {inicio.TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="../#contacto">Escríbenos por el formulario</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
       <div class="pie__base"><span>© 2026 Enlaza Studio</span><span>Hecho en Panamá</span></div>

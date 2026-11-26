@@ -334,7 +334,7 @@ def _final_y_pie(T, wa, otra, rel):
         <div class="pie__marca"><a class="marca" href="./">{MARCA}<span>Enlaza Studio</span></a><p>{T["eslogan"]}</p><p class="pie__desc">{P["desc"]}</p></div>
         <nav aria-label="{P["soluciones"]}"><h2>{P["soluciones"]}</h2>{sol}</nav>
         <nav aria-label="{P["empresa"]}"><h2>{P["empresa"]}</h2>{emp}<a href="{rel("privacidad")}">{P["privacidad"]}</a></nav>
-        <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {TEL}</a><a href="#contacto">{P["form"]}</a><a href="{otra}">{T["otra_nombre"]} {I["flecha"]}</a></div>
+        <div><h2>{P["contacto"]}</h2><a class="pie__wa" href="{wa}" target="_blank" rel="noopener">{I["wa"]} {TEL}</a><a href="mailto:hola@enlazastudio.com">hola@enlazastudio.com</a><a href="#contacto">{P["form"]}</a><a href="{otra}">{T["otra_nombre"]} {I["flecha"]}</a></div>
       </div>
       <p class="pie__gigante" aria-hidden="true">Enlaza Studio</p>
       <div class="pie__base"><span>{P["derechos"]}</span><span>{P["hecho"]}</span></div>
@@ -356,7 +356,7 @@ def pagina(T, cfg, wa_link):
     d = cfg["dominio"]
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "ProfessionalService", "@id": d + "#empresa", "name": "Enlaza Studio", "url": d, "slogan": T["eslogan"], "description": T["descripcion"],
-         "areaServed": {"@type": "Country", "name": "Panamá"}, "telephone": "+" + cfg["whatsapp"], "image": d + "img/compartir.jpg", "logo": d + "img/icono-512.png",
+         "areaServed": {"@type": "Country", "name": "Panamá"}, "telephone": "+" + cfg["whatsapp"], "email": "hola@enlazastudio.com", "image": d + "img/compartir.jpg", "logo": d + "img/icono-512.png",
          "knowsAbout": ["Diseño de páginas web", "SEO local", "CRM para WhatsApp", "Cobranza automática", "Automatización de WhatsApp Business", "WhatsApp Business API", "Integraciones", "Google Sheets"],
          "priceRange": "$$", "address": {"@type": "PostalAddress", "addressLocality": "Ciudad de Panamá", "addressCountry": "PA"}},
         {"@type": "WebSite", "name": "Enlaza Studio", "url": d, "inLanguage": ["es", "en"]},
