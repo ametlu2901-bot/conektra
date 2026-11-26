@@ -142,6 +142,8 @@ export async function iniciar() {
   }
   // Si vuelve del enlace del correo, manda el modo real (aunque antes haya visto la demostración).
   const vieneDelCorreo = location.hash.includes('access_token=') || location.search.includes('code=');
+  // ¿Es el enlace de «olvidé mi contraseña»? (se lee antes de que supabase-js borre la dirección)
+  const esRecuperar = /type=recovery/.test(location.hash + location.search);
   if (vieneDelCorreo) { try { localStorage.removeItem(DEMO); } catch (_) {} }
   // Solo la marca nueva ('1') cuenta: la versión anterior guardaba otra cosa con la misma clave.
   if (localStorage.getItem(DEMO) === '1') { cargarDemo(); return 'demo'; }
@@ -153,7 +155,23 @@ export async function iniciar() {
   if (vieneDelCorreo) history.replaceState(null, '', location.pathname);
   if (!session) return 'fuera';
   usuario = session.user;
+  if (esRecuperar) return 'recuperar';
   return (await cargarReal()) ? 'real' : 'sin-negocio';
+}
+
+/** «Olvidé mi contraseña»: manda el correo con el enlace para poner una nueva. */
+export async function olvideClave(correo) {
+  const s = await cliente();
+  const { error } = await s.auth.resetPasswordForEmail(correo, { redirectTo: location.origin + location.pathname });
+  if (error) return error.status === 429 ? 'Se enviaron muchos correos seguidos. Espera unos minutos y vuelve a intentarlo.' : 'No se pudo enviar el correo. Revisa la dirección.';
+  return null;
+}
+
+/** Poner la contraseña nueva (después del enlace del correo). Devuelve el estado para seguir. */
+export async function ponerClaveNueva(clave) {
+  const { error } = await sb.auth.updateUser({ password: clave });
+  if (error) return { error: /least|short|weak/i.test(error.message || '') ? 'La contraseña debe tener al menos 8 caracteres.' : 'No se pudo cambiar la contraseña. Pide otro enlace.' };
+  return { estado: (await cargarReal()) ? 'real' : 'sin-negocio' };
 }
 
 /** Entrar: en la demostración, al instante; con correo, se envía el enlace (devuelve el error si hubo). */

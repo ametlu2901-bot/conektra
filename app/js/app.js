@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js';
-import * as db from './datos.js?v=10';
+import * as db from './datos.js?v=11';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
@@ -243,7 +243,9 @@ function entrar() {
            <div class="separador"><span>o</span></div>`
         : ''}
       <button class="btn btn--suave btn--ancho" id="demo">Ver la demostración</button>
-      ${real ? '<p class="nota">¿No tienes cuenta? <a href="#" id="ir-registro"><b>Crear cuenta</b></a></p>' : '<p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p>'}`);
+      ${real ? '<p class="nota"><a href="#" id="ir-olvide">¿Olvidaste tu contraseña?</a> · ¿No tienes cuenta? <a href="#" id="ir-registro"><b>Crear cuenta</b></a></p>' : '<p class="nota">Por ahora el portal funciona en modo demostración con datos de ejemplo.</p>'}`);
+  const irOlvide = $('#ir-olvide');
+  if (irOlvide) irOlvide.addEventListener('click', e => { e.preventDefault(); olvide($('[name=correo]')?.value || ''); });
   const irRegistro = $('#ir-registro');
   if (irRegistro) irRegistro.addEventListener('click', e => { e.preventDefault(); registro(); });
   document.title = 'Entrar · Enlaza Studio';
@@ -280,6 +282,51 @@ function entrar() {
     $('#otra-vez').addEventListener('click', entrar);
   });
   $('#demo').addEventListener('click', async () => { await db.entrarDemo(); location.hash = '#/inicio'; render(); });
+}
+
+/** «¿Olvidaste tu contraseña?»: pide el correo y manda el enlace. */
+function olvide(correoInicial = '') {
+  document.body.innerHTML = pantallaEntrada(`
+      <h1>Recupera tu contraseña</h1><p>Te enviamos un correo con un enlace para poner una contraseña nueva.</p>
+      <form id="form-olvide">${campo('Correo', `<input name="correo" type="email" required placeholder="tu@negocio.com" autocomplete="email" value="${esc(correoInicial)}">`)}
+        <p class="dialogo__error" role="alert" id="error-olvide"></p>
+        <button class="btn btn--tinta btn--ancho">Enviar enlace</button></form>
+      <p class="nota"><a href="#" id="volver-entrar">Volver a entrar</a></p>`);
+  document.title = 'Recuperar contraseña · Enlaza Studio';
+  $('#volver-entrar').addEventListener('click', e => { e.preventDefault(); entrar(); });
+  const form = $('#form-olvide');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const correo = String(new FormData(form).get('correo')).trim();
+    const b = $('button', form); b.disabled = true; b.textContent = 'Enviando…';
+    const error = await db.olvideClave(correo);
+    if (error) { $('#error-olvide').textContent = error; b.disabled = false; b.textContent = 'Enviar enlace'; return; }
+    document.body.innerHTML = pantallaEntrada(`<h1>Revisa tu correo</h1>
+      <p>Si <b>${esc(correo)}</b> tiene cuenta, te llegó un correo con un enlace. Tócalo <b>una sola vez</b> y podrás poner tu contraseña nueva.</p>
+      <p class="nota">¿No llegó? Revisa la carpeta de spam o espera un minuto.</p>
+      <button class="btn btn--suave btn--ancho" id="volver">Volver a entrar</button>`);
+    $('#volver').addEventListener('click', entrar);
+  });
+}
+
+/** Después del enlace de «olvidé mi contraseña»: poner la nueva. */
+function claveNueva() {
+  document.body.innerHTML = pantallaEntrada(`
+      <h1>Contraseña nueva</h1><p>Para <b>${esc(db.correoUsuario())}</b>.</p>
+      <form id="form-clave">${campo('Contraseña nueva', '<input name="clave" type="password" required minlength="8" placeholder="Al menos 8 caracteres" autocomplete="new-password">')}
+        <p class="dialogo__error" role="alert" id="error-clave"></p>
+        <button class="btn btn--tinta btn--ancho">Guardar y entrar</button></form>`);
+  document.title = 'Contraseña nueva · Enlaza Studio';
+  const form = $('#form-clave');
+  $('input', form).focus();
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const b = $('button', form); b.disabled = true; b.textContent = 'Guardando…';
+    const r = await db.ponerClaveNueva(String(new FormData(form).get('clave')));
+    if (r.error) { $('#error-clave').textContent = r.error; b.disabled = false; b.textContent = 'Guardar y entrar'; return; }
+    if (r.estado === 'sin-negocio') return bienvenida();
+    location.hash = '#/inicio'; render();
+  });
 }
 
 /** Crear cuenta: correo, contraseña y el negocio, en un solo paso. */
@@ -402,6 +449,7 @@ async function arrancar() {
   let estado = 'fuera';
   try { estado = await db.iniciar(); } catch (e) { console.error('[portal] no se pudo iniciar', e); }
   if (estado === 'fuera') return entrar();
+  if (estado === 'recuperar') return claveNueva();
   if (estado === 'sin-negocio') return bienvenida();
   if (!location.hash || location.hash === '#/') location.hash = '#/inicio';
   render();
