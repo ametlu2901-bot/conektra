@@ -332,6 +332,9 @@ a.kpi:hover { box-shadow: 0 0 0 1px var(--linea-2), 0 10px 24px -16px rgba(11, 3
 .dialogo header, .dialogo footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .dialogo footer { justify-content: flex-end; }
 .dialogo__campos { display: grid; gap: 12px; }
+.dialogo__numero { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 10px; background: rgba(54, 201, 138, .1); font-size: .88rem; }
+.dialogo__numero b { font-size: 1rem; color: var(--esmeralda); }
+.dialogo__numero span { color: var(--gris); font-size: .78rem; }
 .dialogo__error { min-height: 1em; font-size: .84rem; color: var(--rojo); }
 .aviso { position: fixed; left: 50%; bottom: 24px; z-index: 100; display: flex; align-items: center; gap: 10px; padding: 11px 16px; border-radius: 12px; background: var(--tinta); color: #fff; font-size: .88rem; box-shadow: 0 20px 40px -18px rgba(0, 0, 0, .6); transform: translate(-50%, 20px); opacity: 0; transition: opacity .3s, transform .4s var(--curva); }
 .aviso svg { width: 16px; height: 16px; color: var(--verde); }

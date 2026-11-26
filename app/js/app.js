@@ -1,6 +1,6 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
 import { I, LOGO } from './iconos.js?v=2';
-import * as db from './datos.js?v=17';
+import * as db from './datos.js?v=18';
 import { metaListo, registroIntegrado } from './meta.js?v=1';
 
 const $ = (s, c = document) => c.querySelector(s);
@@ -89,7 +89,7 @@ V.inicio = () => {
   const barras = R.embudo.map(([t, v]) => `<li><span>${t}</span><i style="--v:${(v / tope).toFixed(2)}"><b>${v}</b></i></li>`).join('');
   const proximos = db.cobros().filter(cb => cb.estado !== 'pagado').slice(0, 4).map(cb => {
     const e = db.estadoCobro(cb); const x = db.contacto(cb.contacto_id);
-    return `<li><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small>${esc(cb.concepto)}</small></span><b>${dinero(cb.monto)}</b><span class="pill pill--${e.id}">${e.texto}</span></li>`;
+    return `<li><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span><b>${dinero(cb.monto)}</b><span class="pill pill--${e.id}">${e.texto}</span></li>`;
   }).join('');
   const rep = [`${R.clientesHoy || 0} clientes nuevos hoy`, `${R.abiertas} cotizaciones abiertas`, `${dinero(R.cobradoMes)} cobrados este mes`, `${R.venceSemana} pagos vencen esta semana`].map(x => `<li>${x}</li>`).join('');
   return `
@@ -151,8 +151,8 @@ V.cobros = () => {
   const filas = db.cobros().map(cb => {
     const e = db.estadoCobro(cb); const x = db.contacto(cb.contacto_id);
     const pagos = db.textoPagos();
-    const msg = `Hola ${x.nombre.split(' ')[0]}, te saluda ${db.negocio().nombre}. Te recordamos el pago de ${dinero(cb.monto)} por ${cb.concepto}, ${e.id === 'vencido' ? `que venció el ${fechaCorta(cb.vence)}` : `que vence el ${fechaCorta(cb.vence)}`}. ¡Gracias!${pagos ? `\n\n${pagos}` : ''}`;
-    return `<tr><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small>${esc(cb.concepto)}</small></span></td><td class="num"><b>${dinero(cb.monto)}</b></td><td class="tenue">${fechaCorta(cb.vence)}</td><td><span class="pill pill--${e.id}">${e.texto}</span></td>
+    const msg = `Hola ${x.nombre.split(' ')[0]}, te saluda ${db.negocio().nombre}. Te recordamos el pago de ${dinero(cb.monto)} por ${cb.concepto} (factura ${db.numFactura(cb.numero)}), ${e.id === 'vencido' ? `que venció el ${fechaCorta(cb.vence)}` : `que vence el ${fechaCorta(cb.vence)}`}. ¡Gracias!${pagos ? `\n\n${pagos}` : ''}`;
+    return `<tr><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span></td><td class="num"><b>${dinero(cb.monto)}</b></td><td class="tenue">${fechaCorta(cb.vence)}</td><td><span class="pill pill--${e.id}">${e.texto}</span></td>
       <td class="acciones">${cb.estado === 'pagado' ? '' : `<a class="btn btn--mini" href="${wa(x.telefono, msg)}" target="_blank" rel="noopener" data-recordar="${cb.id}">${I.wa} Recordar</a><button class="btn btn--mini btn--suave" data-pagado="${cb.id}">${I.check} Pagado</button>`}</td></tr>`;
   }).join('');
   return `<div class="cab-vista"><div><h1>Cobros</h1><p>Quién te debe, cuánto y desde cuándo. Envía el recordatorio con un toque.</p></div><button class="btn btn--tinta" id="nuevo-cobro">${I.mas} Nuevo cobro</button></div>
@@ -207,7 +207,7 @@ function fichaCliente(x) {
       ${qs.length ? `<ul class="ficha-cli__lista">${qs.slice(0, 4).map(q => `<li><span><b>#${q.numero}</b> ${esc(q.servicio)}</span><span class="ficha-cli__dato"><b>${dinero(q.monto)}</b><span class="pill pill--etapa-${q.etapa}">${etapa(q.etapa)}</span></span></li>`).join('')}</ul>`
         : '<p class="tenue ficha-cli__vacio">Sin cotizaciones abiertas.</p>'}
       <h5>Cobros pendientes</h5>
-      ${cbs.length ? `<ul class="ficha-cli__lista">${cbs.slice(0, 4).map(cb => { const e = db.estadoCobro(cb); return `<li><span>${esc(cb.concepto)}</span><span class="ficha-cli__dato"><b>${dinero(cb.monto)}</b><span class="pill${e.id === 'vencido' ? ' pill--vencido' : e.id === 'pronto' ? ' pill--pronto' : ''}">${e.texto}</span></span></li>`; }).join('')}</ul>`
+      ${cbs.length ? `<ul class="ficha-cli__lista">${cbs.slice(0, 4).map(cb => { const e = db.estadoCobro(cb); return `<li><span><b class="mono">${db.numFactura(cb.numero)}</b> ${esc(cb.concepto)}</span><span class="ficha-cli__dato"><b>${dinero(cb.monto)}</b><span class="pill${e.id === 'vencido' ? ' pill--vencido' : e.id === 'pronto' ? ' pill--pronto' : ''}">${e.texto}</span></span></li>`; }).join('')}</ul>`
         : '<p class="tenue ficha-cli__vacio">Al día: no debe nada.</p>'}
       <div class="ficha-cli__acciones">
         <button class="btn btn--tinta btn--ancho" data-cot-para="${esc(x.id)}">${I.mas} Nueva cotización</button>
@@ -566,7 +566,8 @@ function enlazar(vista) {
     campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Servicio', '<input name="servicio" required placeholder="Ej.: mudanza de 2 recámaras">') + campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>'),
     d => { if (!d.servicio.trim() || !(+d.monto > 0)) return 'Escribe el servicio y un monto mayor a cero.'; db.crearCotizacion(d); aviso('Cotización creada'); render(); });
   const abrirCobro = sel => !sinClientes() && dialogo('Nuevo cobro',
-    campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: factura #0413">') +
+    `<p class="dialogo__numero">Factura <b class="mono">${db.numFactura(db.siguienteFactura())}</b><span>El número se pone solo y sigue en orden.</span></p>` +
+    campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: mudanza del sábado">') +
     campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>') + campo('Vence', `<input name="vence" type="date" required value="${new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10)}">`),
     d => { if (!d.concepto.trim() || !(+d.monto > 0) || !d.vence) return 'Completa el concepto, el monto y la fecha.'; db.crearCobro(d); aviso('Cobro agregado'); render(); });
   const nuevaCot = $('#nueva-cot'); if (nuevaCot) nuevaCot.addEventListener('click', () => abrirCot());

@@ -32,6 +32,7 @@ def _head(T, cfg, pre, ld):
   <link rel="canonical" href="{url}">{alt}
   <meta name="theme-color" content="#fbfbf8">
   <meta name="color-scheme" content="light">
+  <meta name="facebook-domain-verification" content="4a9kk5fmzsdeguo2i55iz1cotgbd28">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Enlaza Studio">
   <meta property="og:url" content="{url}">
