@@ -1,14 +1,19 @@
 /* Portal Enlaza Studio — interfaz (rutas, vistas y acciones) */
-import { I, LOGO } from './iconos.js?v=2';
-import * as db from './datos.js?v=18';
+import { I, LOGO } from './iconos.js?v=3';
+import * as db from './datos.js?v=20';
 import { metaListo, registroIntegrado } from './meta.js?v=1';
 
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const esc = v => String(v ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-const dinero = n => '$' + Math.round(n).toLocaleString('en-US');
-const iniciales = n => n.split(/\s+/).slice(0, 2).map(x => x[0]).join('').toUpperCase();
-const digitos = tel => tel.replace(/\D/g, '');
+// montos con centavos solo si los tienen ($49.99, $650): igual en pantalla que en los mensajes
+const dinero = n => db.dineroTexto(n);
+// iniciales: solo letras y números (el nombre puede venir del perfil de WhatsApp de cualquiera)
+const iniciales = n => String(n || '').split(/\s+/).filter(Boolean).slice(0, 2).map(x => x.match(/[\p{L}\p{N}]/u)?.[0] || '').join('').toUpperCase();
+const digitos = tel => String(tel || '').replace(/\D/g, '');
+const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+/** Fecha local (no UTC) en formato AAAA-MM-DD, `dias` después de hoy. */
+const fechaLocal = (dias = 0) => { const d = new Date(Date.now() + dias * 864e5); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const hace = iso => {
   const s = (Date.now() - new Date(iso)) / 1000;
   if (s < 60) return 'ahora';
@@ -17,7 +22,8 @@ const hace = iso => {
   const d = Math.floor(s / 86400); return d === 1 ? 'ayer' : `${d} días`;
 };
 const fechaCorta = f => new Date(f.length === 10 ? f + 'T00:00' : f).toLocaleDateString('es-PA', { day: 'numeric', month: 'short' });
-const wa = (tel, texto) => `https://wa.me/${digitos(tel)}?text=${encodeURIComponent(texto)}`;
+// los números panameños sin código de país (7 u 8 dígitos) llevan el 507 delante
+const wa = (tel, texto) => `https://wa.me/${db.waNumero(tel)}?text=${encodeURIComponent(texto)}`;
 
 const RUTAS = [
   ['inicio', 'Inicio', 'base'], ['clientes', 'Clientes', 'crm'], ['cotizaciones', 'Cotizaciones', 'factura'], ['cobros', 'Cobros', 'pago'],
@@ -82,44 +88,57 @@ function marco(ruta, contenido) {
 // ---------------------------------------------------------------- vistas
 const V = {};
 
+/** Columnas de lo cobrado por mes (solo pagos registrados). */
+function graficaMeses(vm) {
+  const tope = Math.max(...vm.map(([, v]) => v), 1);
+  return `<div class="columnas" style="grid-template-columns: repeat(${vm.length}, minmax(0, 1fr))">${vm.map(([m, v]) => `<div><i style="--h:${Math.max(v / tope * 100, v ? 4 : 0).toFixed(0)}%">${v ? `<b>${dinero(v)}</b>` : ''}</i><span>${m[0].toUpperCase() + m.slice(1)}</span></div>`).join('')}</div>`;
+}
+const vacioCaja = (icono, titulo, texto) => `<div class="vacio2 vacio2--caja">${icono}<b>${titulo}</b><p>${texto}</p></div>`;
+
 V.inicio = () => {
-  const R = db.resumen();
+  const R = db.resumen(), N = db.negocio();
   const act = db.actividad().slice(0, 6).map(a => `<li class="act"><span class="act__ico act__ico--${a.tipo}">${I[ICO_ACT[a.tipo]] || I.check}</span><span class="act__txt"><b>${esc(a.titulo)}</b><small>${esc(a.detalle)}</small></span><time>${hace(a.fecha)}</time></li>`).join('');
-  const tope = Math.max(...R.embudo.map(x => x[1]), 1);
-  const barras = R.embudo.map(([t, v]) => `<li><span>${t}</span><i style="--v:${(v / tope).toFixed(2)}"><b>${v}</b></i></li>`).join('');
   const proximos = db.cobros().filter(cb => cb.estado !== 'pagado').slice(0, 4).map(cb => {
     const e = db.estadoCobro(cb); const x = db.contacto(cb.contacto_id);
-    return `<li><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span><b>${dinero(cb.monto)}</b><span class="pill pill--${e.id}">${e.texto}</span></li>`;
+    return `<li><span class="mini-av">${esc(iniciales(x.nombre))}</span><span class="crece"><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span><b>${dinero(cb.monto)}</b><span class="pill pill--${e.id}">${e.texto}</span></li>`;
   }).join('');
-  const rep = [`${R.clientesHoy || 0} clientes nuevos hoy`, `${R.abiertas} cotizaciones abiertas`, `${dinero(R.cobradoMes)} cobrados este mes`, `${R.venceSemana} pagos vencen esta semana`].map(x => `<li>${x}</li>`).join('');
+  const vm = db.ventasPorMes(6), hayVentas = vm.some(([, v]) => v);
+  const rep = [plural(R.clientesHoy, 'cliente nuevo hoy', 'clientes nuevos hoy'), plural(R.abiertas, 'cotización abierta', 'cotizaciones abiertas'),
+    `${dinero(R.cobradoMes)} cobrados este mes`, plural(R.venceSemana, 'pago vence esta semana', 'pagos vencen esta semana')].map(x => `<li>${x}</li>`).join('');
+  const autoResumen = db.automatizaciones().find(a => a.id === 'resumen');
+  const notaResumen = !db.enModoReal() ? 'Así llega cada mañana a las 7:00 a tu correo.'
+    : !N.correo ? 'Para recibirlo cada mañana, pon tu correo en <a href="#/ajustes">Ajustes</a>.'
+    : autoResumen?.activa ? `Te llega cada mañana a las 7:00 a <b>${esc(N.correo)}</b>.`
+    : 'Está apagado. Actívalo en <a href="#/automatizaciones">Automatizaciones</a> para recibirlo cada mañana.';
   return `
     <div class="kpis">
-      <a class="kpi" href="#/clientes"><small>Clientes nuevos (mes)</small><b>${R.clientesNuevos}</b><span>${R.clientesHoy ? `+${R.clientesHoy} hoy` : 'Sin nuevos hoy'}</span></a>
-      <a class="kpi" href="#/cotizaciones"><small>Cotizaciones abiertas</small><b>${R.abiertas}</b><span>${R.porSeguir} por seguir</span></a>
-      <a class="kpi" href="#/cobros"><small>Por cobrar</small><b>${dinero(R.porCobrar)}</b><span class="${R.vencidos.length ? 'rojo' : ''}">${R.vencidos.length ? `${R.vencidos.length} vencidos · ` : ''}${R.venceSemana} vencen esta semana</span></a>
-      <div class="kpi"><small>Ganado (mes)</small><b>${dinero(R.ganadoMes)}</b><span>${dinero(R.cobradoMes)} ya cobrados</span></div>
+      <a class="kpi" href="#/clientes"><small>Clientes nuevos (mes)</small><b>${R.clientesNuevos}</b><span>${R.clientesHoy ? `+${R.clientesHoy} hoy` : 'Ninguno hoy'}</span></a>
+      <a class="kpi" href="#/cotizaciones"><small>Cotizaciones abiertas</small><b>${R.abiertas}</b><span class="${R.porSeguir ? 'ambar' : ''}">${R.porSeguir ? plural(R.porSeguir, 'sin respuesta hace 2+ días', 'sin respuesta hace 2+ días') : 'Todas al día'}</span></a>
+      <a class="kpi" href="#/cobros"><small>Por cobrar</small><b>${dinero(R.porCobrar)}</b><span class="${R.vencidos.length ? 'rojo' : ''}">${R.vencidos.length ? `${plural(R.vencidos.length, 'vencido', 'vencidos')} · ` : ''}${R.venceSemana ? plural(R.venceSemana, 'vence esta semana', 'vencen esta semana') : (R.vencidos.length ? '' : 'Nada vence esta semana')}</span></a>
+      <a class="kpi" href="#/reportes"><small>Cobrado (mes)</small><b>${dinero(R.cobradoMes)}</b><span>${R.ganadoMes ? `${dinero(R.ganadoMes)} en cotizaciones ganadas` : 'Pagos registrados este mes'}</span></a>
     </div>
     <div class="rejilla-inicio">
-      <section class="caja"><h4><span class="vivo"></span>Actividad reciente</h4><ul class="act__lista">${act}</ul></section>
-      <section class="caja"><h4>Ventas del mes</h4><ul class="barras">${barras}</ul>
-        <svg class="linea-graf" viewBox="0 0 200 60" preserveAspectRatio="none"><defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#36c98a" stop-opacity=".35"/><stop offset="1" stop-color="#36c98a" stop-opacity="0"/></linearGradient></defs><path d="M0 48 L25 44 L50 46 L75 34 L100 37 L125 26 L150 28 L175 15 L200 10 L200 60 L0 60Z" fill="url(#gA)"/><path class="linea-graf__trazo" d="M0 48 L25 44 L50 46 L75 34 L100 37 L125 26 L150 28 L175 15 L200 10" fill="none" stroke="#1f9e66" stroke-width="2"/></svg>
-      </section>
+      <section class="caja"><h4><span class="vivo"></span>Actividad reciente</h4>${act ? `<ul class="act__lista">${act}</ul>` : vacioCaja(I.rayo, 'Todavía no hay movimiento', 'Aquí verás lo que pasa en tu negocio: clientes nuevos, cotizaciones, pagos y mensajes.')}</section>
+      <section class="caja"><h4>Cobrado por mes ${db.enModoReal() ? '' : '<small>meses anteriores de ejemplo</small>'}<a class="ver" href="#/reportes">Reportes</a></h4>
+        ${hayVentas ? graficaMeses(vm) : vacioCaja(I.grafica, 'Sin pagos registrados', 'Cuando marques un cobro como pagado, aquí verás cuánto entra cada mes.')}</section>
       <section class="caja"><h4>Próximos cobros <a class="ver" href="#/cobros">Ver todos</a></h4><ul class="lista-simple">${proximos || '<li class="vacio">No hay cobros pendientes.</li>'}</ul></section>
-      <section class="caja caja--wa"><h4>${I.wa} Resumen del día <small>vista previa</small></h4>
-        <div class="globo"><b>Resumen del día ☀️</b><ul>${rep}</ul><small>7:00 a. m. ✓✓</small></div>
-        <p class="nota">Así llegará cada mañana a tu WhatsApp cuando lo conectemos.</p></section>
+      <section class="caja caja--resumen"><h4>${I.chat} Resumen del día</h4>
+        <div class="globo"><b>Buenos días${N.dueno ? ', ' + esc(N.dueno.split(' ')[0]) : ''}</b><ul>${rep}</ul><small>7:00 a. m.</small></div>
+        <p class="nota">${notaResumen}</p></section>
     </div>`;
 };
 
 V.clientes = (filtro = '') => {
   const q = filtro.toLowerCase();
   const lista = db.contactos().filter(x => !q || (x.nombre + x.telefono + x.nota + x.origen).toLowerCase().includes(q));
-  const etapaDe = cid => { const qs = db.cotizaciones().filter(c => c.contacto_id === cid); return qs.length ? db.ETAPAS.find(e => e.id === qs[qs.length - 1].etapa) : null; };
-  const filas = lista.map(x => { const e = etapaDe(x.id); return `<tr data-id="${x.id}"><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small>${esc(x.nota)}</small></span></td>
-    <td class="mono">${esc(x.telefono)}</td><td><span class="etq-origen">${esc(x.origen)}</span></td><td>${e ? `<span class="pill pill--etapa-${e.id}">${e.nombre}</span>` : '<span class="tenue">—</span>'}</td><td class="tenue">${fechaCorta(x.creado)}</td>
-    <td class="acciones"><a class="icono-btn" href="${wa(x.telefono, `Hola ${x.nombre.split(' ')[0]}, `)}" target="_blank" rel="noopener" title="Escribir por WhatsApp" data-escribir="${x.id}">${I.wa}</a></td></tr>`; }).join('');
-  return `<div class="cab-vista"><div><h1>Clientes</h1><p>${lista.length} ${lista.length === 1 ? 'cliente' : 'clientes'}${q ? ` para «${esc(filtro)}»` : ''}</p></div><button class="btn btn--tinta" id="nuevo-cliente">${I.mas} Nuevo cliente</button></div>
-    <div class="caja caja--tabla"><table class="tabla"><thead><tr><th>Cliente</th><th>Teléfono</th><th>Origen</th><th>Etapa</th><th>Desde</th><th></th></tr></thead><tbody>${filas || '<tr><td colspan="6" class="vacio">No hay clientes que coincidan.</td></tr>'}</tbody></table></div>`;
+  // la etapa del cliente es la de su cotización más reciente
+  const etapaDe = cid => { const qs = db.cotizaciones().filter(c => c.contacto_id === cid).sort((a, b) => a.creada.localeCompare(b.creada)); return qs.length ? db.ETAPAS.find(e => e.id === qs[qs.length - 1].etapa) : null; };
+  const filas = lista.map(x => { const e = etapaDe(x.id); return `<tr data-id="${x.id}"><td><span class="mini-av">${esc(iniciales(x.nombre))}</span><span><b>${esc(x.nombre)}</b><small>${esc(x.nota)}</small></span></td>
+    <td class="mono">${esc(x.telefono)}</td><td>${x.origen ? `<span class="etq-origen">${esc(x.origen)}</span>` : '<span class="tenue">—</span>'}</td><td>${e ? `<span class="pill pill--etapa-${e.id}">${e.nombre}</span>` : '<span class="tenue">—</span>'}</td><td class="tenue">${fechaCorta(x.creado)}</td>
+    <td class="acciones"><button class="icono-btn" data-editar-cliente="${x.id}" title="Editar cliente" aria-label="Editar ${esc(x.nombre)}">${I.lapiz}</button><a class="icono-btn" href="${wa(x.telefono, `Hola ${x.nombre.split(' ')[0]}, `)}" target="_blank" rel="noopener" title="Escribir por WhatsApp" data-escribir="${x.id}">${I.wa}</a></td></tr>`; }).join('');
+  const vacio = q ? 'No hay clientes que coincidan.' : 'Todavía no tienes clientes. Agrega el primero, o espera: los que te escriban por WhatsApp o llenen el formulario de tu página llegan solos.';
+  return `<div class="cab-vista"><div><h1>Clientes</h1><p>${plural(lista.length, 'cliente', 'clientes')}${q ? ` para «${esc(filtro)}»` : ''}</p></div><button class="btn btn--tinta" id="nuevo-cliente">${I.mas} Nuevo cliente</button></div>
+    <div class="caja caja--tabla"><table class="tabla"><thead><tr><th>Cliente</th><th>Teléfono</th><th>Origen</th><th>Etapa</th><th>Desde</th><th></th></tr></thead><tbody>${filas || `<tr><td colspan="6" class="vacio">${vacio}</td></tr>`}</tbody></table></div>`;
 };
 
 V.cotizaciones = () => {
@@ -131,10 +150,12 @@ V.cotizaciones = () => {
       const atrasada = dias >= 2 && ['contactado', 'cotizado'].includes(q.etapa);
       const porEnviar = ['nuevo', 'contactado'].includes(q.etapa);
       const nombre = x.nombre.split(' ')[0];
-      const boton = porEnviar
+      // sin precio (p. ej. llegó del formulario de la página) no se puede enviar: primero ponerle precio
+      const boton = porEnviar && !q.monto ? `<button class="btn btn--mini btn--suave" data-editar-cot="${q.id}">${I.lapiz} Poner precio</button>`
+        : porEnviar
         ? `<a class="btn btn--mini" href="${wa(x.telefono, `Hola ${nombre}, te saluda ${db.negocio().nombre}. Te comparto la cotización #${q.numero}: ${q.servicio} por ${dinero(q.monto)}. ¿Te parece bien? Si quieres, la agendamos.`)}" target="_blank" rel="noopener" data-enviar-cot="${q.id}" title="Enviar la cotización por WhatsApp: pasa sola a Cotizado">${I.wa} Enviar</a>`
         : atrasada ? `<a class="btn btn--mini" href="${wa(x.telefono, `Hola ${nombre}, te escribo de ${db.negocio().nombre} para saber si pudiste revisar la cotización #${q.numero} (${q.servicio}). ¿Te ayudo con algo?`)}" target="_blank" rel="noopener" data-seguir="${q.id}">${I.wa} Seguir</a>` : '';
-      return `<article class="tarj" draggable="true" data-id="${q.id}"><header><small class="mono">#${q.numero}</small>${atrasada ? `<span class="pill pill--pronto">${dias} días sin respuesta</span>` : ''}</header>
+      return `<article class="tarj" draggable="true" data-id="${q.id}"><header><small class="mono">#${q.numero}</small>${atrasada ? `<span class="pill pill--pronto">${dias} días sin respuesta</span>` : ''}<button class="tarj__editar" data-editar-cot="${q.id}" title="Editar servicio y precio" aria-label="Editar cotización #${q.numero}">${I.lapiz}</button></header>
         <b>${esc(x.nombre)}</b><p>${esc(q.servicio)}</p><footer><b>${dinero(q.monto)}</b>${boton}</footer>
         <select class="tarj__mover" data-mover="${q.id}" aria-label="Mover a">${db.ETAPAS.map(o => `<option value="${o.id}"${o.id === q.etapa ? ' selected' : ''}>${o.nombre}</option>`).join('')}</select></article>`;
     }).join('');
@@ -152,95 +173,219 @@ V.cobros = () => {
     const e = db.estadoCobro(cb); const x = db.contacto(cb.contacto_id);
     const pagos = db.textoPagos();
     const msg = `Hola ${x.nombre.split(' ')[0]}, te saluda ${db.negocio().nombre}. Te recordamos el pago de ${dinero(cb.monto)} por ${cb.concepto} (factura ${db.numFactura(cb.numero)}), ${e.id === 'vencido' ? `que venció el ${fechaCorta(cb.vence)}` : `que vence el ${fechaCorta(cb.vence)}`}. ¡Gracias!${pagos ? `\n\n${pagos}` : ''}`;
-    return `<tr><td><span class="mini-av">${iniciales(x.nombre)}</span><span><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span></td><td class="num"><b>${dinero(cb.monto)}</b></td><td class="tenue">${fechaCorta(cb.vence)}</td><td><span class="pill pill--${e.id}">${e.texto}</span></td>
-      <td class="acciones">${cb.estado === 'pagado' ? '' : `<a class="btn btn--mini" href="${wa(x.telefono, msg)}" target="_blank" rel="noopener" data-recordar="${cb.id}">${I.wa} Recordar</a><button class="btn btn--mini btn--suave" data-pagado="${cb.id}">${I.check} Pagado</button>`}</td></tr>`;
+    return `<tr><td><span class="mini-av">${esc(iniciales(x.nombre))}</span><span><b>${esc(x.nombre)}</b><small><span class="mono">${db.numFactura(cb.numero)}</span> · ${esc(cb.concepto)}</small></span></td><td class="num"><b>${dinero(cb.monto)}</b></td><td class="tenue">${fechaCorta(cb.vence)}</td><td><span class="pill pill--${e.id}">${e.texto}</span></td>
+      <td class="acciones">${cb.estado === 'pagado' ? '' : `<a class="btn btn--mini" href="${wa(x.telefono, msg)}" target="_blank" rel="noopener" data-recordar="${cb.id}">${I.wa} Recordar</a><button class="btn btn--mini btn--suave" data-pagado="${cb.id}">${I.check} Pagado</button><button class="icono-btn" data-anular="${cb.id}" title="Anular cobro" aria-label="Anular factura ${db.numFactura(cb.numero)}">✕</button>`}</td></tr>`;
   }).join('');
   return `<div class="cab-vista"><div><h1>Cobros</h1><p>Quién te debe, cuánto y desde cuándo. Envía el recordatorio con un toque.</p></div><button class="btn btn--tinta" id="nuevo-cobro">${I.mas} Nuevo cobro</button></div>
-    <div class="kpis kpis--3"><div class="kpi"><small>Por cobrar</small><b>${dinero(R.porCobrar)}</b><span>${R.venceSemana} vencen esta semana</span></div>
-      <div class="kpi"><small>Vencido</small><b class="${R.vencidos.length ? 'rojo' : ''}">${dinero(R.vencidos.reduce((s, cb) => s + cb.monto, 0))}</b><span>${R.vencidos.length} ${R.vencidos.length === 1 ? 'cobro' : 'cobros'}</span></div>
+    <div class="kpis kpis--3"><div class="kpi"><small>Por cobrar</small><b>${dinero(R.porCobrar)}</b><span>${R.venceSemana ? plural(R.venceSemana, 'vence esta semana', 'vencen esta semana') : 'Nada vence esta semana'}</span></div>
+      <div class="kpi"><small>Vencido</small><b class="${R.vencidos.length ? 'rojo' : ''}">${dinero(R.vencidos.reduce((s, cb) => s + cb.monto, 0))}</b><span>${plural(R.vencidos.length, 'cobro', 'cobros')}</span></div>
       <div class="kpi"><small>Cobrado este mes</small><b>${dinero(R.cobradoMes)}</b><span>Pagos registrados</span></div></div>
-    <div class="caja caja--tabla"><table class="tabla"><thead><tr><th>Cliente</th><th class="num">Monto</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${filas}</tbody></table></div>`;
+    <div class="caja caja--tabla"><table class="tabla"><thead><tr><th>Cliente</th><th class="num">Monto</th><th>Vence</th><th>Estado</th><th></th></tr></thead><tbody>${filas || '<tr><td colspan="5" class="vacio">Todavía no tienes cobros. Crea el primero: el número de factura se pone solo.</td></tr>'}</tbody></table></div>`;
 };
+
+// ---------------------------------------------------------------- conversaciones
+const COLORES_AV = ['#0f6b4a', '#2a62c9', '#a0620e', '#7a3fb8', '#b4436c', '#2f7d86'];
+const colorDe = t => COLORES_AV[[...String(t)].reduce((s, c) => s + c.charCodeAt(0), 0) % COLORES_AV.length];
+const avatar = (nombre, clase = '') => `<span class="av${clase ? ' ' + clase : ''}" style="--av:${colorDe(nombre)}">${esc(iniciales(nombre) || '?')}</span>`;
+const horaDe = iso => new Date(iso).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' });
+const mismoDia = (a, b) => a.toDateString() === b.toDateString();
+function diaDe(iso) {
+  const d = new Date(iso), hoyD = new Date(), ayer = new Date(Date.now() - 864e5);
+  if (mismoDia(d, hoyD)) return 'Hoy';
+  if (mismoDia(d, ayer)) return 'Ayer';
+  const t = d.toLocaleDateString('es-PA', { weekday: 'long', day: 'numeric', month: 'long' });
+  return t[0].toUpperCase() + t.slice(1);
+}
+function cuandoCorto(iso) {
+  const d = new Date(iso);
+  if (mismoDia(d, new Date())) return horaDe(iso);
+  if (mismoDia(d, new Date(Date.now() - 864e5))) return 'Ayer';
+  return d.toLocaleDateString('es-PA', { day: 'numeric', month: 'short' });
+}
+const ultimoDe = c => c.mensajes[c.mensajes.length - 1];
+/** «Por responder»: el último mensaje es del cliente. */
+const porResponder = c => ultimoDe(c).dir === 'in';
+const QUIEN = { bot: 'Bot: ', portal: 'Tú: ', celular: 'Tú: ', automatizacion: 'Auto: ' };
+
+function filaConversacion(c, actual) {
+  const x = db.contacto(c.contacto_id), u = ultimoDe(c);
+  const pre = u.dir === 'out' ? (QUIEN[u.origen] || 'Tú: ') : '';
+  const nuevos = c !== actual && c.no_leidos ? `<b class="conv2__nuevos">${c.no_leidos}</b>` : '';
+  const buscar = `${x.nombre} ${x.telefono} ${c.mensajes.map(m => m.texto).join(' ')}`.toLowerCase();
+  return `<a href="#/conversaciones/${c.id}" class="conv2${c === actual ? ' activo' : ''}${c.no_leidos && c !== actual ? ' conv2--nuevo' : ''}"
+      data-buscar="${esc(buscar)}" data-sinleer="${c.no_leidos && c !== actual ? 1 : 0}" data-responder="${porResponder(c) ? 1 : 0}">
+      ${avatar(x.nombre)}
+      <span class="conv2__txt"><span class="conv2__fila"><b>${esc(x.nombre)}</b><time>${cuandoCorto(u.fecha)}</time></span>
+        <span class="conv2__fila"><small>${pre}${esc(u.texto.split('\n')[0])}</small>${nuevos}</span></span></a>`;
+}
+
+function burbuja(m, previo) {
+  const junto = previo && previo.dir === m.dir && previo.origen === m.origen && new Date(m.fecha) - new Date(previo.fecha) < 5 * 60e3;
+  const quien = m.dir !== 'out' ? '' : m.origen === 'bot' ? `<span class="burb__quien">${I.bot} Bot</span>`
+    : m.origen === 'celular' ? '<span class="burb__quien">Desde tu celular</span>'
+    : m.origen === 'automatizacion' ? `<span class="burb__quien">${I.rayo} Automático</span>` : '';
+  const estado = m.dir !== 'out' ? ''
+    : m.estado === 'fallido' ? '<span class="burb__fallo" title="Meta no entregó este mensaje">No se entregó</span>'
+    : `<span class="burb__visto${m.estado === 'leido' ? ' burb__visto--leido' : ''}" title="${{ enviado: 'Enviado', entregado: 'Entregado', leido: 'Leído' }[m.estado] || 'Enviado'}">${m.estado === 'entregado' || m.estado === 'leido' ? '✓✓' : '✓'}</span>`;
+  const clases = ['burb', `burb--${m.dir}`, m.origen === 'bot' ? 'burb--bot' : '', m.estado === 'fallido' ? 'burb--fallo' : '', junto ? 'burb--junto' : ''].filter(Boolean).join(' ');
+  return `<div class="${clases}">${junto ? '' : quien}<p>${esc(m.texto).replace(/\n/g, '<br>')}</p><small>${horaDe(m.fecha)} ${estado}</small></div>`;
+}
+
+function hiloDe(c) {
+  let html = '', dia = '';
+  c.mensajes.forEach((m, j) => {
+    const d = diaDe(m.fecha);
+    if (d !== dia) { html += `<div class="hilo__dia"><span>${d}</span></div>`; dia = d; }
+    html += burbuja(m, j && diaDe(c.mensajes[j - 1].fecha) === d ? c.mensajes[j - 1] : null);
+  });
+  return html;
+}
+
+/** Respuestas rápidas: las respuestas del bot y las formas de pago, para no escribir lo mismo cada vez. */
+function rapidas() {
+  const r = db.bot().opciones.filter(o => o.titulo && o.respuesta).map(o => [o.titulo, o.respuesta]);
+  const pagos = db.textoPagos(); if (pagos) r.push(['Formas de pago', pagos]);
+  return r;
+}
 
 V.conversaciones = (abierta) => {
   const convs = db.conversaciones();
-  const real = db.enModoReal() && db.negocio().whatsapp_conectado;   // chats reales: se responde desde aquí
+  const N = db.negocio();
+  const real = db.enModoReal() && N.whatsapp_conectado;   // chats reales: se responde desde aquí
+  const estadoWa = N.whatsapp_conectado
+    ? `<span class="cab-chat__estado cab-chat__estado--ok">${I.wa}<span>WhatsApp conectado${N.whatsapp_numero ? ` · <b class="mono">${esc(N.whatsapp_numero)}</b>` : ''}</span></span>`
+    : `<span class="cab-chat__estado">${I.wa}<span><b>${db.enModoReal() ? 'WhatsApp sin conectar.' : 'Chats de ejemplo.'}</b> Conecta tu número y tus chats llegan aquí; sigues usándolo en tu celular.</span><a class="btn btn--verde btn--mini" href="#/ajustes">Conectar</a></span>`;
   if (!convs.length) {
-    return `<div class="cab-vista"><div><h1>Conversaciones</h1><p>Todos los chats de WhatsApp de tu negocio en un solo lugar, conectados con tus clientes y cotizaciones.</p></div></div>
-      ${real
-        ? `<div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Tu WhatsApp ya está conectado. Cuando un cliente te escriba, el chat aparecerá aquí solo.</p></div></div>`
-        : `<div class="aviso-conectar">${I.wa}<div><b>Todavía no hay conversaciones</b><p>Cuando conectes el WhatsApp de tu negocio, tus chats aparecerán aquí. Mientras tanto, desde Clientes, Cotizaciones y Cobros puedes escribir por WhatsApp con un toque.</p></div><a class="btn btn--verde" href="#/ajustes">Ver cómo conectar</a></div>`}`;
+    return `<div class="cab-chat"><h1>Conversaciones</h1>${estadoWa}</div>
+      <div class="bandeja2 bandeja2--vacia"><div class="vacio2">${I.chat}<b>Todavía no hay conversaciones</b>
+        <p>${real ? 'Tu WhatsApp ya está conectado. Cuando un cliente te escriba, el chat aparecerá aquí al instante.' : 'Cuando conectes el WhatsApp de tu negocio, cada chat aparecerá aquí con la ficha del cliente al lado. Mientras tanto, desde Clientes, Cotizaciones y Cobros puedes escribir por WhatsApp con un toque.'}</p></div></div>`;
   }
   const actual = convs.find(c => c.id === abierta) || convs[0];
-  const lista = convs.map(c => { const x = db.contacto(c.contacto_id); const u = c.mensajes[c.mensajes.length - 1];
-    const nuevos = c !== actual && c.no_leidos ? `<i class="conv__nuevos">${c.no_leidos}</i>` : '';
-    return `<a href="#/conversaciones/${c.id}" class="conv${c === actual ? ' activo' : ''}"><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small>${u.dir === 'out' ? 'Tú: ' : ''}${esc(u.texto)}</small></span><span class="conv__lado"><time>${hace(u.fecha)}</time>${nuevos}</span></a>`; }).join('');
   const x = db.contacto(actual.contacto_id);
-  const marca = m => m.dir !== 'out' ? '' : m.estado === 'fallido' ? ' <span class="msg__fallo">No se entregó</span>' : `<span class="msg__visto${m.estado === 'leido' ? ' msg__visto--leido' : ''}">${m.estado === 'enviado' && real ? ' ✓' : ' ✓✓'}</span>`;
-  const msgs = actual.mensajes.map(m => `<div class="msg msg--${m.dir}">${esc(m.texto)}<small>${m.origen === 'celular' ? 'Desde tu celular · ' : ''}${new Date(m.fecha).toLocaleTimeString('es-PA', { hour: 'numeric', minute: '2-digit' })}${marca(m)}</small></div>`).join('');
+  const sinLeer = convs.filter(c => c !== actual && c.no_leidos).length;
+  const responder = convs.filter(porResponder).length;
   const abierto24 = !real || db.dentroDe24h(actual);
-  // Encabezado de una línea: la bandeja se queda con todo el alto de la pantalla.
-  const estadoWa = db.negocio().whatsapp_conectado
-    ? `<span class="cab-chat__estado cab-chat__estado--ok">${I.wa}<span>WhatsApp conectado${db.negocio().whatsapp_numero ? ` · <b class="mono">${esc(db.negocio().whatsapp_numero)}</b>` : ''}</span></span>`
-    : `<span class="cab-chat__estado">${I.wa}<span><b>Chats de ejemplo.</b> Conecta tu WhatsApp para ver los reales; sigues usándolo en tu celular.</span><a class="btn btn--verde btn--mini" href="#/ajustes">Conectar</a></span>`;
+  const quedan = real && actual.ultimo_entrante ? Math.max(0, Math.ceil(24 - (Date.now() - new Date(actual.ultimo_entrante)) / 36e5)) : 0;
+
+  // estado del chat: ventana de 24 h de Meta y bot de este chat
+  const B = db.bot();
+  const pausado = actual.bot_pausado_hasta && new Date(actual.bot_pausado_hasta) > new Date();
+  const chips = [];
+  if (real) chips.push(abierto24 ? `<span class="chip2 chip2--ok" title="Por reglas de WhatsApp, puedes escribir libremente hasta 24 h después del último mensaje del cliente">${I.reloj} Puedes responder · quedan ${quedan} h</span>`
+    : `<span class="chip2 chip2--aviso" title="Pasaron más de 24 h desde su último mensaje">${I.reloj} Ventana cerrada · responde desde tu celular</span>`);
+  if (B.activo) chips.push(`<button class="chip2 chip2--btn${pausado ? ' chip2--pausa' : ''}" data-pausar-bot="${actual.id}" data-pausado="${pausado ? 1 : 0}" title="${pausado ? 'El bot no responde en este chat hasta ' + horaDe(actual.bot_pausado_hasta) : 'El bot responde en este chat. Tócalo para pausarlo 12 h y atender tú'}">${I.bot} ${pausado ? 'Bot pausado · reanudar' : 'Bot activo · pausar'}</button>`);
+
+  const r = rapidas();
   return `<div class="cab-chat"><h1>Conversaciones</h1>${estadoWa}</div>
-    <div class="bandeja"><nav class="bandeja__lista">${lista}</nav>
-      <section class="chat"><header><span class="mini-av">${iniciales(x.nombre)}</span><span class="crece"><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></span></header>
-        <div class="chat__cuerpo">${msgs}</div>
-        ${abierto24 ? '' : '<p class="chat__regla">Pasaron más de 24 horas desde su último mensaje. Por reglas de WhatsApp, lo que escribas se abrirá en tu celular.</p>'}
-        <form class="chat__escribir" id="escribir"><input placeholder="${real && abierto24 ? 'Escribe un mensaje…' : 'Escribe un mensaje… (se abrirá WhatsApp)'}" name="texto" autocomplete="off" maxlength="4096"><button class="btn btn--verde btn--mini" aria-label="Enviar">${I.flecha}</button></form>
+    <div class="bandeja2">
+      <nav class="lista2" aria-label="Conversaciones">
+        <div class="lista2__cab">
+          <label class="lista2__buscar">${I.lupa}<input id="buscar-chat" type="search" placeholder="Buscar chat o mensaje" autocomplete="off"></label>
+          <div class="lista2__tabs" role="tablist">
+            <button role="tab" aria-selected="true" data-filtro="todos">Todos <span>${convs.length}</span></button>
+            <button role="tab" aria-selected="false" data-filtro="sinleer">Sin leer <span>${sinLeer}</span></button>
+            <button role="tab" aria-selected="false" data-filtro="responder" title="El último mensaje es del cliente">Pendientes <span>${responder}</span></button>
+          </div>
+        </div>
+        <div class="lista2__items" id="lista-chats">${convs.map(c => filaConversacion(c, actual)).join('')}<p class="lista2__nada" hidden>No hay chats que coincidan.</p></div>
+      </nav>
+      <section class="chat2">
+        <header class="chat2__cab">${avatar(x.nombre, 'av--md')}
+          <span class="chat2__quien"><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></span>
+          <span class="chat2__chips">${chips.join('')}</span></header>
+        <div class="chat2__hilo" id="hilo">${hiloDe(actual)}</div>
+        <form class="chat2__escribir" id="escribir">
+          ${r.length ? `<details class="rapidas"><summary title="Respuestas rápidas">${I.rayo}<span>Rápidas</span></summary>
+            <div class="rapidas__menu">${r.map(([t, txt], j) => `<button type="button" data-rapida="${j}"><b>${esc(t)}</b><small>${esc(txt.split('\n')[0])}</small></button>`).join('')}</div></details>` : ''}
+          <textarea name="texto" rows="1" maxlength="4096" placeholder="${real && abierto24 ? 'Escribe un mensaje… (Enter para enviar)' : 'Escribe un mensaje… se abrirá WhatsApp'}" aria-label="Mensaje"></textarea>
+          <button class="chat2__enviar" aria-label="Enviar">${I.flecha}</button>
+        </form>
         <input type="hidden" id="chat-tel" value="${esc(x.telefono)}"><input type="hidden" id="chat-id" value="${esc(actual.id)}"><input type="hidden" id="chat-contacto" value="${esc(x.id)}">
-        <input type="hidden" id="chat-modo" value="${real && abierto24 ? 'api' : 'celular'}"></section>
+        <input type="hidden" id="chat-modo" value="${real && abierto24 ? 'api' : 'celular'}">
+      </section>
       ${fichaCliente(x)}</div>`;
 };
 
 /** Panel derecho de la bandeja: quién es, qué cotizaciones y cobros tiene, y acciones con un toque. */
 function fichaCliente(x) {
-  const qs = db.cotizaciones().filter(q => q.contacto_id === x.id && q.etapa !== 'perdido').sort((a, b) => b.creada.localeCompare(a.creada));
+  const qs = db.cotizaciones().filter(q => q.contacto_id === x.id && !['perdido', 'ganado'].includes(q.etapa)).sort((a, b) => b.creada.localeCompare(a.creada));
   const cbs = db.cobros().filter(cb => cb.contacto_id === x.id && cb.estado !== 'pagado');
+  const pagado = db.cobros().filter(cb => cb.contacto_id === x.id && cb.estado === 'pagado').reduce((s, cb) => s + cb.monto, 0);
   const etapa = id => db.ETAPAS.find(e => e.id === id)?.nombre ?? id;
-  return `<aside class="ficha-cli">
-      <div class="ficha-cli__quien"><span class="avatar">${iniciales(x.nombre)}</span><b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small>
-        ${x.origen ? `<span class="pill">${esc(x.origen)}</span>` : ''}</div>
-      ${x.nota ? `<p class="ficha-cli__nota">${esc(x.nota)}</p>` : ''}
-      <h5>Cotizaciones</h5>
-      ${qs.length ? `<ul class="ficha-cli__lista">${qs.slice(0, 4).map(q => `<li><span><b>#${q.numero}</b> ${esc(q.servicio)}</span><span class="ficha-cli__dato"><b>${dinero(q.monto)}</b><span class="pill pill--etapa-${q.etapa}">${etapa(q.etapa)}</span></span></li>`).join('')}</ul>`
-        : '<p class="tenue ficha-cli__vacio">Sin cotizaciones abiertas.</p>'}
-      <h5>Cobros pendientes</h5>
-      ${cbs.length ? `<ul class="ficha-cli__lista">${cbs.slice(0, 4).map(cb => { const e = db.estadoCobro(cb); return `<li><span><b class="mono">${db.numFactura(cb.numero)}</b> ${esc(cb.concepto)}</span><span class="ficha-cli__dato"><b>${dinero(cb.monto)}</b><span class="pill${e.id === 'vencido' ? ' pill--vencido' : e.id === 'pronto' ? ' pill--pronto' : ''}">${e.texto}</span></span></li>`; }).join('')}</ul>`
-        : '<p class="tenue ficha-cli__vacio">Al día: no debe nada.</p>'}
-      <div class="ficha-cli__acciones">
+  return `<aside class="ficha2">
+      <div class="ficha2__quien">${avatar(x.nombre, 'av--lg')}<b>${esc(x.nombre)}</b><small class="mono">${esc(x.telefono)}</small></div>
+      <dl class="ficha2__datos">
+        <div><dt>Origen</dt><dd>${esc(x.origen || '—')}</dd></div>
+        <div><dt>Cliente desde</dt><dd>${x.creado ? new Date(x.creado).toLocaleDateString('es-PA', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</dd></div>
+        <div><dt>Te ha pagado</dt><dd>${dinero(pagado)}</dd></div>
+      </dl>
+      ${x.nota ? `<p class="ficha2__nota">${esc(x.nota)}</p>` : ''}
+      <h5>Cotizaciones abiertas <span>${qs.length}</span></h5>
+      ${qs.length ? `<ul class="ficha2__lista">${qs.slice(0, 4).map(q => `<li><span class="ficha2__fila"><b class="mono">#${q.numero}</b><span class="pill pill--etapa-${q.etapa}">${etapa(q.etapa)}</span></span><span class="ficha2__fila"><span>${esc(q.servicio)}</span><b>${dinero(q.monto)}</b></span></li>`).join('')}</ul>`
+        : '<p class="ficha2__vacio">Sin cotizaciones abiertas.</p>'}
+      <h5>Cobros pendientes <span>${cbs.length}</span></h5>
+      ${cbs.length ? `<ul class="ficha2__lista">${cbs.slice(0, 4).map(cb => { const e = db.estadoCobro(cb); return `<li><span class="ficha2__fila"><b class="mono">${db.numFactura(cb.numero)}</b><span class="pill${e.id === 'vencido' ? ' pill--vencido' : e.id === 'pronto' ? ' pill--pronto' : ''}">${e.texto}</span></span><span class="ficha2__fila"><span>${esc(cb.concepto)}</span><b>${dinero(cb.monto)}</b></span></li>`; }).join('')}</ul>`
+        : '<p class="ficha2__vacio">Al día: no debe nada.</p>'}
+      <div class="ficha2__acciones">
         <button class="btn btn--tinta btn--ancho" data-cot-para="${esc(x.id)}">${I.mas} Nueva cotización</button>
         <button class="btn btn--suave btn--ancho" data-cobro-para="${esc(x.id)}">${I.mas} Nuevo cobro</button>
       </div>
     </aside>`;
 }
 
+let periodoReporte = 'mes';
 V.reportes = () => {
-  const qs = db.cotizaciones();
-  const porOrigen = db.ORIGENES.map(o => [o, db.contactos().filter(x => x.origen === o).length]);
-  const topeO = Math.max(...porOrigen.map(x => x[1]), 1);
-  const ganadas = qs.filter(q => q.etapa === 'ganado').length, cerradas = qs.filter(q => ['ganado', 'perdido'].includes(q.etapa)).length;
-  const vm = db.ventasPorMes();
-  const meses = vm.map(([m]) => m[0].toUpperCase() + m.slice(1)), valores = vm.map(([, v]) => v);
-  const topeM = Math.max(...valores, 1);
-  return `<div class="cab-vista"><div><h1>Reportes</h1><p>Cómo va tu negocio, sin abrir una hoja de cálculo.</p></div></div>
-    <div class="kpis"><div class="kpi"><small>Tasa de cierre</small><b>${cerradas ? Math.round(ganadas / cerradas * 100) : 0}%</b><span>${ganadas} de ${cerradas} cerradas</span></div>
-      <div class="kpi"><small>Ticket promedio</small><b>${dinero(qs.reduce((s, q) => s + q.monto, 0) / Math.max(qs.length, 1))}</b><span>Por cotización</span></div>
-      <div class="kpi"><small>Ganado este mes</small><b>${dinero(db.resumen().ganadoMes)}</b><span>Cotizaciones ganadas</span></div>
-      <div class="kpi"><small>Por cobrar</small><b>${dinero(db.resumen().porCobrar)}</b><span>Pendiente</span></div></div>
+  const R = db.reporte(periodoReporte);
+  const nombreP = db.PERIODOS.find(p => p[0] === periodoReporte)[1].toLowerCase();
+  const vm = db.ventasPorMes(['anio', 'todo'].includes(periodoReporte) ? 12 : 6), hayVentas = vm.some(([, v]) => v);
+  const topeO = Math.max(...R.origenes.map(o => o.clientes), 1);
+  const totalO = R.origenes.reduce((s, o) => s + o.clientes, 0) || 1;
+  const origenes = R.origenes.map(o => `<li><span class="rep-or__nombre">${esc(o.origen)}</span>
+      <span class="rep-or__barra"><i style="--v:${(o.clientes / topeO).toFixed(2)}"></i></span>
+      <span class="rep-or__num"><b>${o.clientes}</b> <small>${Math.round(o.clientes / totalO * 100)}%</small></span>
+      <span class="rep-or__dinero">${o.cobrado ? dinero(o.cobrado) : '—'}</span></li>`).join('');
+  const topeE = Math.max(...R.etapas.map(e => e.cantidad), 1);
+  const etapas = R.etapas.map(e => `<li><span><span class="punto punto--${e.id}"></span>${e.nombre}</span><span class="rep-et__barra"><i style="--v:${(e.cantidad / topeE).toFixed(2)}"></i></span><b>${e.cantidad}</b><span class="tenue">${dinero(e.monto)}</span></li>`).join('');
+  const mejores = R.mejores.map((m, j) => `<li><span class="rep-pos">${j + 1}</span><span class="mini-av">${esc(iniciales(m.cliente.nombre))}</span><span class="crece"><b>${esc(m.cliente.nombre)}</b><small>${esc(m.cliente.origen || '')}</small></span><b>${dinero(m.total)}</b></li>`).join('');
+  return `<div class="cab-vista"><div><h1>Reportes</h1><p>Cómo va tu negocio, con lo que tú registras: cobros, cotizaciones y clientes.</p></div>
+      <div class="periodos" role="tablist" aria-label="Periodo">${db.PERIODOS.map(([id, t]) => `<button role="tab" aria-selected="${id === periodoReporte}" data-periodo="${id}">${t}</button>`).join('')}</div></div>
+    <div class="kpis">
+      <div class="kpi"><small>Cobrado</small><b>${dinero(R.cobrado)}</b><span>${R.pagos ? plural(R.pagos, 'pago registrado', 'pagos registrados') : 'Sin pagos en ' + nombreP}</span></div>
+      <div class="kpi"><small>Ventas ganadas</small><b>${dinero(R.ganado)}</b><span>${R.ganadas ? plural(R.ganadas, 'cotización ganada', 'cotizaciones ganadas') : 'Ninguna ganada en ' + nombreP}</span></div>
+      <div class="kpi"><small>Tasa de cierre</small><b>${R.tasa === null ? '—' : R.tasa + '%'}</b><span>${R.tasa === null ? 'Aún no hay cotizaciones cerradas' : `${R.ganadas} ${R.ganadas === 1 ? 'ganada' : 'ganadas'} · ${R.perdidas} ${R.perdidas === 1 ? 'perdida' : 'perdidas'}`}</span></div>
+      <div class="kpi"><small>Ticket promedio</small><b>${R.ticket === null ? '—' : dinero(R.ticket)}</b><span>${R.ticket === null ? 'Se calcula con ventas ganadas' : 'Por venta ganada'}</span></div>
+    </div>
     <div class="rejilla-2">
-      <section class="caja"><h4>Cobrado por mes ${db.enModoReal() ? '' : '<small>meses anteriores de ejemplo</small>'}</h4><div class="columnas">${meses.map((m, j) => `<div><i style="--h:${(valores[j] / topeM * 100).toFixed(0)}%"><b>${dinero(valores[j])}</b></i><span>${m}</span></div>`).join('')}</div></section>
-      <section class="caja"><h4>¿De dónde vienen tus clientes?</h4><ul class="barras barras--anchas">${porOrigen.map(([o, v]) => `<li><span>${o}</span><i style="--v:${(v / topeO).toFixed(2)}"><b>${v}</b></i></li>`).join('')}</ul></section>
+      <section class="caja"><h4>Cobrado por mes ${db.enModoReal() ? '' : '<small>meses anteriores de ejemplo</small>'}</h4>
+        ${hayVentas ? graficaMeses(vm) : vacioCaja(I.grafica, 'Todavía no hay pagos registrados', 'Cuando marques un cobro como pagado, aquí verás cuánto entra cada mes.')}</section>
+      <section class="caja"><h4>¿De dónde vienen tus clientes? <small>${plural(R.clientesNuevos, 'cliente nuevo', 'clientes nuevos')} · ${nombreP}</small></h4>
+        ${origenes ? `<ul class="rep-or"><li class="rep-or__cab"><span>Origen</span><span></span><span>Clientes</span><span>Cobrado</span></li>${origenes}</ul>
+          <p class="nota">Según el origen de cada cliente. Los que te escriben por WhatsApp o llenan el formulario de tu página se marcan solos; a los demás se lo pones al agregarlos.</p>`
+          : vacioCaja(I.crm, 'Sin clientes nuevos en ' + nombreP, 'Cuando agregues clientes (o te escriban por WhatsApp o tu página), aquí verás de dónde llegan y cuánto te dejan.')}</section>
+      <section class="caja"><h4>Cotizaciones por etapa <small>ahora</small><a class="ver" href="#/cotizaciones">Tablero</a></h4>
+        ${R.etapas.some(e => e.cantidad) ? `<ul class="rep-et">${etapas}</ul>` : vacioCaja(I.factura, 'Sin cotizaciones', 'Crea tu primera cotización y aquí verás cuántas tienes en cada etapa y por cuánto.')}</section>
+      <section class="caja"><h4>Mejores clientes <small>${nombreP}</small></h4>
+        ${mejores ? `<ul class="lista-simple rep-mejores">${mejores}</ul>` : vacioCaja(I.estrella, 'Todavía sin pagos', 'Aquí aparecen los clientes que más te han pagado en el periodo.')}</section>
     </div>`;
 };
 
 V.automatizaciones = () => {
-  const N = db.negocio();
-  const items = db.automatizaciones().map(a => `<article class="auto${a.activa ? ' auto--activa' : ''}"><span class="auto__ico">${I[a.canal === 'whatsapp' ? 'wa' : 'chat']}</span>
-    <div class="crece"><h3>${esc(a.nombre)}</h3><p>${esc(a.detalle)}</p><small class="auto__canal">${a.canal === 'whatsapp' ? (N.whatsapp_conectado ? 'Por WhatsApp' : 'Por WhatsApp · requiere conectar tu número') : 'Por correo'}</small></div>
-    <button class="interruptor" role="switch" aria-checked="${a.activa}" data-auto="${a.id}" aria-label="${esc(a.nombre)}"><i></i></button></article>`).join('');
-  return `<div class="cab-vista"><div><h1>Automatizaciones</h1><p>Lo que tu negocio hace solo, mientras tú trabajas.</p></div></div><div class="autos">${items}</div>`;
+  const N = db.negocio(), real = db.enModoReal();
+  const items = db.automatizaciones().map(a => {
+    const pronto = ['resena', 'reactivar'].includes(a.id);
+    const faltaWa = real && a.canal === 'whatsapp' && !N.whatsapp_conectado;
+    const faltaCorreo = real && a.canal === 'correo' && !N.correo;
+    const bloqueada = pronto || faltaWa;
+    const activa = a.activa && !bloqueada;
+    const estado = pronto ? '<span class="pill pill--pronto">Próximamente</span>'
+      : faltaWa ? `<span class="auto__falta">${I.wa} Requiere <a href="#/ajustes">conectar tu WhatsApp</a></span>`
+      : faltaCorreo ? `<span class="auto__falta">Pon tu correo en <a href="#/ajustes">Ajustes</a> para recibirlo</span>`
+      : a.canal === 'whatsapp' ? 'Por WhatsApp, con mensajes aprobados por Meta' : `Por correo${N.correo ? ' a ' + esc(N.correo) : ''}`;
+    return `<article class="auto${activa ? ' auto--activa' : ''}${bloqueada ? ' auto--bloq' : ''}"><span class="auto__ico">${I[a.canal === 'whatsapp' ? 'wa' : 'chat']}</span>
+      <div class="crece"><h3>${esc(a.nombre)}</h3><p>${esc(a.detalle)}</p><small class="auto__canal">${estado}</small></div>
+      <button class="interruptor" role="switch" aria-checked="${activa}" data-auto="${a.id}" aria-label="${esc(a.nombre)}"${bloqueada ? ' disabled' : ''}><i></i></button></article>`;
+  }).join('');
+  return `<div class="cab-vista"><div><h1>Automatizaciones</h1><p>Lo que tu negocio hace solo, mientras tú trabajas. Se revisan cada hora y cada aviso se envía una sola vez.</p></div></div><div class="autos">${items}</div>`;
 };
 
 // ---------------------------------------------------------------- bot de WhatsApp
@@ -324,6 +469,8 @@ V.ajustes = () => {
         ${campo('Correo para el resumen diario', `<input name="correo" type="email" value="${esc(N.correo)}">`)}${campo('Teléfono', `<input name="telefono" value="${esc(N.telefono)}">`)}
         <button class="btn btn--tinta">Guardar</button></form></section>
       ${cajaWhatsApp(N)}
+      <section class="caja"><h4>${I.pago} Cobros en línea <span class="pill pill--pronto">Próximamente</span></h4>
+        <p class="tenue">Con TiloPay, cada factura tendrá su enlace de pago: tu cliente paga con tarjeta desde WhatsApp y el cobro se marca como pagado solo.</p></section>
       <section class="caja"><h4>${I.pago} Formas de pago</h4>
         <p class="tenue">Cómo te pagan tus clientes. Salen en el bot («Formas de pago») y al final de los recordatorios de cobro.</p>
         ${db.pagos().length ? `<ul class="pagos">${db.pagos().map(p => `<li><span class="pagos__ico">${I.pago}</span><span class="crece"><b>${esc(p.titulo)}</b><small>${esc(p.detalle)}</small></span><button class="icono-btn" data-quitar-pago="${esc(p.id)}" aria-label="Quitar ${esc(p.titulo)}">✕</button></li>`).join('')}</ul>`
@@ -541,7 +688,7 @@ function render() {
   document.body.innerHTML = marco(vista, V[vista](extra ? decodeURIComponent(extra) : undefined));
   document.title = `${RUTAS.find(r => r[0] === vista)?.[1] || 'Ajustes'} · Enlaza Studio`;
   // En Conversaciones la pantalla no se desplaza: la bandeja llena el alto disponible.
-  document.body.classList.toggle('en-chat', vista === 'conversaciones' && !!$('.bandeja'));
+  document.body.classList.toggle('en-chat', vista === 'conversaciones' && !!$('.bandeja2:not(.bandeja2--vacia)'));
   enlazar(vista);
 }
 
@@ -555,11 +702,30 @@ function enlazar(vista) {
   buscar.addEventListener('keydown', e => { if (e.key === 'Enter') location.hash = '#/clientes/' + encodeURIComponent(buscar.value.trim()); });
   if (vista === 'clientes') { const [, , f] = location.hash.split('/'); if (f) buscar.value = decodeURIComponent(f); }
 
+  const camposCliente = (x = {}) => {
+    const origenes = [...new Set([...db.ORIGENES, ...(x.origen ? [x.origen] : [])])];
+    return campo('Nombre', `<input name="nombre" required value="${esc(x.nombre || '')}">`) + campo('Teléfono (WhatsApp)', `<input name="telefono" placeholder="6000-0000" required value="${esc(x.telefono || '')}">`) +
+      campo('¿Cómo llegó?', `<select name="origen">${origenes.map(o => `<option${o === x.origen ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`) + campo('Qué necesita', `<input name="nota" placeholder="Ej.: mudanza local" value="${esc(x.nota || '')}">`);
+  };
+  const validoCliente = d => (!d.nombre.trim() || digitos(d.telefono).length < 7) ? 'Escribe el nombre y un teléfono válido.' : null;
   const nuevoCliente = $('#nuevo-cliente');
-  if (nuevoCliente) nuevoCliente.addEventListener('click', () => dialogo('Nuevo cliente',
-    campo('Nombre', '<input name="nombre" required>') + campo('Teléfono (WhatsApp)', '<input name="telefono" placeholder="+507 6000-0000" required>') +
-    campo('Origen', `<select name="origen">${db.ORIGENES.map(o => `<option>${o}</option>`).join('')}</select>`) + campo('Qué necesita', '<input name="nota" placeholder="Ej.: mudanza local">'),
-    d => { if (!d.nombre.trim() || digitos(d.telefono).length < 7) return 'Escribe el nombre y un teléfono válido.'; db.crearContacto(d); aviso('Cliente agregado'); render(); }));
+  if (nuevoCliente) nuevoCliente.addEventListener('click', () => dialogo('Nuevo cliente', camposCliente(),
+    d => { const mal = validoCliente(d); if (mal) return mal; const r = db.crearContacto({ ...d, nombre: d.nombre.trim() }); if (r.error) return r.error; aviso('Cliente agregado'); render(); }));
+  $$('[data-editar-cliente]').forEach(b => b.addEventListener('click', () => {
+    const x = db.contacto(b.dataset.editarCliente);
+    dialogo('Editar cliente', camposCliente(x), d => { const mal = validoCliente(d); if (mal) return mal; const r = db.editarContacto(x.id, { ...d, nombre: d.nombre.trim() }); if (r.error) return r.error; aviso('Cliente actualizado'); render(); });
+  }));
+  $$('[data-editar-cot]').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    const q = db.cotizaciones().find(x => x.id === b.dataset.editarCot); if (!q) return;
+    dialogo(`Cotización #${q.numero}`, campo('Servicio', `<input name="servicio" required value="${esc(q.servicio)}">`) + campo('Monto ($)', `<input name="monto" type="number" min="0" step="0.01" required value="${q.monto || ''}">`),
+      d => { if (!d.servicio.trim() || !(+d.monto > 0)) return 'Escribe el servicio y un monto mayor a cero.'; db.editarCotizacion(q.id, { servicio: d.servicio.trim(), monto: +d.monto }); aviso('Cotización actualizada'); render(); });
+  }));
+  $$('[data-anular]').forEach(b => b.addEventListener('click', () => {
+    const cb = db.cobros().find(x => x.id === b.dataset.anular); if (!cb) return;
+    dialogo(`Anular factura ${db.numFactura(cb.numero)}`, `<p>Se quita de tus cobros (${esc(cb.concepto)} · ${dinero(cb.monto)}). El número ${db.numFactura(cb.numero)} no se vuelve a usar, para que tus facturas sigan en orden.</p>`,
+      () => { db.anularCobro(cb.id); aviso('Cobro anulado'); render(); }, 'Anular');
+  }));
 
   const sinClientes = () => { if (db.contactos().length) return false; aviso('Primero agrega un cliente'); location.hash = '#/clientes'; return true; };
   const abrirCot = sel => !sinClientes() && dialogo('Nueva cotización',
@@ -568,14 +734,15 @@ function enlazar(vista) {
   const abrirCobro = sel => !sinClientes() && dialogo('Nuevo cobro',
     `<p class="dialogo__numero">Factura <b class="mono">${db.numFactura(db.siguienteFactura())}</b><span>El número se pone solo y sigue en orden.</span></p>` +
     campo('Cliente', `<select name="contacto_id">${opcionesContactos(sel)}</select>`) + campo('Concepto', '<input name="concepto" required placeholder="Ej.: mudanza del sábado">') +
-    campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>') + campo('Vence', `<input name="vence" type="date" required value="${new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10)}">`),
+    campo('Monto ($)', '<input name="monto" type="number" min="0" step="0.01" required>') + campo('Vence', `<input name="vence" type="date" required value="${fechaLocal(7)}">`),
     d => { if (!d.concepto.trim() || !(+d.monto > 0) || !d.vence) return 'Completa el concepto, el monto y la fecha.'; db.crearCobro(d); aviso('Cobro agregado'); render(); });
   const nuevaCot = $('#nueva-cot'); if (nuevaCot) nuevaCot.addEventListener('click', () => abrirCot());
   const nuevoCobro = $('#nuevo-cobro'); if (nuevoCobro) nuevoCobro.addEventListener('click', () => abrirCobro());
   $$('[data-cot-para]').forEach(b => b.addEventListener('click', () => abrirCot(b.dataset.cotPara)));
   $$('[data-cobro-para]').forEach(b => b.addEventListener('click', () => abrirCobro(b.dataset.cobroPara)));
 
-  $$('[data-pagado]').forEach(b => b.addEventListener('click', () => { db.marcarPagado(b.dataset.pagado); aviso('Pago registrado: su cotización pasó a Ganado'); render(); }));
+  $$('[data-pagado]').forEach(b => b.addEventListener('click', () => { const movio = db.marcarPagado(b.dataset.pagado); aviso(movio ? 'Pago registrado: su cotización pasó a Ganado' : 'Pago registrado'); render(); }));
+  $$('[data-periodo]').forEach(b => b.addEventListener('click', () => { periodoReporte = b.dataset.periodo; render(); }));
   $$('[data-recordar]').forEach(a => a.addEventListener('click', () => { db.marcarRecordatorio(a.dataset.recordar); setTimeout(() => { aviso('Recordatorio registrado'); render(); }, 300); }));
   $$('[data-seguir]').forEach(a => a.addEventListener('click', () => { db.marcarSeguimiento(a.dataset.seguir); setTimeout(() => { aviso('Seguimiento registrado'); render(); }, 300); }));
   $$('[data-enviar-cot]').forEach(a => a.addEventListener('click', () => { db.enviarCotizacion(a.dataset.enviarCot); setTimeout(() => { aviso('Cotización enviada: pasó a Cotizado'); render(); }, 300); }));
@@ -592,29 +759,68 @@ function enlazar(vista) {
   });
   $$('[data-mover]').forEach(s => s.addEventListener('change', () => { db.moverCotizacion(s.dataset.mover, s.value); aviso('Cotización movida'); render(); }));
 
+  // ---- bandeja: escribir, respuestas rápidas, buscar, filtrar y pausar el bot del chat
   const escribir = $('#escribir');
-  if (escribir) escribir.addEventListener('submit', async e => {
-    e.preventDefault();
-    const campoTexto = $('input', escribir), texto = campoTexto.value.trim();
-    if (!texto) return;
-    // Demostración, sin conectar o fuera de las 24 h: se abre WhatsApp en el celular con el mensaje escrito.
-    if ($('#chat-modo').value !== 'api') {
-      window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
-      if (db.escribioCliente($('#chat-contacto').value)) { aviso('Su cotización pasó a Contactado'); render(); }
-      return;
-    }
-    const boton = $('button', escribir); boton.disabled = true; campoTexto.disabled = true;
-    db.escribioCliente($('#chat-contacto').value);
-    const r = await db.enviarMensaje($('#chat-id').value, texto);
-    if (r.error) {
-      aviso(r.error); boton.disabled = false; campoTexto.disabled = false;
-      if (r.fuera24h) window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
-      return;
-    }
-    render();
-  });
-  const chat = $('.chat__cuerpo'); if (chat) chat.scrollTop = chat.scrollHeight;
+  if (escribir) {
+    const campoTexto = $('textarea', escribir);
+    const crecer = () => { campoTexto.style.height = 'auto'; campoTexto.style.height = Math.min(campoTexto.scrollHeight, 160) + 'px'; };
+    campoTexto.addEventListener('input', crecer);
+    // Enter envía; Shift + Enter hace salto de línea
+    campoTexto.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) { e.preventDefault(); escribir.requestSubmit(); } });
+    $$('[data-rapida]', escribir).forEach(b => b.addEventListener('click', () => {
+      campoTexto.value = rapidas()[+b.dataset.rapida][1]; crecer(); campoTexto.focus();
+      b.closest('details').open = false;
+    }));
+    escribir.addEventListener('submit', async e => {
+      e.preventDefault();
+      const texto = campoTexto.value.trim();
+      if (!texto) return;
+      // Demostración, sin conectar o fuera de las 24 h: se abre WhatsApp en el celular con el mensaje escrito.
+      if ($('#chat-modo').value !== 'api') {
+        window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
+        campoTexto.value = ''; crecer();
+        if (db.escribioCliente($('#chat-contacto').value)) { aviso('Su cotización pasó a Contactado'); render(); }
+        return;
+      }
+      const boton = $('.chat2__enviar', escribir); boton.disabled = true; campoTexto.disabled = true;
+      const r = await db.enviarMensaje($('#chat-id').value, texto);
+      if (r.error) {
+        aviso(r.error); boton.disabled = false; campoTexto.disabled = false;
+        if (r.fuera24h) window.open(wa($('#chat-tel').value, texto), '_blank', 'noopener');
+        return;
+      }
+      // solo si de verdad salió: su cotización pasa a Contactado
+      db.escribioCliente($('#chat-contacto').value);
+      render();
+    });
+  }
+  const hilo = $('#hilo'); if (hilo) hilo.scrollTop = hilo.scrollHeight;
   const chatId = $('#chat-id'); if (chatId && db.enModoReal()) db.leerConversacion(chatId.value);
+  const buscarChat = $('#buscar-chat');
+  if (buscarChat) {
+    let filtro = 'todos';
+    const aplicar = () => {
+      const q = buscarChat.value.trim().toLowerCase();
+      let vistos = 0;
+      $$('#lista-chats .conv2').forEach(a => {
+        const ok = (!q || a.dataset.buscar.includes(q)) && (filtro === 'todos' || (filtro === 'sinleer' && a.dataset.sinleer === '1') || (filtro === 'responder' && a.dataset.responder === '1'));
+        a.hidden = !ok; if (ok) vistos++;
+      });
+      $('.lista2__nada').hidden = vistos > 0;
+    };
+    buscarChat.addEventListener('input', aplicar);
+    $$('[data-filtro]').forEach(b => b.addEventListener('click', () => {
+      filtro = b.dataset.filtro;
+      $$('[data-filtro]').forEach(x => x.setAttribute('aria-selected', String(x === b)));
+      aplicar();
+    }));
+  }
+  $$('[data-pausar-bot]').forEach(b => b.addEventListener('click', () => {
+    const pausar = b.dataset.pausado !== '1';
+    db.pausarBot(b.dataset.pausarBot, pausar);
+    aviso(pausar ? 'Bot pausado 12 h en este chat: atiendes tú' : 'El bot vuelve a responder en este chat');
+    render();
+  }));
 
   const conectarWa = $('#conectar-wa');
   if (conectarWa && !conectarWa.disabled) conectarWa.addEventListener('click', async () => {
@@ -658,8 +864,10 @@ function enlazar(vista) {
     });
     $('#bot-activo').addEventListener('click', () => {
       const b = limpio(leerBot());
-      const completo = b.saludo && !b.opciones.some(o => !o.titulo || !o.respuesta);
-      const guardado = db.guardarBot({ ...(completo ? b : db.bot()), activo: !db.bot().activo });
+      const completo = x => x.saludo && x.opciones.length && !x.opciones.some(o => !o.titulo || !o.respuesta);
+      // no se enciende con respuestas vacías: el cliente recibiría un mensaje a medias
+      if (!db.bot().activo && !completo(b)) return aviso('Completa el saludo y la respuesta de cada opción antes de encender el bot');
+      const guardado = db.guardarBot({ ...(completo(b) ? b : db.bot()), activo: !db.bot().activo });
       aviso(guardado.activo ? 'Bot encendido' : 'Bot apagado'); render();
     });
     vista();
@@ -685,21 +893,39 @@ function enlazar(vista) {
   if (rein) rein.addEventListener('click', () => { db.reiniciar(); aviso('Datos de ejemplo restablecidos'); location.hash = '#/inicio'; render(); });
 }
 
+/** Falló la red al cargar el negocio: no es lo mismo que no tener negocio. */
+function errorDeCarga() {
+  document.body.innerHTML = `<main class="error-carga"><div class="vacio2">${I.escudo}<b>No se pudo cargar tu negocio</b>
+    <p>Parece un problema de conexión. Tus datos están bien guardados.</p><button class="btn btn--tinta" id="reintentar">Reintentar</button></div></main>`;
+  $('#reintentar').addEventListener('click', async () => {
+    const r = await db.reintentar();
+    if (r === 'error') return aviso('Todavía sin conexión. Inténtalo en un momento.');
+    if (r === 'sin-negocio') return bienvenida();
+    if (!location.hash || location.hash === '#/') location.hash = '#/inicio';
+    render();
+  });
+}
+
 async function arrancar() {
   // Si algo no se pudo guardar en Supabase, se avisa y se muestra lo que de verdad quedó.
   db.cuandoFalle(texto => { aviso(texto); if (db.sesion.actual()) render(); });
   // Llegó un mensaje (tiempo real): se vuelve a dibujar sin perder lo que estaba escribiendo.
+  // Cuando la base pone el número definitivo de una cotización o factura, se vuelve a dibujar.
+  db.cuandoNumere(() => { if (db.sesion.actual() && !document.querySelector('dialog[open]')) render(); });
   db.cuandoCambie(() => {
     if (!db.sesion.actual() || document.querySelector('dialog[open]')) return;
-    const campo = $('#escribir input'), borrador = campo?.value ?? '', enfocado = document.activeElement === campo;
+    // en el editor del bot y en Ajustes no se vuelve a dibujar: borraría lo que está escribiendo
+    if (['bot', 'ajustes'].includes(location.hash.split('/')[1])) return;
+    const campo = $('#escribir textarea'), borrador = campo?.value ?? '', enfocado = document.activeElement === campo;
     render();
-    const nuevo = $('#escribir input');
+    const nuevo = $('#escribir textarea');
     if (nuevo && borrador) nuevo.value = borrador;
     if (nuevo && enfocado) nuevo.focus();
   });
   let estado = 'fuera';
   try { estado = await db.iniciar(); } catch (e) { console.error('[portal] no se pudo iniciar', e); }
   if (estado === 'fuera') return entrar();
+  if (estado === 'error') return errorDeCarga();
   if (estado === 'recuperar') return claveNueva();
   if (estado === 'sin-negocio') return bienvenida();
   if (!location.hash || location.hash === '#/') location.hash = '#/inicio';
